@@ -1,0 +1,41 @@
+---
+import { Contacts } from '../data'
+---
+<footer class="footer dark:text-white">
+  <nav class="links">
+    <a href="/faq">FAQ</a>
+    <a href="/pricing">Қаріпке тапсырыс беру</a>
+    <a href="/licenses">Лицензияларымыз</a>
+    <a href="/blog">Мақалалар</a>
+    <a href="/terms-of-use">Қолдану шарты</a>
+  </nav>
+  <div class="flex items-center gap-5">
+    <a href={Contacts.Instagram} target="_blank" rel="noopener noreferrer" title="Instagram">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+    </a>
+    <a href={Contacts.Telegram} target="_blank" rel="noopener noreferrer" title="Telegram">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+    </a>
+    <a href={Contacts.Email} target="_blank" rel="noopener noreferrer" title="Пошта">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+    </a>
+  </div>
+</footer>
+<style>
+  .footer {
+    @apply py-6 px-8 md:container md:mx-auto flex justify-between gap-6;
+    @apply flex-col items-start mt-2;
+    @apply lg:flex-row lg:items-center lg:mt-16;
+  }
+  .footer a {
+    @apply hover:text-brand;
+  }
+  .links {
+    @apply flex items-start flex-col;
+    @apply md:flex-row md:items-center md:gap-4;
+  }
+  .links a {
+    @apply block py-2;
+    @apply md:inline md:py-0;
+  }
+</style>

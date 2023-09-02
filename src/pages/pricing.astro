@@ -1,0 +1,48 @@
+---
+import { Contacts } from '../data';
+import PriceCard from '../components/PriceCard.astro';
+import Layout from '../layouts/Layout.astro';
+
+const prices = [
+  {
+    title: 'Qazaqca qosıw',
+    price: '5000',
+    description: 'Техникалық тапсырма мен қаріпке байланысты қызмет бағасы өзгере алады',
+    list: ['Қазақ кирил әріптері', 'Қазақ латын әріптері']
+  },
+  {
+    title: 'Kyryl qosıw',
+    price: '20 000',
+    description: 'Техникалық тапсырма мен қаріпке байланысты қызмет бағасы өзгере алады',
+    list: ['Қазақ кирил әліпбиі', 'Қазақ латын әріптері'],
+    active: true
+  },
+  {
+    title: 'Qazaqca qosıw',
+    price: 'XX 000',
+    description: 'Техникалық тапсырмаға байланысты қызмет бағасы анықталады',
+    list: ['Техникалық тапсырмаңыз бойынша жаңадан қаріп жасау']
+  }
+];
+
+---
+
+<Layout title="Қаріпке тапсырыс беру — Qarip">
+  <div class="flex flex-col items-center mb-10 dark:text-white">
+    <h1 class="page-title">Qaripke tapsırıs beriñiz</h1>
+    <p class="my-4 text-xl">Tiyimdi bağağa sizge qazaq tili qoljetimdi qarip jasap beremiz</p>
+  </div>
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:mx-10">
+    {prices.map(price => (
+      <PriceCard
+        title={price.title}
+        href={Contacts.Instagram}
+        price={`${price.price} ₸`}
+        active={price.active || false}
+        description={price.description}
+        btnText="Tapsırıs beriw"
+        list={price.list}
+      />
+    ))}
+  </section>
+</Layout>

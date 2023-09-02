@@ -1,0 +1,27 @@
+---
+import PriceCard from "../components/PriceCard.astro";
+import Layout from "./Layout.astro";
+const { frontmatter } = Astro.props;
+---
+<Layout title={frontmatter.title}>
+  <section class="max-w-7xl mx-auto dark:text-white">
+    <h1 class="page-title mb-2">{frontmatter.title}</h1>
+    <p class="text-xl my-4">
+      <a href={frontmatter.font.href} class="underline">{frontmatter.font.name}</a> қарпінің лицензия түрлері
+    </p>
+    <hr class="my-5" />
+    <div class="prose dark:prose-invert">
+      <slot />
+    </div>
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {frontmatter.prices.map((price: any) => (
+        <PriceCard {...price} />
+      ))}
+    </div>
+    <p class="text-xl text-center mt-14">
+      Қаріпті сатып алу үшін біздің поштаға жазыңыз: <a href="mailto:abayemes@gmail.com" class="underline">abayemes@gmail.com</a>
+    </p>
+  </section>
+</Layout>
+<style>
+</style>

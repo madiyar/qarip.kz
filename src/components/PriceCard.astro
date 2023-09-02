@@ -1,0 +1,51 @@
+---
+
+interface Props {
+	active: boolean;
+	title: string;
+	price: string;
+	description?: string;
+	href: string;
+  btnText: string;
+	list: string[];
+}
+
+const { active, title, price, description, href, btnText, list = [] } = Astro.props;
+---
+<div class={`card ${active ? 'active' : 'md:scale-95'}`}>
+  <h2>{title}</h2>
+  <h3>{price}</h3>
+  {description && <p>{description}</p>}
+  <a href={href} target="_blank" rel="noopener noreferrer">{btnText}</a>
+  <ul>
+    {list.map(item => <li>{item}</li>)}
+  </ul>
+</div>
+<style>
+  .card {
+    @apply flex flex-col items-center shadow-2xl rounded-3xl py-6 px-9 shadow-brand/20 bg-inherit;
+    @apply border-4 border-transparent dark:text-white;
+  }
+  .active {
+    @apply border-brand-light/70;
+  }
+  .card h2 {
+    @apply text-2xl font-medium;
+  }
+  .card h3 {
+    @apply text-5xl font-bold my-4;
+  }
+  .card p {
+    @apply text-center font-light;
+  }
+  .card a {
+    @apply bg-brand text-white rounded-full px-4 py-2 my-4 text-xl;
+    @apply transition-all hover:bg-brand-dark hover:shadow-lg hover:shadow-brand/20 hover:scale-105;
+  }
+  .card ul {
+    @apply max-w-xs mx-auto my-8;
+  }
+  .card li {
+    @apply list-image-[url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZWNrIj48cG9seWxpbmUgcG9pbnRzPSIyMCA2IDkgMTcgNCAxMiIvPjwvc3ZnPg==)];
+  }
+</style>

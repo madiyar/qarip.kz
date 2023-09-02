@@ -1,0 +1,69 @@
+---
+import dayjs from 'dayjs';
+
+import FontsList from '../components/FontsList.astro';
+import Layout from '../layouts/Layout.astro';
+const fonts = await Astro.glob("../pages/qaripter/*.md");
+
+const newFonts = fonts
+	.sort((a, b) => dayjs(a.frontmatter.pubDate).unix() - dayjs(b.frontmatter.pubDate).unix())
+	.slice(0, 3)
+	.map(item => ({ title: item.frontmatter.title as string, url: item.url as string }));
+
+// const ourFonts = fonts
+// 	.sort((a, b) => dayjs(a.frontmatter.pubDate).unix() - dayjs(b.frontmatter.pubDate).unix())
+// 	.filter(item => item.frontmatter.tags.includes('our'))
+// 	.slice(0, 3)
+// 	.map(item => ({ title: item.frontmatter.title, url: item.url }));
+
+---
+
+<Layout title="Qarip — Қазақша қаріп қоры">
+	<!-- Инфо -->
+	<section class="flex flex-col items-center gap-8 py-8 dark:text-white">
+		<h1 class="text-5xl sm:text-7xl font-bold text-center">Qazaqca Qarip Qorı</h1>
+		<p class="text-xl sm:text-2xl max-w-2xl text-center font-light">Qarip — Qazaq tili qoljetimdi qaripterge arnalğan nömiri bir joba
+			(Joba üziliste. Mobayl nusqada kemcilikter bar.)</p>
+		<div class="flex items-center gap-6 mt-2">
+			<a href="/qaripter" class="btn border-brand bg-brand text-white hover:bg-brand-dark hover:border-brand-dark">Carlaw</a>
+			<a href="/about-us" class="btn border-black dark:border-white hover:text-brand hover:border-brand dark:hover:border-brand">Biz tuwralı</a>
+		</div>
+	</section>
+	<!-- Фильтры -->
+	<section class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5 max-w-4xl mx-auto my-28 dark:text-white">
+		<a href="" class="card">
+			<span class="font-sans">Aa</span>
+			Sans Serif
+		</a>
+		<a href="" class="card">
+			<span class="font-serif">Aa</span>
+			Serif
+		</a>
+		<a href="" class="card">
+			<span class="font-extrabold">Aa</span>
+			Display
+		</a>
+		<a href="" class="card">
+			<span class="font-mono">Aa</span>
+			Monospace
+		</a>
+		<a href="" class="card">
+			<span class="italic">Aa</span>
+			Handwriting
+		</a>
+	</section>
+	<FontsList title="Жаңа қаріп" fonts={newFonts} href="/qaripter" />
+	<FontsList title="🔥Біздің қаріп" fonts={newFonts} href="/qaripter" />
+</Layout>
+<style>
+	.btn {
+		@apply rounded-full px-5 py-2 text-sm sm:text-xl font-semibold border-2;
+	}
+	.card {
+		@apply flex-1 rounded-3xl p-4 border-2 border-black dark:border-white aspect-square flex flex-col items-center justify-around;
+		@apply hover:bg-gradient-to-t	hover:from-brand hover:to-blue-400 hover:text-white hover:border-transparent;
+	}
+	.card span {
+		@apply text-4xl sm:text-6xl;
+	}
+</style>

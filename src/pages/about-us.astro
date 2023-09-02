@@ -1,0 +1,35 @@
+---
+import { Contacts } from '../data';
+import Layout from '../layouts/Layout.astro';
+
+---
+
+<Layout title="Біз туралы — Qarip">
+  <section class="max-w-7xl mx-auto dark:text-white">
+    <h1 class="page-title">Biz tuwralı</h1>
+    <p class="my-4 text-xl">Qarip жобасының мақсаты — қазақ тілі қолжетімді қаріптердің бәрін бір жерге жинау, және сол қаріптер саның көбейтуге атсалысу.</p>
+    <hr class="my-7" />
+    <!-- Social Networks -->
+    <h2 class="text-3xl font-medium my-5">Älewmettik jeliler</h2>
+    <div class="flex items-center gap-5 socials">
+      <a href={Contacts.Instagram} target="_blank" rel="noopener noreferrer" title="Instagram" class="hover:text-pink-600">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+      </a>
+      <a href={Contacts.Telegram} target="_blank" rel="noopener noreferrer" title="Telegram" class="hover:text-blue-500">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+      </a>
+      <a href={Contacts.Email} target="_blank" rel="noopener noreferrer" title="Пошта" class="hover:text-sky-700">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      </a>
+    </div>
+    <!-- Order -->
+    <hr class="my-7" />
+    <h2 class="text-3xl font-medium mt-5 mb-8">Qalasañız qaripke tapsırıs beriñiz</h2>
+    <a href="/pricing" class="inline-block rounded-full bg-brand hover:bg-brand-dark text-white px-8 py-4 text-lg">Тапсырыс беру</a>
+  </section>
+</Layout>
+<style>
+  .socials a {
+    @apply hover:scale-110 transition-all;
+  }
+</style>

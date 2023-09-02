@@ -1,0 +1,61 @@
+---
+const pathname = new URL(Astro.request.url).pathname;
+
+const links = [
+  { href: '/qaripter', title: 'Қаріптер' },
+  { href: '/typography', title: 'Типография' },
+  { href: '/about-us', title: 'Біз туралы' },
+  { href: '/terms-of-use', title: 'Қолдану шарты' },
+]
+---
+
+<header class="header dark:text-white">
+  <a href="/" class="font-semibold text-xl">Qarip</a>
+  <nav class="menu">
+    {links.map(link => (
+      <a
+        href={link.href}
+        class={`hover:text-brand ${pathname === link.href ? 'active' : ''}`}
+      >
+        {link.title}
+      </a>
+    ))}
+  </nav>
+  <div class="flex gap-3">
+    <button data-toggle-theme-button>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+    </button>
+    <button class="block md:hidden" data-open-button>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+<nav class="menu-mobile" data-menu-mobile>
+  <button class="top-2 fixed right-4 p-4" data-close-button>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  </button>
+  {links.map(link => (
+    <a
+      href={link.href}
+      class={`hover:text-brand ${pathname === link.href ? 'active' : ''}`}
+    >
+      {link.title}
+    </a>
+  ))}
+</nav>
+<style>
+  .header {
+    @apply flex items-center justify-between py-6 px-8 backdrop-blur-md sticky top-0;
+    @apply bg-white/50 dark:bg-zinc-900/50;
+  }
+  .active {
+    @apply text-brand hover:text-brand-dark underline underline-offset-8;
+  }
+  .menu {
+    @apply hidden md:flex items-center gap-4;
+  }
+  .menu-mobile {
+    @apply hidden flex-col gap-4 fixed top-0 right-0 left-0 bottom-0 bg-inherit items-center justify-center text-2xl z-50;
+    @apply dark:text-white;
+  }
+</style>

@@ -24,16 +24,3 @@ const { href, title, fonts } = Astro.props;
 		))}
 	</div>
 </section>
-
-<style is:global>
-	@tailwind components;
-	@layer components {
-		.fonts-list {
-			@apply flex flex-col dark:text-white;
-		}
-		.fonts-list a {
-			@apply text-2xl py-6 border-b border-black/80 dark:border-white/30;
-			@apply hover:text-brand hover:border-b-brand;
-		}
-	}
-</style>

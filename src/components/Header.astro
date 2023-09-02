@@ -1,6 +1,4 @@
 ---
-const pathname = new URL(Astro.request.url).pathname;
-
 const links = [
   { href: '/qaripter', title: 'Қаріптер' },
   { href: '/typography', title: 'Типография' },
@@ -11,12 +9,9 @@ const links = [
 
 <header class="header dark:text-white">
   <a href="/" class="font-semibold text-xl">Qarip</a>
-  <nav class="menu">
+  <nav class="menu" id="menu">
     {links.map(link => (
-      <a
-        href={link.href}
-        class={`hover:text-brand ${pathname === link.href ? 'active' : ''}`}
-      >
+      <a href={link.href}>
         {link.title}
       </a>
     ))}
@@ -30,23 +25,35 @@ const links = [
     </button>
   </div>
 </header>
-<nav class="menu-mobile" data-menu-mobile>
+<nav class="menu-mobile" id="menu" data-menu-mobile>
   <button class="top-2 fixed right-4 p-4" data-close-button>
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
   </button>
   {links.map(link => (
-    <a
-      href={link.href}
-      class={`hover:text-brand ${pathname === link.href ? 'active' : ''}`}
-    >
+    <a href={link.href}>
       {link.title}
     </a>
   ))}
 </nav>
+<script>
+  const nav = document.querySelector("#menu");
+  if (nav) {
+    const navLinks = nav.querySelectorAll("a");
+    const currentURL = window.location.href;
+    navLinks.forEach((link) => {
+      if (link.href === currentURL) {
+        link.classList.add("active");
+      }
+    });
+  }
+</script>
 <style>
   .header {
     @apply flex items-center justify-between py-6 px-8 backdrop-blur-md sticky top-0;
     @apply bg-white/50 dark:bg-zinc-900/50;
+  }
+  .header a {
+    @apply hover:text-brand;
   }
   .active {
     @apply text-brand hover:text-brand-dark underline underline-offset-8;

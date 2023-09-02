@@ -116,8 +116,15 @@ const { title } = Astro.props;
 }
 @layer components {
   .page-title {
-    @apply text-4xl font-semibold;
+    @apply text-4xl font-semibold break-words;
     @apply sm:text-5xl dark:text-white;
+  }
+  .fonts-list {
+    @apply flex flex-col dark:text-white;
+  }
+  .fonts-list a {
+    @apply text-2xl py-6 border-b border-black/80 dark:border-white/30;
+    @apply hover:text-brand hover:border-b-brand;
   }
 }
 </style>

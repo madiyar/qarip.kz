@@ -1,0 +1,30 @@
+---
+import dayjs from 'dayjs';
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+type Props = {
+  posts: Array<CollectionEntry<'blog'>>;
+};
+
+const { posts } = Astro.props;
+
+---
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+  {posts.map(post => (
+    <article class="shadow-xl rounded-xl shadow-brand/10">
+      <a
+        href={`/blog/${post.slug}/`}
+        class="hover:text-brand"
+      >
+        <Image src={post.data.cover} alt={post.data.title} class="rounded-t-xl" />
+        <div class="p-4">
+          <h2 class="text-xl">{post.data.title}</h2>
+          {post.data.pubDate && (
+            <p>{dayjs(post.data.pubDate).format('DD.MM.YYYY')}</p>
+          )}
+        </div>
+      </a>
+    </article>
+  ))}
+</div>

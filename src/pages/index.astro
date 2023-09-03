@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import FontsList from '../components/FontsList.astro';
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
+import BlogPosts from '../components/BlogPosts.astro';
 
 const fonts = (await getCollection('qaripter')).sort(
 	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
@@ -70,25 +70,7 @@ const posts = (await getCollection('blog'))
 			<h2 class="font-medium text-2xl sm:text-4xl">Соңғы мақалалар</h2>
 			<a href="/blog" class="font-thin underline text-lg sm:text-2xl hover:text-brand whitespace-nowrap">Қалғаны →</a>
 		</div>
-		
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {posts.map(post => (
-        <article class="shadow-xl rounded-xl shadow-brand/10">
-          <a
-            href={`/blog/${post.slug}/`}
-            class="hover:text-brand"
-          >
-            <Image src={post.data.cover} alt={post.data.title} class="rounded-t-xl" />
-            <div class="p-4">
-              <h2 class="text-xl">{post.data.title}</h2>
-              {post.data.pubDate && (
-                <p>{dayjs(post.data.pubDate).format('DD.MM.YYYY')}</p>
-              )}
-            </div>
-          </a>
-        </article>
-      ))}
-    </div>
+		<BlogPosts posts={posts} />
 	</section>
 </Layout>
 <style>

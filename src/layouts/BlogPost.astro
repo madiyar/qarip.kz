@@ -1,0 +1,22 @@
+---
+import dayjs from 'dayjs';
+import type { CollectionEntry } from 'astro:content';
+import Layout from './Layout.astro';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, pubDate } = Astro.props;
+---
+<Layout title={title}>
+  <article class="max-w-7xl mx-auto dark:text-white">
+    <h1 class="page-title mb-2">{title}</h1>
+    {pubDate && (
+      <p class="text-xl my-4">{dayjs(pubDate).format('DD.MM.YYYY')}</p>
+    )}
+    <!-- {heroImage && <img width={720} height={360} src={heroImage} alt="" />} -->
+    <hr class="my-5" />
+    <div class="prose dark:prose-invert">
+      <slot />
+    </div>
+  </article>
+</Layout>

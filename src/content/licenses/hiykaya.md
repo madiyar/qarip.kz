@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/License.astro
 title: 'Hiykaya License'
 font:
   name: 'Hiykaya'

@@ -23,11 +23,25 @@ const qaripter = defineCollection({
 			.string()
 			.or(z.date())
 			.transform((val) => new Date(val)),
-		updatedDate: z
-			.string()
-			.optional()
-			.transform((str) => (str ? new Date(str) : undefined)),
 	}),
 });
 
-export const collections = { blog, qaripter };
+const licenses = defineCollection({
+	schema: z.object({
+		title: z.string(),
+		font: z.object({
+			name: z.string(),
+			href: z.string(),
+		}),
+		prices: z.array(z.object({
+			title: z.string(),
+			price: z.string(),
+			href: z.string(),
+			btnText: z.string(),
+			active: z.boolean().optional(),
+			list: z.array(z.string()),
+		})).optional()
+	}),
+});
+
+export const collections = { blog, qaripter, licenses };

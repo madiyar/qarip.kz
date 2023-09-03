@@ -3,12 +3,16 @@ import dayjs from 'dayjs';
 
 import FontsList from '../components/FontsList.astro';
 import Layout from '../layouts/Layout.astro';
-const fonts = await Astro.glob("../pages/qaripter/*.md");
+import { getCollection } from 'astro:content';
+
+const fonts = (await getCollection('qaripter')).sort(
+	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
+);
 
 const newFonts = fonts
-	.sort((a, b) => dayjs(a.frontmatter.pubDate).unix() - dayjs(b.frontmatter.pubDate).unix())
+	.sort((a, b) => dayjs(a.data.pubDate).unix() - dayjs(b.data.pubDate).unix())
 	.slice(0, 3)
-	.map(item => ({ title: item.frontmatter.title as string, url: item.url as string }));
+	.map(item => ({ title: item.data.title as string, url: `/qaripter/${item.slug}/` as string }));
 
 // const ourFonts = fonts
 // 	.sort((a, b) => dayjs(a.frontmatter.pubDate).unix() - dayjs(b.frontmatter.pubDate).unix())

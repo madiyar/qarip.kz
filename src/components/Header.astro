@@ -37,15 +37,17 @@ const links = [
   ))}
 </nav>
 <script>
-  const nav = document.querySelector("#menu");
-  if (nav) {
-    const navLinks = nav.querySelectorAll("a");
-    const currentURL = window.location.href;
-    navLinks.forEach((link) => {
-      if (currentURL.includes(link.href)) {
-        link.classList.add("active");
-      }
-    });
+  const menus = document.querySelectorAll("#menu");
+  if (menus) {
+    menus.forEach(nav => {
+      const navLinks = nav.querySelectorAll("a");
+      const currentURL = window.location.href;
+      navLinks.forEach((link) => {
+        if (currentURL.includes(link.href)) {
+          link.classList.add("active");
+        }
+      });
+    })
   }
 </script>
 <style>

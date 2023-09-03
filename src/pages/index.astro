@@ -20,7 +20,7 @@ const newFonts = fonts
 
 <Layout title="Qarip — Қазақша қаріп қоры">
 	<!-- Инфо -->
-	<section class="flex flex-col items-center gap-8 py-8 dark:text-white relative">
+	<section class="flex flex-col items-center gap-8 py-8 dark:text-white">
 		<h1 class="text-5xl sm:text-7xl font-bold text-center z-10">Qazaqca Qarip Qorı</h1>
 		<p class="text-xl sm:text-2xl max-w-2xl text-center font-light z-10">Qarip — Qazaq tili qoljetimdi qaripterge arnalğan nömiri bir joba
 			(Joba üziliste. Mobayl nusqada kemcilikter bar.)</p>
@@ -28,11 +28,6 @@ const newFonts = fonts
 			<a href="/qaripter" class="btn border-brand bg-brand text-white hover:bg-brand-dark hover:border-brand-dark">Carlaw</a>
 			<a href="/about-us" class="btn border-black dark:border-white hover:text-brand hover:border-brand dark:hover:border-brand">Biz tuwralı</a>
 		</div>
-
-		<div class="purple z-0"></div>
-    <div class="green z-0"></div>
-    <div class="blue z-0"></div>
-
 	</section>
 	<!-- Фильтры -->
 	<section class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5 max-w-4xl mx-auto my-28 dark:text-white">
@@ -61,24 +56,6 @@ const newFonts = fonts
 	<FontsList title="🔥Біздің қаріп" fonts={newFonts} href="/qaripter" />
 </Layout>
 <style>
-	.purple {
-		@apply bg-purple-500;
-		@apply absolute rounded-full filter blur-3xl w-full sm:w-96 h-72;
-		@apply mix-blend-multiply dark:mix-blend-soft-light;
-		@apply top-0 left-8 opacity-60;
-	}
-	.green {
-		@apply bg-green-400;
-		@apply absolute rounded-full filter blur-3xl w-full sm:w-96 h-72;
-		@apply mix-blend-multiply dark:mix-blend-soft-light;
-		@apply -bottom-11 left-0 lg:left-36 lg:opacity-90 opacity-60;
-	}
-	.blue {
-		@apply bg-brand;
-		@apply absolute rounded-full filter blur-3xl w-full sm:w-96 h-72;
-		@apply mix-blend-multiply dark:mix-blend-soft-light;
-		@apply top-20 right-0 lg:right-32 lg:opacity-80 opacity-60;
-	}
 	.btn {
 		@apply rounded-full px-5 py-2 text-sm sm:text-xl font-semibold border-2;
 	}

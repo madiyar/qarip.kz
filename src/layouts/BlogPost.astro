@@ -2,18 +2,19 @@
 import dayjs from 'dayjs';
 import type { CollectionEntry } from 'astro:content';
 import Layout from './Layout.astro';
+import { Image } from 'astro:assets';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, pubDate } = Astro.props;
+const { title, pubDate, cover } = Astro.props;
 ---
 <Layout title={title}>
-  <article class="max-w-7xl mx-auto dark:text-white">
+  <article class="max-w-4xl mx-auto dark:text-white">
+    {cover && <Image src={cover} alt={title} class="rounded-3xl mb-8 shadow-xl shadow-brand/10" />}
     <h1 class="page-title mb-2">{title}</h1>
     {pubDate && (
       <p class="text-xl my-4">{dayjs(pubDate).format('DD.MM.YYYY')}</p>
     )}
-    <!-- {heroImage && <img width={720} height={360} src={heroImage} alt="" />} -->
     <hr class="my-5" />
     <div class="prose dark:prose-invert">
       <slot />

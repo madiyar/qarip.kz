@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/Qarip.astro
 title: 'Noto Serif'
 pubDate: 2023-03-23
 author: "Astro Learner"

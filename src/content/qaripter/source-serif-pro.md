@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/Qarip.astro
 title: 'Source Serif Pro'
 pubDate: 2023-04-01
 author: "Astro Learner"

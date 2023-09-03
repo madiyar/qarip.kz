@@ -1,0 +1,19 @@
+---
+import Filters from '../../components/Filters';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const fonts = (await getCollection('qaripter')).sort(
+	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
+);
+---
+<Layout title="Қаріптер — Qarip">
+  <Filters />
+  <div class="fonts-list">
+    {fonts.map(font => (
+      <a href={`/qaripter/${font.slug}/`}>
+        {font.data.title}
+      </a>
+    ))}
+  </div>
+</Layout>

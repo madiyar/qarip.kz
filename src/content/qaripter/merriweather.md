@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/Qarip.astro
 title: 'Merriweather'
 pubDate: 2023-04-01
 author: "Astro Learner"

@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/Qarip.astro
 title: 'PT Serif'
 pubDate: 2023-03-20
 author: "Astro Learner"

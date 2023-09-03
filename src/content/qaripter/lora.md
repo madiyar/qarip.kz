@@ -1,6 +1,5 @@
 ---
-layout: ../../layouts/Qarip.astro
-title: 'EB Garamond'
+title: 'Lora'
 pubDate: 2023-04-01
 author: "Astro Learner"
 # image:

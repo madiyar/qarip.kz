@@ -1,27 +1,32 @@
 ---
 import dayjs from 'dayjs';
 import Layout from "./Layout.astro";
-const { frontmatter } = Astro.props;
 
+import type { CollectionEntry } from 'astro:content';
+
+type Props = CollectionEntry<'qaripter'>['data'];
+
+const { title, pubDate, author, tags } = Astro.props;
 ---
-
-<Layout title={frontmatter.title}>
-  <section class="max-w-7xl mx-auto dark:text-white">
-    <h1 class="page-title mb-2">{frontmatter.title}</h1>
-    <p>{dayjs(frontmatter.pubDate).format('DD.MM.YYYY')}</p>
-    <p>Авторы: {frontmatter.author}</p>
+<Layout title={title}>
+  <article class="max-w-7xl mx-auto dark:text-white">
+    <h1 class="page-title mb-2">{title}</h1>
+    {pubDate && (
+      <p class="text-xl my-4">{dayjs(pubDate).format('DD.MM.YYYY')}</p>
+    )}
+    <p>Авторы: {author}</p>
     <nav class="flex flex-wrap gap-3 mt-4">
       <a href="/qaripter" class="tag">Қаріптер</a>
-      {frontmatter.tags.map((tag: string) => (
+      {tags?.map((tag: string) => (
         <a href="" class="tag">{tag}</a>
       ))}
     </nav>
+    <!-- {heroImage && <img width={720} height={360} src={heroImage} alt="" />} -->
     <hr class="my-5" />
-    <!-- <img src={frontmatter.image.url} width="300" alt={frontmatter.image.alt} /> -->
     <div class="prose dark:prose-invert">
       <slot />
     </div>
-  </section>
+  </article>
 </Layout>
 <style>
   .tag {

@@ -24,12 +24,14 @@ export default defineConfig({
           // Define a blog post collection
           {
             name: 'blog',
-            label: 'Мақалалар',
+            label: 'Мақала',
+            identifier_field: 'url',
             folder: 'src/content/blog',
             create: true,
             delete: true,
             slug: '{{slug}}',
             fields: [
+              { name: 'url', widget: 'string', label: 'URL' },
               { name: 'title', widget: 'string', label: 'Title' },
               { name: 'cover', widget: 'image', label: 'Постер', },
               { name: "pubDate", widget: 'hidden', label: 'Publish Date', default: `${dayjs().format('YYYY-MM-DD')}` },

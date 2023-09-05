@@ -31,10 +31,11 @@ export default defineConfig({
             delete: true,
             slug: '{{slug}}',
             fields: [
-              { name: 'url', widget: 'string', label: 'URL' },
               { name: 'title', widget: 'string', label: 'Title' },
+              { name: 'url', widget: 'string', label: 'URL' },
+              { name: "pubDate", widget: 'datetime', label: 'Publish Date', default: `${dayjs().format('YYYY-MM-DD')}` },
+              { name: 'author', widget: 'string', label: 'Авторы', required: false },
               { name: 'cover', widget: 'image', label: 'Постер', },
-              { name: "pubDate", widget: 'hidden', label: 'Publish Date', default: `${dayjs().format('YYYY-MM-DD')}` },
               { name: 'body', widget: 'markdown', label: 'Post Body' },
             ],
           },

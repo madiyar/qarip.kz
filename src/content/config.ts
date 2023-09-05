@@ -4,6 +4,7 @@ const blog = defineCollection({
 	schema: ({ image }) => z.object({
 		title: z.string(),
 		cover: image(),
+		author: z.string().optional(),
 		pubDate: z
 			.string()
 			.or(z.date())

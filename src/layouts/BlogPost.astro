@@ -6,17 +6,20 @@ import { Image } from 'astro:assets';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, pubDate, cover } = Astro.props;
+const { title, pubDate, cover, author } = Astro.props;
 ---
 <Layout title={title}>
   <article class="max-w-4xl mx-auto dark:text-white">
     {cover && <Image src={cover} alt={title} class="rounded-3xl mb-8 shadow-xl shadow-brand/10" />}
     <h1 class="page-title mb-2">{title}</h1>
+    {author && (
+      <p class="text-xl my-4">Ауторы: {author}</p>
+    )}
     {pubDate && (
       <p class="text-xl my-4">{dayjs(pubDate).format('DD.MM.YYYY')}</p>
     )}
     <hr class="my-5" />
-    <div class="prose dark:prose-invert">
+    <div class="prose-lg md:prose-xl dark:prose-invert">
       <slot />
     </div>
   </article>

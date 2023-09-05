@@ -14,7 +14,7 @@ const { title, font, prices = [] } = Astro.props;
       <a href={font.href} class="underline">{font.name}</a> қарпінің лицензия түрлері
     </p>
     <hr class="my-5" />
-    <div class="prose dark:prose-invert">
+    <div class="prose-lg md:prose-xl dark:prose-invert">
       <slot />
     </div>
     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

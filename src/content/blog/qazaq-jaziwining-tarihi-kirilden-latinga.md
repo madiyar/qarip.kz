@@ -2,7 +2,8 @@
 url: qazaq-jaziwining-tarihi-kirilden-latinga
 title: "Қазақ жазуының тарихи: кирилден латынға"
 cover: /src/assets/qazaq-jaziwining-tarihi-kirilden-latinga.png
-pubDate: 2023-09-05
+author: "Жансая Алиева"
+pubDate: 2023-08-22
 ---
 Үздіксіз үш нәрсеге қарауға болады: судың аққанына, оттың лаулап жанғанына және адамдардың латын әліпбиі қандай болуы керектігі жайлы өзара дауласқанына.
 
@@ -58,8 +59,4 @@ pubDate: 2023-09-05
 
 Латын әліпбиіне ауысу қаншалықты қымбатқа түсетінің жайлы нақты есептеу жоқ. Экономист Жандос Темірғалидің сөзінше, жалпы **шығын 200 млн доллардан** асып кетсе, таңғалатын түгі жоқ. Латын әліпбиіне көшуді құптамайтындар кеткен шығын ақталмайды, халықтың сауаттылығы төмендейді, кириллицада жарық көрген туындылар жоғалады деп қорқады. Аталған қауіптердің алдын-алу үшін бұл мәселе жан-жақты зерттелуі керек.
 
-
-
-Ауторы: Жансая Алиева
-
-Түпнұсқа: [https://www.98mag.kz/likbez/қazaқ-zhazuynyң-tarihy-kirilliczadan-latynғa/](https://www.98mag.kz/likbez/%D2%9Baza%D2%9B-zhazuyny%D2%A3-tarihy-kirilliczadan-latyn%D2%93a/)
+Түпнұсқа: <a href="https://www.98mag.kz/likbez/қazaқ-zhazuynyң-tarihy-kirilliczadan-latynғa/" target="_blank" rel="noopener noreferrer">https://www.98mag.kz/likbez/қazaқ-zhazuynyң-tarihy-kirilliczadan-latynғa/</a>

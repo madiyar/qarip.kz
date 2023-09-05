@@ -40,6 +40,8 @@ export default defineConfig({
         ],
         previewStyles: [
           'https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&display=swap',
+          ['* { font-family: "Geologica", sans-serif }', { raw: true }],
+          ['img { width: 100% }', { raw: true }],
         ],
       },
     }),

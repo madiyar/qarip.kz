@@ -19,7 +19,7 @@ export default defineConfig({
         },
         publish_mode: 'editorial_workflow',
         media_folder: "src/assets",
-        public_folder: "/_astro",
+        public_folder: "/src/assets",
         collections: [
           // Define a blog post collection
           {
@@ -32,7 +32,7 @@ export default defineConfig({
             fields: [
               { name: 'title', widget: 'string', label: 'Title' },
               { name: 'cover', widget: 'image', label: 'Постер', },
-              { name: "pubDate", widget: 'hidden', label: 'Publish Date', default: dayjs().format('YYYY-MM-DD') },
+              { name: "pubDate", widget: 'hidden', label: 'Publish Date', default: `${dayjs().format('YYYY-MM-DD')}` },
               { name: 'body', widget: 'markdown', label: 'Post Body' },
             ],
           },

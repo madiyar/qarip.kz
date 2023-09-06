@@ -1,8 +1,8 @@
 ---
 import { Contacts } from '../data';
-import Accordion from '../components/Accordion';
 import Layout from '../layouts/Layout.astro';
-// import data from '../content/typography/typography.json';
+import data from '../content/typography/typography.json';
+import Collapse from '../components/Collapse.astro';
 
 ---
 <Layout title="Типография — Qarip">
@@ -18,23 +18,33 @@ import Layout from '../layouts/Layout.astro';
       data-search="typography"
     />
 
-    <div class="border-2 border-brand-light/20 rounded-xl shadow-xl shadow-brand/10">
-      <Accordion title="SLLD" client:load>SLSL</Accordion>
-
-      <!-- {data.words.map(word => (
-        <Accordion title={word.title} client:load>
-          {word.description}
-        </Accordion>
-      ))} -->
+    <div class="border-2 border-brand-light/20 rounded-xl shadow-xl shadow-brand/10" data-list="typography">
+      {data.words.map((word) => (
+        <Collapse title={word.title} description={word.description} />
+      ))}
     </div>
   </section>
 </Layout>
 <script>
   const input = document.querySelector('[data-search="typography"]');
+  const list = document.querySelector('[data-list="typography"]');
 
   if (input) {
     input.addEventListener('input', (e: any) => {
       console.log(e.target.value);
+    })
+  }
+
+  if (list) {
+    list.addEventListener('click', (e: any) => {
+      if (e.target.nodeName === 'BUTTON') {
+        const accordion = e.target.parentElement;
+        const svg = accordion.querySelector('[accordion-svg]');
+        const description = accordion.querySelector('[accordion-description]');
+
+        svg.classList.toggle('hidden');
+        description.classList.toggle('hidden');
+      }
     })
   }
 

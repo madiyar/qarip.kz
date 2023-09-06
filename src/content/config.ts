@@ -46,4 +46,15 @@ const licenses = defineCollection({
 	}),
 });
 
-export const collections = { blog, qaripter, licenses };
+const typography = defineCollection({
+	type: 'data',
+	schema: z.object({
+		title: z.string(),
+		words: z.array(z.object({
+			title: z.string(),
+			description: z.string(),
+		}))
+	})
+})
+
+export const collections = { blog, qaripter, licenses, typography };

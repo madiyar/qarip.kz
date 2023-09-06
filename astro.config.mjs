@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { uuid } from 'uuidv4';
 
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
@@ -58,7 +57,6 @@ export default defineConfig({
                 fields: [
                   { name: 'title', widget: 'string', label: 'Title' },
                   { name: 'description', widget: 'text', label: 'Description' },
-                  { name: "id", widget: 'hidden', label: 'id', default: uuid() },
                 ]
               },
             ],

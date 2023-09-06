@@ -1,8 +1,13 @@
 ---
 import { Contacts } from '../data';
 import Layout from '../layouts/Layout.astro';
-import data from '../content/typography/typography.json';
 import Collapse from '../components/Collapse.astro';
+import { getEntry } from 'astro:content';
+
+const { data } = await getEntry('typography', 'typography');
+
+const words = data.words
+  .sort((a, b) => a.title.localeCompare(b.title));
 
 ---
 <Layout title="Типография — Qarip">
@@ -19,7 +24,7 @@ import Collapse from '../components/Collapse.astro';
     />
 
     <div class="border-2 border-brand-light/20 rounded-xl shadow-xl shadow-brand/10" data-list="typography">
-      {data.words.map((word) => (
+      {words.map((word) => (
         <Collapse title={word.title} description={word.description} />
       ))}
     </div>

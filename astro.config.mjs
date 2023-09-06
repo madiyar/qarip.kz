@@ -39,6 +39,28 @@ export default defineConfig({
               { name: 'body', widget: 'markdown', label: 'Post Body' },
             ],
           },
+          {
+            name: 'typography',
+            label: 'Типография',
+            folder: 'src/pages/typography',
+            create: false,
+            delete: false,
+            slug: '{{slug}}',
+            extension: 'json',
+            fields: [
+              {
+                name: 'words',
+                widget: 'list',
+                label: 'Сөздер',
+                label_singular: 'сөз',
+                fields: [
+                  { name: 'title', widget: 'string', label: 'Title' },
+                  { name: 'description', widget: 'text', label: 'Description' },
+                  { name: "id", widget: 'hidden', label: 'id', default: Date.now() },
+                ]
+              },
+            ],
+          },
           // Content collections
         ],
         previewStyles: [

@@ -1,10 +1,10 @@
 ---
-import { Contacts } from '../data';
-import Accordion from '../components/Accordion';
-import Layout from '../layouts/Layout.astro';
+import { Contacts } from '../../data';
+import Accordion from '../../components/Accordion';
+import Layout from '../../layouts/Layout.astro';
+import data from './typography.json';
 
 ---
-
 <Layout title="Типография — Qarip">
   <section class="max-w-7xl mx-auto dark:text-white">
     <h1 class="page-title">Типографиялық сөздік</h1>
@@ -15,15 +15,11 @@ import Layout from '../layouts/Layout.astro';
     <input class="w-full bg-zinc-900/10 dark:bg-zinc-600/20 my-10 py-3 px-5 rounded-2xl max-w-4xl" placeholder="Іздеу" />
 
     <div class="border-2 border-brand-light/20 rounded-xl shadow-xl shadow-brand/10">
-      <Accordion title="Әріп (Letter)" client:load>
-        Әріп — белгілі бір дыбысты білдіру үшін арналған графикалық таңба.​
-      </Accordion>
-      <Accordion title="Әріп (Letter)" client:load>
-        Әріп — белгілі бір дыбысты білдіру үшін арналған графикалық таңба.​
-      </Accordion>
-      <Accordion title="Әріп (Letter)" client:load>
-        Әріп — белгілі бір дыбысты білдіру үшін арналған графикалық таңба.​
-      </Accordion>
+      {data.words.map(word => (
+        <Accordion title={word.title} client:load>
+          {word.description}
+        </Accordion>
+      ))}
     </div>
   </section>
 </Layout>

@@ -1,7 +1,7 @@
 ---
 title: 'Қазақша панграм'
 pubDate: '2023-04-03'
-cover: '../../assets/qazaqca-pangram.png'
+cover: '/src/assets/qazaqca-pangram.png'
 ---
 
 ## PANGRAM

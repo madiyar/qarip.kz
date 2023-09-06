@@ -1,8 +1,8 @@
 ---
-import { Contacts } from '../../data';
-import Accordion from '../../components/Accordion';
-import Layout from '../../layouts/Layout.astro';
-import data from './typography.json';
+import { Contacts } from '../data';
+import Accordion from '../components/Accordion';
+import Layout from '../layouts/Layout.astro';
+// import data from '../content/typography/typography.json';
 
 ---
 <Layout title="Типография — Qarip">
@@ -12,17 +12,33 @@ import data from './typography.json';
       Әр терминнің өте қысқа түсіндірмесі. Қате таптыңыз ба? Онда <a href={Contacts.Telegram} target="_blank" rel="noopener noreferrer" class="underline">маған</a> жазыңыз
     </p>
 
-    <input class="w-full bg-zinc-900/10 dark:bg-zinc-600/20 my-10 py-3 px-5 rounded-2xl max-w-4xl" placeholder="Іздеу" />
+    <input
+      class="w-full bg-zinc-900/10 dark:bg-zinc-600/20 my-10 py-3 px-5 rounded-2xl max-w-4xl"
+      placeholder="Іздеу"
+      data-search="typography"
+    />
 
     <div class="border-2 border-brand-light/20 rounded-xl shadow-xl shadow-brand/10">
-      {data.words.map(word => (
+      <Accordion title="SLLD" client:load>SLSL</Accordion>
+
+      <!-- {data.words.map(word => (
         <Accordion title={word.title} client:load>
           {word.description}
         </Accordion>
-      ))}
+      ))} -->
     </div>
   </section>
 </Layout>
+<script>
+  const input = document.querySelector('[data-search="typography"]');
+
+  if (input) {
+    input.addEventListener('input', (e: any) => {
+      console.log(e.target.value);
+    })
+  }
+
+</script>
 <style>
   .h2 {
     @apply text-3xl font-medium my-6;

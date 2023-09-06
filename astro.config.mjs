@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { uuid } from 'uuidv4';
+
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
@@ -42,7 +44,7 @@ export default defineConfig({
           {
             name: 'typography',
             label: 'Типография',
-            folder: 'src/pages/typography',
+            folder: 'src/content/typography',
             create: false,
             delete: false,
             slug: '{{slug}}',
@@ -56,7 +58,7 @@ export default defineConfig({
                 fields: [
                   { name: 'title', widget: 'string', label: 'Title' },
                   { name: 'description', widget: 'text', label: 'Description' },
-                  { name: "id", widget: 'hidden', label: 'id', default: Date.now() },
+                  { name: "id", widget: 'hidden', label: 'id', default: uuid() },
                 ]
               },
             ],

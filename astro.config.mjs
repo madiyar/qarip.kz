@@ -8,6 +8,7 @@ import NetlifyCMS from 'astro-netlify-cms';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://qarip.kz',
   integrations: [
     tailwind(),
     react(),

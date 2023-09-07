@@ -20,10 +20,10 @@ const schema = JSON.stringify({
   "@type": "BlogPosting",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": Astro.url
+    "@id": new URL(Astro.url.pathname, Astro.site)
   },
   "headline": title,
-  "image": cover.src,  
+  "image": new URL(cover.src, Astro.site),  
   ...authorSchema,
   "datePublished": pubDate
 });

@@ -1,5 +1,5 @@
 ---
-layout: ../layouts/Page.astro
+layout: ../layouts/FaqPage.astro
 title: 'FAQ'
 description: 'Жиі қойылатын сұрақтар'
 ---

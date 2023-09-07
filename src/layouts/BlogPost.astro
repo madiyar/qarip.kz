@@ -7,8 +7,30 @@ import { Image } from 'astro:assets';
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, pubDate, cover, author } = Astro.props;
+
+const authorSchema = author ? {
+  "author": {
+    "@type": "Person",
+    "name": author
+  }
+} : {};
+
+const schema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": Astro.url
+  },
+  "headline": title,
+  "image": cover,  
+  ...authorSchema,
+  "datePublished": pubDate
+});
+
 ---
 <Layout title={title}>
+  <script type="application/ld+json" slot="head" set:html={schema} />
   <article class="max-w-4xl mx-auto dark:text-white">
     {cover && <Image src={cover} alt={title} class="rounded-3xl mb-8 shadow-xl shadow-brand/10" />}
     <h1 class="page-title mb-2">{title}</h1>

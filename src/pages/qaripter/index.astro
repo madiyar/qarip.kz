@@ -8,12 +8,38 @@ const fonts = (await getCollection('qaripter')).sort(
 );
 ---
 <Layout title="Қаріптер — Qarip">
-  <Filters />
-  <div class="fonts-list">
+  <!-- <Filters /> -->
+  <div class="qaripter">
     {fonts.map(font => (
       <a href={`/qaripter/${font.slug}/`}>
+        <p class="text-sm opacity-70 gap-2 flex items-center">
+          <span class="font-semibold">{font.data.title}</span>
+          <span class="font-light">{font.data.author}</span>
+        </p>
         {font.data.title}
+        <div class="tags">
+          {font.data.tags.map(tag => <span>{tag}</span>)}  
+        </div>
       </a>
     ))}
   </div>
 </Layout>
+<style>
+  .qaripter {
+    @apply flex flex-col dark:text-white;
+  }
+  .qaripter a {
+    @apply flex flex-col gap-5;
+    @apply text-3xl md:text-4xl py-6 px-2 border-b border-black/80 dark:border-white/30;
+    @apply hover:text-brand hover:border-b-brand;
+  }
+
+  .tags {
+    @apply flex items-center gap-2 text-sm;
+  }
+
+  .tags span {
+    @apply bg-brand-light/90 dark:bg-brand/40 rounded-full px-2 text-white;
+
+  }
+</style>

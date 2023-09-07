@@ -9,7 +9,7 @@ type Props = CollectionEntry<'qaripter'>['data'];
 const { title, pubDate, author, tags } = Astro.props;
 ---
 <Layout title={title}>
-  <article class="max-w-7xl mx-auto dark:text-white">
+  <article class="max-w-4xl mx-auto dark:text-white">
     <h1 class="page-title mb-2">{title}</h1>
     {pubDate && (
       <p class="text-xl my-4">{dayjs(pubDate).format('DD.MM.YYYY')}</p>

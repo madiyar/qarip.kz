@@ -3,3 +3,11 @@ export enum Contacts {
   Telegram = 'https://t.me/qarip',
   Email = 'mailto:abayemes@gmail.com',
 }
+
+export const tagLabel = {
+  free: 'тегін',
+  our: 'біздің қаріп',
+  serif: 'serif',
+  'sans-serif': 'sans serif',
+  display: 'display',
+};

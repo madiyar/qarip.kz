@@ -1,37 +1,60 @@
 ---
-import Filters from '../../components/Filters';
-import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import { tagLabel } from '../../data';
+
+// import Filters from '../../components/Filters';
+import Layout from '../../layouts/Layout.astro';
 
 const fonts = (await getCollection('qaripter')).sort(
 	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
 );
 ---
 <Layout title="Қаріптер — Qarip">
-  <!-- <Filters /> -->
-  <div class="qaripter">
-    {fonts.map(font => (
-      <a href={`/qaripter/${font.slug}/`}>
-        <p class="text-sm opacity-70 gap-2 flex items-center">
-          <span class="font-semibold">{font.data.title}</span>
-          <span class="font-light">{font.data.author}</span>
-        </p>
-        {font.data.title}
-        <div class="tags">
-          {font.data.tags.map(tag => <span>{tag}</span>)}  
-        </div>
-      </a>
-    ))}
+  <div class="flex dark:text-white gap-8">
+    <aside class="pb-6 w-72 lg:block hidden">
+      <h2 class="my-4 text-xl">Сіздің мәтін</h2>
+      <textarea class="search-input" rows="4"></textarea>
+      <h2 class="my-4 text-xl">Сүзгілер</h2>
+      <div class="flex flex-wrap gap-4">
+        {fonts[0].data.tags.map(tag => <a href="/qaripter" class="rounded-full bg-brand-dark hover:bg-brand px-4 py-1">{tagLabel[tag] || tag}</a>)}  
+      </div>
+
+      <!-- <Filters /> -->
+    </aside>
+    <section class="qaripter">
+      <div class="flex items-center gap-4 mb-6">
+        <button class="filters-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+          Сүзгі
+        </button>
+        <input
+          placeholder="Іздеу"
+          class="search-input border-2 border-transparent"
+        />
+      </div>
+      {fonts.map(font => (
+        <a href={`/qaripter/${font.slug}/`}>
+          <p class="text-sm opacity-70 gap-2 flex items-center">
+            <span class="font-semibold">{font.data.title}</span>
+            <span class="font-light">{font.data.author}</span>
+          </p>
+          {font.data.title}
+          <div class="tags">
+            {font.data.tags.map(tag => <span>{tagLabel[tag] || tag}</span>)}  
+          </div>
+        </a>
+      ))}
+    </section>
   </div>
 </Layout>
 <style>
   .qaripter {
-    @apply flex flex-col dark:text-white;
+    @apply flex flex-col flex-1;
   }
   .qaripter a {
     @apply flex flex-col gap-5;
-    @apply text-3xl md:text-4xl py-6 px-2 border-b border-black/80 dark:border-white/30;
-    @apply hover:text-brand hover:border-b-brand;
+    @apply text-3xl md:text-4xl py-6 px-2 border-b border-black/30 dark:border-white/30;
+    @apply hover:text-brand hover:border-b-brand dark:hover:bg-zinc-800/30 hover:bg-zinc-800/10;
   }
 
   .tags {
@@ -40,6 +63,10 @@ const fonts = (await getCollection('qaripter')).sort(
 
   .tags span {
     @apply bg-brand-light/90 dark:bg-brand/40 rounded-full px-2 text-white;
+  }
 
+  .filters-btn {
+    @apply border-2 px-4 py-3 rounded-full border-zinc-700 dark:text-zinc-300 text-zinc-600 flex items-center gap-2;
+    @apply hover:border-brand hover:text-brand-light;
   }
 </style>

@@ -1,9 +1,9 @@
 ---
+title: "Қазақ жазуының тарихы: кирилден латынға"
 url: qazaq-jaziwining-tarihi-kirilden-latinga
-title: "Қазақ жазуының тарихи: кирилден латынға"
-cover: /src/assets/qazaq-jaziwining-tarihi-kirilden-latinga.png
-author: "Жансая Алиева"
 pubDate: 2023-08-22
+author: Жансая Алиева
+cover: /src/assets/lajournale3.png
 ---
 Үздіксіз үш нәрсеге қарауға болады: судың аққанына, оттың лаулап жанғанына және адамдардың латын әліпбиі қандай болуы керектігі жайлы өзара дауласқанына.
 

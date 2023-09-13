@@ -12,6 +12,11 @@ export default defineConfig({
   site: 'https://qarip.kz',
   adapter: netlify(),
   output: 'hybrid',
+  vite: {
+    ssr: {
+      noExternal: ['path-to-regexp'],
+    },
+  },
   integrations: [tailwind(), react(), mdx(), NetlifyCMS({
     config: {
       backend: {

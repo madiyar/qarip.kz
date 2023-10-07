@@ -1,7 +1,7 @@
 ---
 title: "Қазақ жазуының тарихы: кирилден латынға"
 url: qazaq-jaziwining-tarihi-kirilden-latinga
-pubDate: 2023-08-22
+pubDate: 2023-07-21T19:00:00.000Z
 author: Жансая Алиева
 cover: /src/assets/lajournale3.png
 ---

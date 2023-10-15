@@ -5,18 +5,18 @@ import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import NetlifyCMS from 'astro-netlify-cms';
 
-import netlify from "@astrojs/netlify/functions";
+// import netlify from "@astrojs/netlify/functions";
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://qarip.kz',
-  adapter: netlify(),
-  output: 'hybrid',
-  vite: {
-    ssr: {
-      noExternal: ['path-to-regexp'],
-    },
-  },
+  // adapter: netlify(),
+  // output: 'hybrid',
+  // vite: {
+  //   ssr: {
+  //     noExternal: ['path-to-regexp'],
+  //   },
+  // },
   integrations: [tailwind(), react(), mdx(), NetlifyCMS({
     config: {
       backend: {

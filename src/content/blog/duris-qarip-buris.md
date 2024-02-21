@@ -1,7 +1,7 @@
 ---
 title: Дұрыс қаріп бұрыс
 url: duris-qarip-buris
-pubDate: 2023-11-22
+pubDate: 2023-04-16T19:00:00.000Z
 author: Абай Емес
 cover: /src/assets/lajournale5.png
 ---

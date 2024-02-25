@@ -1,0 +1,49 @@
+backend:
+  name: git-gateway
+  branch: main
+  repo: madiyar/qarip.kz #replace with your githu repo
+  # squash_merges: true
+  # open_authoring: true
+
+publish_mode: editorial_workflow
+media_folder: src/assets
+public_folder: /src/assets
+# site_url: "https://qarip.kz" # your site name
+
+collections:
+  - name: blog
+    label: Мақала
+    identifier_field: url
+    folder: src/content/blog
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    # format: frontmatter
+    # preview_path: post/{{slug}}
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: url, label: URL, widget: string }
+      - { name: pubDate, label: Publish Date, widget: datetime }
+      - { name: author, label: Author, widget: string, required: false }
+      - { name: cover, label: Poster, widget: image }
+      - { name: body, label: Body, widget: markdown }
+
+  - name: typography
+    label: Типография
+    folder: src/content/typography
+    create: false
+    delete: false
+    slug: '{{slug}}'
+    extension: json
+    fields:
+      - name: words
+        label: Сөздер
+        label_singular: сөз
+        widget: list
+        fields:
+          - name: 'title'
+            widget: 'string'
+            label: 'Title'
+          - name: 'description'
+            widget: 'text'
+            label: 'Description'

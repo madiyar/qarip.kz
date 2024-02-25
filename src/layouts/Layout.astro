@@ -22,6 +22,7 @@ const { title, description } = Astro.props;
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 		<meta name="generator" content={Astro.generator} />
+    <script is:inline src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 		<title>{title}</title>
     <slot name="head" />
 	</head>
@@ -33,6 +34,20 @@ const { title, description } = Astro.props;
 		<Footer />
 	</body>
 </html>
+<script is:inline>
+  // @ts-ignore
+  if (window.netlifyIdentity) {
+    // @ts-ignore
+    window.netlifyIdentity.on("init", (user) => {
+      if (!user) {
+        // @ts-ignore
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/index.html";
+        });
+      }
+    });
+  }
+</script>
 <script>
   const closeBtn = document.querySelector('[data-close-button]');
   const openBtn = document.querySelector('[data-open-button]');

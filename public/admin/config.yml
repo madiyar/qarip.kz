@@ -41,9 +41,31 @@ collections:
         label_singular: сөз
         widget: list
         fields:
-          - name: 'title'
-            widget: 'string'
-            label: 'Title'
-          - name: 'description'
-            widget: 'text'
-            label: 'Description'
+          - { name: title, label: Title, widget: string }
+          - { name: description, label: Description, widget: string }
+
+  - name: fonts
+    label: Қаріптер
+    folder: src/content/qaripter
+    identifier_field: url
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: author, label: Author, widget: string }
+      - { name: url, label: URL, widget: string }
+      - { name: summary, label: Summary, widget: string, required: false }
+      - { name: pubDate, label: Publish Date, widget: datetime }
+      - { name: tags, label: Tags, widget: select, options: ['serif', 'sans-serif', 'display', 'free', 'our'], multiple: true }
+      - name: files
+        label: Files
+        widget: list
+        fields:
+          - { name: title, required: false, label: Title, widget: string }
+          - { name: url, label: URL, widget: file, media_library: { allow_multiple: false } }
+          - { name: weight, label: Weight, widget: select, options: ['100', '200', '300', '400', '500', '600', '700', '800'] }
+          - { name: isItalic, required: false, label: Italic, widget: boolean, default: false }
+          - { name: isMain, required: false, label: Main, widget: boolean, default: false }
+
+

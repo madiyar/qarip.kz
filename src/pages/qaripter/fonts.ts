@@ -6,7 +6,7 @@ import { getCollection } from 'astro:content';
 export const GET: APIRoute = async ({ params, request }) => {
   const { query } = queryString.parseUrl(request.url, { arrayFormat: 'comma' });
 
-  const fonts = (await getCollection('qaripter')).sort(
+  const fonts = (await getCollection('qaripter') ?? []).sort(
     (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
   ).map(({ body, ...item}) => item);
 

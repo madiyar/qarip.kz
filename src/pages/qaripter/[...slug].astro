@@ -3,7 +3,7 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import Qarip from '../../layouts/Qarip.astro';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('qaripter');
+	const posts = await getCollection('qaripter') ?? [];
 	return posts.map((post) => ({
 		params: { slug: post.slug },
 		props: post,

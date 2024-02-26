@@ -5,8 +5,9 @@ import { tagLabel } from '../../data';
 
 // import Filters from '../../components/Filters';
 import Layout from '../../layouts/Layout.astro';
+const tags = ['serif', 'sans-serif', 'display', 'free', 'our'];
 
-const fonts = (await getCollection('qaripter')).sort(
+const fonts = (await getCollection('qaripter') ?? []).sort(
 	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
 );
 ---
@@ -17,7 +18,7 @@ const fonts = (await getCollection('qaripter')).sort(
       <textarea class="search-input" rows="4"></textarea>
       <h2 class="my-4 text-xl">Сүзгілер</h2>
       <div class="flex flex-wrap gap-4">
-        {fonts[0].data.tags.map(tag => <a href="/qaripter" class="rounded-full bg-brand-dark hover:bg-brand px-4 py-1">{tagLabel[tag] || tag}</a>)}  
+        {tags.map(tag => <a href="/qaripter" class="rounded-full bg-brand-dark hover:bg-brand px-4 py-1">{tagLabel[tag] || tag}</a>)}  
       </div>
 
       <!-- <Filters /> -->

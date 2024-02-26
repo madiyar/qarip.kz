@@ -3,6 +3,7 @@ import { defineCollection, z } from 'astro:content';
 const blog = defineCollection({
 	schema: ({ image }) => z.object({
 		title: z.string(),
+		url: z.string(),
 		cover: image(),
 		author: z.string().optional(),
 		pubDate: z
@@ -20,7 +21,16 @@ const qaripter = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		author: z.string(),
+		url: z.string(),
+		summary: z.string().optional(),
 		tags: z.array(z.enum(['serif', 'sans-serif', 'display', 'free', 'our'])),
+		files: z.array(z.object({
+			url: z.string(),
+			title: z.string().optional(),
+			weight: z.enum(['100', '200', '300', '400', '500', '600', '700', '800']),
+			isItalic: z.boolean().default(false).optional(),
+			isMain: z.boolean().default(false).optional(),
+		})),
 		pubDate: z
 			.string()
 			.or(z.date())

@@ -22,6 +22,7 @@ const qaripter = defineCollection({
 		title: z.string(),
 		author: z.string(),
 		url: z.string(),
+		download: z.string(),
 		summary: z.string().optional(),
 		tags: z.array(z.enum(['serif', 'sans-serif', 'display', 'free', 'our'])),
 		files: z.array(z.object({

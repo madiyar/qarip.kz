@@ -14,4 +14,4 @@ files:
     url: /src/assets/balpaq.ttf
     weight: "400"
 ---
-test 123
+Balpaq is a comic book font made by a designer from Kazakhstan. The font is perfect for anything from quotes and packaging designs to greeting cards and children's books. Add a playful and cheerful vibe to your designs with Balpaq font.

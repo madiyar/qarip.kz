@@ -4,7 +4,7 @@ author: Abay Emes
 url: balpaq
 summary: Balpaq balpaq balpaqay
 pubDate: 2024-02-26T18:12:55.765Z
-download: ''
+download: '/src/assets/balpaq.ttf'
 tags:
   - free
   - our

@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content';
-import Qarip from '../../layouts/Qarip.astro';
+import dayjs from 'dayjs';
+import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('qaripter') ?? [];
@@ -13,8 +14,48 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<'qaripter'>;
 
 const post = Astro.props;
+const { title, pubDate, author, tags, download, summary } = post.data;
 const { Content } = await post.render();
+import { tagLabel } from '../../data';
+
 ---
-<Qarip {...post.data}>
-	<Content />
-</Qarip>
+<Layout title={`${title} — Қазақша тегін қаріп, бесплатный казахский шрифт`}>
+  <article class="max-w-4xl mx-auto dark:text-white">
+    <nav class="flex flex-wrap gap-3 mb-8">
+      <a href="/qaripter" class="py-1">Қаріптер</a>
+      <span class="py-1 opacity-50">/</span>
+      {tags?.map((tag: string) => (
+        <a href="" class="tag">{tagLabel[tag] || tag}</a>
+      ))}
+    </nav>
+
+		<div class="flex justify-between items-center mb-4">
+			<h1 class="page-title">
+				{title} <span class="text-xl font-thin opacity-70">by {author}</span>
+			</h1>
+
+			{download.length > 0 && (
+				<a href={download} download="" class="bg-brand px-6 py-2 rounded-full text-lg font-medium text-white">Жүктеп алу</a>
+			)}
+		</div>
+
+    {summary && (
+      <p class="text-xl my-4">{summary}</p>
+    )}
+		<div class="border-b border-opacity-50 dark:border-white/50 border-black mb-6 flex overflow-y-auto">
+			<div class="cursor-pointer py-3 pr-4 text-brand">Қаріп</div>
+			<div class="cursor-pointer py-3 px-4">Сипаттамасы</div>
+			<!-- <div class="cursor-pointer py-3 px-4">Тексеріп алу</div> -->
+			<!-- <div class="cursor-pointer py-3 px-4">Лицензиясы</div> -->
+		</div>
+    <div class="prose-lg md:prose-xl dark:prose-invert">
+      <Content />
+    </div>
+  </article>
+</Layout>
+<style>
+  .tag {
+    @apply bg-brand-dark/20 rounded-lg dark:text-white text-brand-dark px-3 py-1;
+    @apply hover:bg-brand/50;
+  }
+</style>

@@ -4,7 +4,7 @@ export enum Contacts {
   Email = 'mailto:abayemes@gmail.com',
 }
 
-export const tagLabel = {
+export const tagLabel: Record<any, string> = {
   free: 'тегін',
   our: 'біздің қаріп',
   serif: 'serif',

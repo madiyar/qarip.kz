@@ -4,10 +4,10 @@ author: Abay Emes
 url: balpaq
 summary: Balpaq balpaq balpaqay
 pubDate: 2024-02-26T18:12:55.765Z
-download: '/src/assets/balpaq.ttf'
 tags:
   - free
   - our
+download: /src/assets/balpaq.zip
 files:
   - isItalic: false
     isMain: true

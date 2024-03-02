@@ -1,0 +1,23 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import Qarip from '../../../layouts/Qarip.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('qaripter') ?? [];
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: post,
+	}));
+}
+
+type Props = CollectionEntry<'qaripter'>;
+
+const post = Astro.props;
+const { Content } = await post.render();
+
+---
+<Qarip {...post.data} active="2">
+  <div class="prose-lg md:prose-xl dark:prose-invert">
+    <Content />
+  </div>
+</Qarip>

@@ -58,7 +58,12 @@ collections:
       - { name: summary, label: Summary, widget: string, required: false }
       - { name: pubDate, label: Publish Date, widget: datetime }
       - { name: tags, label: Tags, widget: select, options: ['serif', 'sans-serif', 'display', 'free', 'our'], multiple: true }
-      - { name: download, label: ZIP Архив, widget: file, media_library: { allow_multiple: false } }
+      - name: download
+        label: ZIP Архив
+        widget: file
+        media_library:
+          allow_multiple: false
+          media_folder: public/fonts
       - { name: body, label: Description, widget: markdown }
       - name: files
         label: Files

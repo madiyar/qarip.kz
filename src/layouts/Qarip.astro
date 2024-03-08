@@ -3,7 +3,7 @@ import { type CollectionEntry } from 'astro:content';
 import Layout from './Layout.astro';
 import { tagLabel } from '../data';
 
-type Props = CollectionEntry<'qaripter'>['data'];
+type Props = CollectionEntry<'qaripter'>['data'] & { active: string };
 const { title, url, author, tags, download, summary, active } = Astro.props;
 
 ---
@@ -17,7 +17,7 @@ const { title, url, author, tags, download, summary, active } = Astro.props;
       ))}
     </nav>
 
-		<div class="flex justify-between items-center mb-4">
+		<div class="flex flex-col items-start justify-between md:flex-row md:items-center gap-4 mb-4">
 			<h1 class="page-title">
 				{title} <span class="text-xl font-thin opacity-70">by {author}</span>
 			</h1>

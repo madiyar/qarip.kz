@@ -3,18 +3,20 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import Qarip from '../../../layouts/Qarip.astro';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('qaripter') ?? [];
-	return posts.map((post) => ({
-		params: { slug: post.slug },
-		props: post,
+	const fonts = await getCollection('qaripter') ?? [];
+	return fonts.map((font) => ({
+		params: { slug: font.slug },
+		props: font,
 	}));
 }
 
 type Props = CollectionEntry<'qaripter'>;
 
-const post = Astro.props;
+const font = Astro.props;
 
 ---
-<Qarip {...post.data} active="1">
-  KKEKEKEKEKKEKEKEKEKEK
+<Qarip {...font.data} active="index">
+  {font.data.files.map(item => (
+		<div>{item.weight}</div>
+	))}
 </Qarip>

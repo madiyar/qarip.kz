@@ -6,6 +6,8 @@ import { tagLabel } from '../data';
 type Props = CollectionEntry<'qaripter'>['data'] & { active: string };
 const { title, url, author, tags, download, summary, active } = Astro.props;
 
+// const posts = await Astro.glob(download); // returns an array of posts that live at ./src/pages/post/*.md
+
 ---
 <Layout title={`${title} — Қазақша тегін қаріп, бесплатный казахский шрифт`}>
   <article class="max-w-4xl mx-auto dark:text-white">
@@ -13,7 +15,7 @@ const { title, url, author, tags, download, summary, active } = Astro.props;
       <a href="/qaripter" class="py-1">Қаріптер</a>
       <span class="py-1 opacity-50">/</span>
       {tags?.map((tag: string) => (
-        <a href="" class="tag">{tagLabel[tag] || tag}</a>
+        <a href="#" class="tag">{tagLabel[tag] || tag}</a>
       ))}
     </nav>
 
@@ -31,8 +33,8 @@ const { title, url, author, tags, download, summary, active } = Astro.props;
       <p class="text-xl mt-4 mb-12">{summary}</p>
     )}
 		<div class="border-b border-opacity-50 dark:border-brand/20 border-brand/40 mb-6 flex overflow-y-auto">
-			<a href={`/qaripter/${url}/`} class={`cursor-pointer py-3 px-4 ${active === '1' && 'active'}`}>Қаріп</a>
-			<a href="description" class={`cursor-pointer py-3 px-4 ${active === '2' && 'active'}`}>Сипаттамасы</a>
+			<a href={`/qaripter/${url}/`} class={`cursor-pointer py-3 px-4 ${active === 'index' && 'active'}`}>Қаріп</a>
+			<a href="description" class={`cursor-pointer py-3 px-4 ${active === 'description' && 'active'}`}>Сипаттамасы</a>
 			<!-- <div class="cursor-pointer py-3 px-4">Тексеріп алу</div> -->
 			<!-- <div class="cursor-pointer py-3 px-4">Лицензиясы</div> -->
 		</div>

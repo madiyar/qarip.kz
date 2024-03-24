@@ -36,9 +36,9 @@ const fonts = (await getCollection('qaripter') ?? []).sort(
       </div>
       {fonts.map(font => (
         <a href={`/qaripter/${font.slug}/`}>
-          <p class="text-sm opacity-70 gap-2 flex items-center">
+          <p class="text-sm opacity-70 gap-1 flex items-center">
             <span class="font-semibold">{font.data.title}</span>
-            <span class="font-light">{font.data.author}</span>
+            <span class="font-light">by {font.data.author}</span>
           </p>
           {font.data.title}
           <div class="tags">

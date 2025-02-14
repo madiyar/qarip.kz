@@ -64,6 +64,7 @@ collections:
         media_library:
           allow_multiple: false
           media_folder: public/fonts
+          public_folder: /fonts
       - { name: body, label: Description, widget: markdown }
       - name: files
         label: Files

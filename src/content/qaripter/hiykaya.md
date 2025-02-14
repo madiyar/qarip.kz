@@ -6,7 +6,7 @@ summary: Hiykaya qarpi
 pubDate: 2024-03-05T16:02:37.262Z
 tags:
   - our
-download: /src/assets/hiykaya-regular.zip
+download: /fonts/hiykaya-regular.zip
 files:
   - isItalic: false
     isMain: false

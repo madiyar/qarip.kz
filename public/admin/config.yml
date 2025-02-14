@@ -61,7 +61,7 @@ collections:
       - name: download
         label: ZIP Архив
         widget: file
-        media_folder: public/fonts
+        media_folder: /public/fonts
         public_folder: /fonts
         media_library:
           allow_multiple: false

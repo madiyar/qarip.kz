@@ -7,7 +7,7 @@ pubDate: 2025-02-15T00:36:00.000Z
 tags:
   - our
   - display
-download: /fonts/qr-comic-beta.zip
+download: /fonts/balpaq-2-.zip
 files:
   - isItalic: false
     isMain: false

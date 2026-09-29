@@ -1,0 +1,23 @@
+---
+interface Props {
+  items: { id?: string; title: string; html: string; meta?: string; search?: string; group?: string }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="card divide-y divide-line overflow-hidden">
+  {
+    items.map((item) => (
+      <details class="group" id={item.id} data-search={item.search} data-group={item.group}>
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 font-semibold hover:bg-surface-2 [&::-webkit-details-marker]:hidden">
+          <span>
+            {item.title}
+            {item.meta && <span class="ml-2 text-sm font-normal text-muted">{item.meta}</span>}
+          </span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-muted transition-transform group-open:rotate-45" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+        </summary>
+        <div class="prose max-w-none px-6 pb-6 text-muted dark:prose-invert prose-a:text-accent prose-code:before:content-none prose-code:after:content-none" set:html={item.html} />
+      </details>
+    ))
+  }
+</div>

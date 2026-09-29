@@ -1,0 +1,70 @@
+---
+import { getCategories } from '../lib/fonts';
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import { type Lang, localePath, useT } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const categories = await getCategories();
+const SAMPLE: Record<string, string> = {
+  sans: "'Inter', system-ui, sans-serif",
+  serif: "Georgia, 'Times New Roman', serif",
+  display: "'Inter', system-ui, sans-serif",
+  slab: "'Rockwell', 'Courier New', serif",
+  handwritten: "'Segoe Script', 'Bradley Hand', cursive",
+  monospace: "'JetBrains Mono', ui-monospace, monospace",
+};
+const tips = [
+  ['Мақсатқа қараңыз', 'Сайт пен интерфейске кесілген (sans) қаріптер, баспа кітапқа кертілген (serif) қаріптер жарасады.'],
+  ['Екі қаріп жеткілікті', 'Бір жобада тақырыпқа бір, мәтінге бір қаріп қолдансаңыз жетеді. Үйлесімін «Қаріп үйлесімі» құралынан табыңыз.'],
+  ['Қазақ әріптерін тексеріңіз', 'Ә, Ғ, Қ, Ң, Ө, Ұ, Ү, Һ, І әріптері бар екеніне және дұрыс салынғанына көз жеткізіңіз.'],
+  ['Лицензияны оқыңыз', 'Тегін қаріптің бәрі коммерцияға тегін емес. Қолданбас бұрын лицензиясын тексеріңіз.'],
+];
+---
+
+<Base lang={lang} title={t('Типография')} description={t('Қазақ тіліндегі типография туралы ақпарат')}>
+  <div class="mx-auto max-w-4xl">
+    <PageHeader eyebrow={t('Білім базасы')} title={t('Типография')} description={t('Қазақ тіліндегі типография туралы ақпарат')} />
+    <section class="card p-8">
+      <h2 class="text-2xl font-bold">{t('Типография дегеніміз не?')}</h2>
+      <p class="mt-3 text-muted">
+        {t('Типография — мәтінді көрнекі түрде ұйымдастыру өнері мен техникасы. Ол қаріптер, өлшемдер, аралықтар және басқа элементтерді пайдаланып, мәтінді оқылымды және әсем етеді.')}
+      </p>
+    </section>
+    <section class="mt-12">
+      <h2 class="mb-6 text-2xl font-bold">{t('Қаріп түрлері')}</h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          categories.map((c) => (
+            <a href={localePath(lang, `/fonts?category=${c.id}`)} class="card p-5 transition-colors hover:border-muted">
+              <p class="text-5xl" style={`font-family:${SAMPLE[c.id] ?? 'inherit'};font-weight:${c.id === 'display' ? 900 : 400}`}>Аа Әә</p>
+              <p class="mt-4 font-semibold">{c.name}</p>
+              <p class="text-sm text-muted">{t(c.description)}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+    <section class="mt-12">
+      <h2 class="mb-6 text-2xl font-bold">{t('Қаріпті қалай таңдау керек?')}</h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        {
+          tips.map(([title, text], i) => (
+            <div class="card p-5">
+              <span class="font-mono text-sm text-accent">0{i + 1}</span>
+              <p class="mt-2 font-semibold">{t(title)}</p>
+              <p class="mt-1 text-sm text-muted">{t(text)}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+    <p class="mt-12 text-center">
+      <a class="btn-secondary" href={localePath(lang, '/glossary')}>{t('Типографиялық сөздік')} →</a>
+    </p>
+  </div>
+</Base>

@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { type Lang, switchLocale, useT } from '../i18n';
+import { SITE } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  image?: string;
+  /** Inline CSS (e.g. @font-face rules for previews). */
+  fontCss?: string;
+  wide?: boolean;
+}
+
+const { lang, title, description, image, fontCss, wide = false } = Astro.props;
+const t = useT(lang);
+const fullTitle = title ? `${title} — Qarip` : `Qarip — ${t('Қазақ қаріп қоры')}`;
+const desc = description ?? t('Қазақ тілін қолдайтын тегін қаріптер жинағы. Қаріпті іздеп, тексеріп, тегін жүктеп алыңыз.');
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const kkUrl = new URL(switchLocale(Astro.url.pathname, 'kk'), Astro.site);
+const enUrl = new URL(switchLocale(Astro.url.pathname, 'en'), Astro.site);
+const ogImage = image ? new URL(image, Astro.site) : undefined;
+---
+
+<!doctype html>
+<html lang={lang === 'kk' ? 'kk-KZ' : 'en'} data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="kk" href={kkUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={kkUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script is:inline>
+      (() => {
+        let theme = 'dark';
+        try {
+          theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        // Netlify Identity invite/recovery links land on the site root: hand them to the CMS.
+        if (/(invite|recovery|confirmation|email_change)_token=/.test(location.hash)) location.replace('/admin/' + location.hash);
+      })();
+    </script>
+    {fontCss && <style is:inline set:html={fontCss} />}
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-fg">
+      {t('Мазмұнға өту')}
+    </a>
+    <Header lang={lang} />
+    <main id="main" class:list={['flex-1', !wide && 'container-page py-10 sm:py-14']}>
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <button
+      id="to-top"
+      class="no-print icon-btn fixed right-4 bottom-4 z-40 hidden border border-line bg-surface shadow-lg"
+      aria-label={t('Жоғарыға')}
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
+    </button>
+    <script>
+      const btn = document.getElementById('to-top')!;
+      const onScroll = () => btn.classList.toggle('hidden', window.scrollY < 800);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+  </body>
+</html>

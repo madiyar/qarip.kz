@@ -1,0 +1,22 @@
+[
+  {
+    "id": "cyrillic",
+    "name": "Кирилл"
+  },
+  {
+    "id": "latin",
+    "name": "Латын"
+  },
+  {
+    "id": "free",
+    "name": "Тегін"
+  },
+  {
+    "id": "commercial",
+    "name": "Коммерциялық"
+  },
+  {
+    "id": "variable",
+    "name": "Вариативті"
+  }
+]

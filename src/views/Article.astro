@@ -1,0 +1,73 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ArticleCard from '../components/common/ArticleCard.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, formatDate, localePath, useT } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  post: CollectionEntry<'journal'>;
+}
+const { lang, post } = Astro.props;
+const t = useT(lang);
+const { Content, headings } = await render(post);
+const more = (await getCollection('journal', (p) => !p.data.draft && p.id !== post.id)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  datePublished: post.data.pubDate.toISOString(),
+  ...(post.data.cover && { image: new URL(post.data.cover, Astro.site).toString() }),
+  ...(post.data.author && { author: { '@type': 'Person', name: post.data.author } }),
+};
+const toc = headings.filter((h) => h.depth <= 2);
+---
+
+<Base lang={lang} title={post.data.title} description={post.data.excerpt} image={post.data.cover}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <article class="mx-auto max-w-3xl">
+    <a href={localePath(lang, '/journal')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
+      <Icon name="arrowLeft" size={16} />
+      Journal
+    </a>
+    <h1 class="page-title">{post.data.title}</h1>
+    <p class="mt-4 text-sm text-muted">
+      {post.data.author && (post.data.authorLink ? <a class="text-fg hover:text-accent" href={post.data.authorLink}>{post.data.author}</a> : <span class="text-fg">{post.data.author}</span>)}
+      {post.data.author && ' · '}
+      <time datetime={post.data.pubDate.toISOString()}>{formatDate(lang, post.data.pubDate)}</time>
+    </p>
+    {post.data.cover && <img src={post.data.cover} alt="" class="mt-8 w-full rounded-2xl border border-line" />}
+    {
+      toc.length > 2 && (
+        <nav class="card mt-8 p-5" aria-label={t('Мазмұны')}>
+          <p class="mb-2 text-sm font-semibold">{t('Мазмұны')}</p>
+          <ul class="space-y-1 text-sm">
+            {toc.map((h) => (
+              <li>
+                <a href={`#${h.slug}`} class="text-muted hover:text-fg">
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+    <div class="prose prose-lg mt-10 max-w-none dark:prose-invert prose-headings:tracking-tight prose-a:text-accent prose-img:rounded-xl">
+      <Content />
+    </div>
+  </article>
+  {
+    more.length > 0 && (
+      <section class="mt-24">
+        <h2 class="mb-6 text-2xl font-bold">{t('Басқа мақалалар')}</h2>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {more.map((p) => (
+            <ArticleCard post={p} lang={lang} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

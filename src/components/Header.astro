@@ -1,71 +1,149 @@
 ---
-const links = [
-  { href: '/qaripter', title: 'Қаріптер' },
-  { href: '/typography', title: 'Типография' },
-  { href: '/qaripter/bizdin', title: 'Біздің қаріптер' },
-  { href: '/about-us', title: 'Біз туралы' },
-  // { href: '/terms-of-use', title: 'Қолдану шарты' },
-]
+import { type Lang, localePath, switchLocale, useT } from '../i18n';
+import { NAV, TOOLS } from '../lib/site';
+import Icon from './ui/Icon';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const path = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+const toolsActive = TOOLS.some((tool) => isActive(tool.href));
 ---
 
-<header class="header dark:text-white z-50">
-  <a href="/" class="font-semibold text-xl">Qarip</a>
-  <nav class="menu" id="menu">
-    {links.map(link => (
-      <a href={link.href}>
-        {link.title}
+<header class="sticky top-0 z-50 border-b border-line bg-bg/80 backdrop-blur-xl">
+  <div class="container-page flex h-16 items-center gap-4">
+    <a href={localePath(lang, '/')} class="text-lg font-extrabold tracking-tight">Qarip</a>
+
+    <nav class="mx-auto hidden items-center gap-1 md:flex" aria-label={t('Жоғарғы мәзір')}>
+      {
+        NAV.map((item) => (
+          <a
+            href={localePath(lang, item.href)}
+            class:list={['rounded-lg px-3 py-2 text-sm transition-colors hover:text-fg', isActive(item.href) ? 'font-semibold text-fg' : 'text-muted']}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {t(item.label)}
+          </a>
+        ))
+      }
+      <div class="relative" data-dropdown>
+        <button
+          class:list={['flex items-center gap-1 rounded-lg px-3 py-2 text-sm transition-colors hover:text-fg', toolsActive ? 'font-semibold text-fg' : 'text-muted']}
+          aria-expanded="false"
+          aria-haspopup="true"
+          data-dropdown-trigger
+        >
+          {t('Құралдар')}
+          <Icon name="chevronDown" size={14} />
+        </button>
+        <div class="card absolute top-full left-1/2 mt-2 hidden w-[34rem] -translate-x-1/2 grid-cols-2 gap-1 p-2 shadow-2xl" data-dropdown-menu>
+          {
+            TOOLS.map((tool) => (
+              <a href={localePath(lang, tool.href)} class="flex gap-3 rounded-xl p-3 transition-colors hover:bg-surface-2">
+                <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                  <Icon name={tool.icon} size={16} />
+                </span>
+                <span>
+                  <span class="block text-sm font-semibold">{t(tool.title)}</span>
+                  <span class="block text-xs text-muted">{t(tool.description)}</span>
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-1 md:ml-0">
+      <a href={localePath(lang, '/profile')} class="icon-btn" aria-label={t('Жеке кабинет')} title={t('Жеке кабинет')}>
+        <Icon name="user" />
       </a>
-    ))}
-  </nav>
-  <div class="flex gap-3">
-    <button data-toggle-theme-button aria-label="dark mode toggle">
-      <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-    </button>
-    <button class="block md:hidden" data-open-button aria-label="open menu">
-      <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-    </button>
+      <div class="segmented mx-1 hidden sm:inline-flex" role="group" aria-label={t('Тіл')}>
+        <a href={switchLocale(Astro.url.pathname, 'kk')} hreflang="kk" class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'kk' ? 'bg-bg text-fg' : 'text-muted']}>KK</a>
+        <a href={switchLocale(Astro.url.pathname, 'en')} hreflang="en" class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'en' ? 'bg-bg text-fg' : 'text-muted']}>EN</a>
+      </div>
+      <button class="icon-btn" data-theme-toggle aria-label={t('Тақырыпты ауыстыру')} title={t('Тақырыпты ауыстыру')}>
+        <Icon name="sun" className="hidden dark:block" />
+        <Icon name="moon" className="block dark:hidden" />
+      </button>
+      <button class="icon-btn md:hidden" data-menu-open aria-label={t('Мәзірді ашу')} aria-expanded="false" aria-controls="mobile-menu">
+        <Icon name="menu" />
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="fixed inset-0 z-50 hidden overflow-y-auto bg-bg md:hidden" data-menu>
+    <div class="container-page flex h-16 items-center justify-between border-b border-line">
+      <a href={localePath(lang, '/')} class="text-lg font-extrabold tracking-tight">Qarip</a>
+      <button class="icon-btn" data-menu-close aria-label={t('Мәзірді жабу')}><Icon name="x" /></button>
+    </div>
+    <nav class="container-page flex flex-col gap-1 py-6" aria-label={t('Мобильді мәзір')}>
+      {
+        NAV.map((item) => (
+          <a href={localePath(lang, item.href)} class="rounded-xl px-3 py-3 text-2xl font-semibold hover:bg-surface">
+            {t(item.label)}
+          </a>
+        ))
+      }
+      <p class="eyebrow mt-6 mb-2 px-3">{t('Құралдар')}</p>
+      {
+        TOOLS.map((tool) => (
+          <a href={localePath(lang, tool.href)} class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-base hover:bg-surface">
+            <Icon name={tool.icon} className="text-muted" />
+            {t(tool.label)}
+          </a>
+        ))
+      }
+      <div class="mt-6 flex gap-2 px-3">
+        <a href={switchLocale(Astro.url.pathname, 'kk')} class:list={['chip', lang === 'kk' && 'border-accent']}>Қазақша</a>
+        <a href={switchLocale(Astro.url.pathname, 'en')} class:list={['chip', lang === 'en' && 'border-accent']}>English</a>
+      </div>
+    </nav>
   </div>
 </header>
-<nav class="menu-mobile" id="menu" data-menu-mobile>
-  <button class="top-2 fixed right-4 p-4" data-close-button aria-label="close menu">
-    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-  </button>
-  {links.map(link => (
-    <a href={link.href}>
-      {link.title}
-    </a>
-  ))}
-</nav>
+
 <script>
-  const menus = document.querySelectorAll("#menu");
-  if (menus) {
-    menus.forEach(nav => {
-      const navLinks = nav.querySelectorAll("a");
-      const currentURL = window.location.href;
-      navLinks.forEach((link) => {
-        if (currentURL.includes(link.href)) {
-          link.classList.add("active");
-        }
-      });
-    })
-  }
+  document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+    }),
+  );
+
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const openBtn = document.querySelector<HTMLElement>('[data-menu-open]');
+  const setMenu = (open: boolean) => {
+    menu?.classList.toggle('hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    openBtn?.setAttribute('aria-expanded', String(open));
+  };
+  openBtn?.addEventListener('click', () => setMenu(true));
+  document.querySelector('[data-menu-close]')?.addEventListener('click', () => setMenu(false));
+
+  document.querySelectorAll<HTMLElement>('[data-dropdown]').forEach((root) => {
+    const trigger = root.querySelector<HTMLElement>('[data-dropdown-trigger]')!;
+    const panel = root.querySelector<HTMLElement>('[data-dropdown-menu]')!;
+    let timer: number | undefined;
+    const set = (open: boolean) => {
+      panel.classList.toggle('hidden', !open);
+      panel.classList.toggle('grid', open);
+      trigger.setAttribute('aria-expanded', String(open));
+    };
+    trigger.addEventListener('click', () => set(panel.classList.contains('hidden')));
+    root.addEventListener('mouseenter', () => {
+      clearTimeout(timer);
+      set(true);
+    });
+    root.addEventListener('mouseleave', () => {
+      timer = window.setTimeout(() => set(false), 150);
+    });
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && set(false));
+    document.addEventListener('click', (e) => !root.contains(e.target as Node) && set(false));
+  });
 </script>
-<style>
-  .header {
-    @apply flex items-center justify-between py-6 px-8 backdrop-blur-md sticky top-0;
-    @apply bg-white/50 dark:bg-zinc-900/50;
-  }
-  .header a {
-    @apply hover:text-brand;
-  }
-  .active {
-    @apply text-brand hover:text-brand-dark underline underline-offset-8;
-  }
-  .menu {
-    @apply hidden md:flex items-center gap-4;
-  }
-  .menu-mobile {
-    @apply hidden flex-col gap-4 fixed top-0 right-0 left-0 bottom-0 bg-inherit items-center justify-center text-2xl z-50;
-    @apply dark:text-white;
-  }
-</style>

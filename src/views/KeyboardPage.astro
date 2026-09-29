@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import Keyboard from '../components/tools/Keyboard';
+import Icon from '../components/ui/Icon';
+import { type Lang, useT } from '../i18n';
+import { SITE } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const letters = ['ә', 'ғ', 'қ', 'ң', 'ө', 'ұ', 'ү', 'һ', 'і'];
+const windows = ['Архивті жүктеп, ішінен шығыңыз.', 'Шыққан қалтада «setup» файлын табыңыз.', '«setup» файлын ашып, орнату аяқталғанша күтіңіз.', 'Компьютерді қайта қосыңыз да, пернетақтаны тексеріңіз.'];
+const mac = ['Finder ашып, «Go → Go to Folder…» таңдаңыз.', '«/Library/Keyboard Layouts» адресін енгізіңіз.', 'Жүктелген файлдарды осы қалтаға көшіріп, компьютерді қайта қосыңыз.', 'Пернетақта параметрлерінде «+» басып, «Other» ішінен қазақша раскладканы қосыңыз.'];
+---
+
+<Base lang={lang} title={t('Қазақ пернетақтасы')} description={t('Қазақ кирилл әліпбиінің барлық әріптерін қамтитын пернетақта раскладкасы.')}>
+  <section class="grid gap-8 lg:grid-cols-2 lg:items-center">
+    <div>
+      <span class="chip mb-5 h-8 text-xs"><Icon name="keyboard" size={14} />{t('Қазақ кирилл пернетақтасы')}</span>
+      <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl">{t('Пернетақта')}</h1>
+      <p class="mt-5 text-lg text-muted">
+        {t('Қазақ кирилл әліпбиінің барлық әріптерін қамтитын пернетақта раскладкасы. Стандартты қазақша пернетақта негізінде жасалған, барлық ұлттық әріптерді ыңғайлы теруге мүмкіндік береді.')}
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        {SITE.keyboardZip && <a href={SITE.keyboardZip} download class="btn-primary"><Icon name="download" size={16} />{t('Жүктеу')}</a>}
+        <a href="#virtual" class="btn-secondary">{t('Раскладканы көру')}</a>
+      </div>
+    </div>
+    <div class="card p-6">
+      <p class="text-sm text-muted">{t('Қазақ әліпбиі — кирилл негізіндегі 42 әріп. Раскладка стандартты пернетақтаның үстінен қосымша әріптерді қамтиды:')}</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        {letters.map((l) => <span class="flex size-12 items-center justify-center rounded-xl border border-line bg-bg text-xl font-semibold">{l}</span>)}
+      </div>
+      <p class="mt-4 text-xs text-muted">{t('Барлық әріптер Unicode стандартына сай.')}</p>
+    </div>
+  </section>
+
+  <section id="virtual" class="mt-20 scroll-mt-24">
+    <div class="mb-6 text-center">
+      <h2 class="text-3xl font-bold tracking-tight">{t('Виртуалды пернетақта')}</h2>
+      <p class="mt-2 text-muted">{t('Түймені басып не өз пернетақтаңызда теріңіз — мәтін қазақша шығады.')}</p>
+    </div>
+    <Keyboard client:only="react" lang={lang} />
+  </section>
+
+  <section class="mt-20">
+    <h2 class="mb-2 text-2xl font-bold">{t('Пернетақтаны орнату')}</h2>
+    {
+      !SITE.keyboardZip && (
+        <p class="mb-6 text-muted">
+          {t('Windows 10/11 және macOS жүйелерінде қазақ раскладкасы кірістірілген — оны тіл параметрлерінен қосыңыз. Орнату файлы жақында қосылады.')}
+        </p>
+      )
+    }
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="card p-6">
+        <h3 class="font-semibold">Windows</h3>
+        <ol class="mt-4 list-decimal space-y-2 pl-5 text-sm text-muted">{windows.map((s) => <li>{t(s)}</li>)}</ol>
+        <p class="mt-4 text-xs text-muted">{t('Тілді ауыстыру: Alt+Shift немесе Win+Space.')}</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="font-semibold">macOS</h3>
+        <ol class="mt-4 list-decimal space-y-2 pl-5 text-sm text-muted">{mac.map((s) => <li>{t(s)}</li>)}</ol>
+        <p class="mt-4 text-xs text-muted">{t('Раскладкалар арасында ауысу: Ctrl+Space.')}</p>
+      </div>
+    </div>
+  </section>
+</Base>

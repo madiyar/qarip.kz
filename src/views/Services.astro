@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, useT } from '../i18n';
+import { SITE } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const services = [
+  { title: 'Қазақ әріптерін қосу', text: 'Латын немесе кирилл қаріпке қазақ тіліне арналған әріптерді қосамыз', price: '10 000 ₸', list: ['Ә, Ғ, Қ, Ң, Ө, Ұ, Ү, Һ, І әріптері', 'Барлық начертаниялар', 'Кернинг реттеу', 'Сапа тексеру'] },
+  { title: 'Кирилл әріптерін жасау', text: 'Латын қаріпке толық кирилл алфавитін жасаймыз', price: '50 000 ₸', list: ['Толық кирилл алфавиті', 'Қазақ әріптерімен', 'Орыс тілі қолдауы', 'Профессионалды сапа'], highlight: true },
+  { title: 'Қаріпті реттеу', text: 'Бар қаріпті сіздің қажеттіліктеріңізге сәйкес өзгертеміз', price: '200 000 ₸', list: ['Өзгерістер енгізу', 'Стиль реттеу', 'Жаңа глифтар қосу', 'Кернинг оптимизациясы'] },
+  { title: 'Жаңа қаріп жасау', text: 'Нөлден жаңа, уникалды қаріп жасаймыз', price: '500 000 ₸', list: ['Уникалды дизайн', 'Көп начертания', 'Барлық тілдер', 'Толық құжаттама'] },
+];
+const steps = ['Өтінім жіберу', 'Техникалық тапсырманы талқылау', 'Жұмыс және түзетулер', 'Дайын файлдарды тапсыру'];
+const mail = (s: string) => `mailto:${SITE.email}?subject=${encodeURIComponent(`${t('Тапсырыс')}: ${t(s)}`)}`;
+---
+
+<Base lang={lang} title={t('Қызметтер')} description={t('Профессионалды қаріп дизайнерлерінің командасы сіздің жобаларыңызға көмектеседі')}>
+  <PageHeader eyebrow={t('Қызметтер')} title={t('Қаріп дизайн қызметтері')} description={t('Профессионалды қаріп дизайнерлерінің командасы сіздің жобаларыңызға көмектеседі')} center />
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    {
+      services.map((s) => (
+        <div class:list={['card flex flex-col p-6', s.highlight && 'border-accent ring-1 ring-accent']}>
+          <span class="badge w-fit bg-accent-soft text-accent">{s.highlight ? t('Танымал') : t('Қызмет')}</span>
+          <h2 class="mt-4 text-xl font-bold">{t(s.title)}</h2>
+          <p class="mt-2 text-sm text-muted">{t(s.text)}</p>
+          <p class="mt-6 text-3xl font-extrabold tabular-nums">{s.price}</p>
+          <p class="text-sm text-muted">{t('бастап')}</p>
+          <ul class="my-6 flex-1 space-y-2.5 text-sm">
+            {s.list.map((item) => (
+              <li class="flex gap-2">
+                <Icon name="check" size={16} className="mt-0.5 shrink-0 text-emerald-500" />
+                {t(item)}
+              </li>
+            ))}
+          </ul>
+          <a href={mail(s.title)} class:list={[s.highlight ? 'btn-primary' : 'btn-secondary', 'w-full']}>
+            {t('Тапсырыс беру')}
+            <Icon name="arrowRight" size={16} />
+          </a>
+        </div>
+      ))
+    }
+  </div>
+
+  <section class="mt-20">
+    <h2 class="mb-6 text-2xl font-bold">{t('Жұмыс барысы')}</h2>
+    <ol class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        steps.map((s, i) => (
+          <li class="card p-5">
+            <span class="font-mono text-sm text-accent">0{i + 1}</span>
+            <p class="mt-2 font-semibold">{t(s)}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="card mt-20 p-10 text-center">
+    <h2 class="text-2xl font-bold">{t('Сұрақтарыңыз бар ма?')}</h2>
+    <p class="mt-2 text-muted">{t('Біздің командамен байланысыңыз және жобаңыз туралы талқылаңыз')}</p>
+    <div class="mt-6 flex flex-wrap justify-center gap-3">
+      <a href={`mailto:${SITE.email}`} class="btn-primary"><Icon name="mail" size={16} />{SITE.email}</a>
+      <a href={SITE.telegram} class="btn-secondary" target="_blank" rel="noopener noreferrer"><Icon name="send" size={16} />Telegram</a>
+    </div>
+  </section>
+</Base>

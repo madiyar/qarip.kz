@@ -1,0 +1,143 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/common/SectionHead.astro';
+import FontActions from '../components/fonts/FontActions';
+import FontDetail from '../components/fonts/FontDetail';
+import FontBrowser from '../components/fonts/FontBrowser';
+import Icon from '../components/ui/Icon';
+import { type Lang, formatDate, localePath, useT } from '../i18n';
+import { type FontEntry, familyName, formatBytes, getFonts, primaryFaces, publicCss, similarFonts, styleFaces, toSummaries } from '../lib/fonts';
+
+interface Props {
+  lang: Lang;
+  font: FontEntry;
+}
+const { lang, font } = Astro.props;
+const t = useT(lang);
+const d = font.data;
+
+const [designer, category, license, all] = await Promise.all([getEntry(d.designer), getEntry(d.category), getEntry(d.license), getFonts()]);
+const tags = await Promise.all(d.tags.map((x) => getEntry(x)));
+const purposes = await Promise.all(d.purposes.map((x) => getEntry(x)));
+const similar = await toSummaries(await similarFonts(font, all));
+
+const SCRIPT_LABELS: Record<string, string> = { kazakh: 'Қазақ кирилл', 'kazakh-latin': 'Қазақ латын', cyrillic: 'Кирилл', latin: 'Латын' };
+const glyphs = Math.max(0, ...d.styles.map((s) => s.glyphs ?? 0));
+const formats = [...new Set(d.styles.map((s) => s.format.toUpperCase()))].join(', ');
+
+const styles = d.styles.map((s) => ({ ...s, family: familyName(font.id, s.slug) }));
+const cssUrl = new URL(`/fonts/${font.id}.css`, Astro.site).toString();
+const info = [
+  { label: 'Қаріп атауы', value: d.name },
+  { label: 'Категория', value: category?.data.name ?? '' },
+  { label: 'Дизайнер', value: designer?.data.name ?? '' },
+  { label: 'Стиль саны', value: String(d.styles.length) },
+  { label: 'Форматтар', value: formats },
+  { label: 'Лицензия', value: license?.data.name ?? '' },
+  { label: 'Әліпбилер', value: d.scripts.map((s) => t(SCRIPT_LABELS[s] ?? s)).join(', ') },
+  ...(purposes.length ? [{ label: 'Мақсаты', value: purposes.map((p) => t(p!.data.name)).join(', ') }] : []),
+  { label: 'Қосылған күні', value: formatDate(lang, d.addedDate) },
+  ...(d.releaseDate ? [{ label: 'Шыққан күні', value: d.releaseDate }] : []),
+  ...(d.updatedDate ? [{ label: 'Жаңартылған', value: d.updatedDate }] : []),
+];
+const stats = [
+  { label: 'Стиль саны', value: String(d.styles.length) },
+  { label: 'Глиф саны', value: glyphs ? String(glyphs) : '—' },
+  { label: 'Әліпбилер', value: String(d.scripts.length) },
+  { label: 'Жүктеулер', value: String(d.downloads) },
+];
+const files = d.styles.map((s) => ({ name: s.file.split('/').pop()!, format: s.format, size: formatBytes(s.size), style: s.name }));
+files.push({ name: d.zipName ?? `${font.id}.zip`, format: 'zip', size: formatBytes(d.zipSize), style: '' });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: d.name,
+  applicationCategory: 'DesignApplication',
+  operatingSystem: 'Windows, macOS, Linux',
+  author: { '@type': 'Person', name: designer?.data.name },
+  offers: { '@type': 'Offer', price: 0, priceCurrency: 'KZT' },
+  license: license?.data.url,
+  downloadUrl: new URL(d.zip, Astro.site).toString(),
+};
+---
+
+<Base
+  lang={lang}
+  title={`${d.name} — ${t('қазақша қаріп')}`}
+  description={d.description ?? t('{name} қарпін тегін жүктеп алыңыз. {n} стиль, қазақ әріптері бар.', { name: d.name, n: d.styles.length })}
+  fontCss={`${styleFaces(font)}\n${primaryFaces(similar)}`}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <a href={localePath(lang, '/fonts')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
+    <Icon name="arrowLeft" size={16} />
+    {t('Барлық қаріп')}
+  </a>
+
+  <header class="mb-10">
+    <div class="mb-4 flex flex-wrap gap-2">
+      {
+        category && (
+          <a href={localePath(lang, `/fonts?category=${category.id}`)} class="badge" style={`background:${category.data.color}22;color:${category.data.color}`}>
+            {category.data.name}
+          </a>
+        )
+      }
+      {d.our && <span class="badge-accent">{t('Біздің қаріп')}</span>}
+      {tags.map((tag) => tag && <span class="badge bg-surface-2 text-muted">{t(tag.data.name)}</span>)}
+    </div>
+    <h1 class="text-5xl font-extrabold tracking-tight break-words sm:text-7xl" style={`font-family:'${styles[d.primary]?.family ?? styles[0].family}', system-ui`}>
+      {d.name}
+    </h1>
+    <p class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted">
+      <span>{t('Дизайнер')}:</span>
+      <a href={localePath(lang, `/designers/${d.designer.id}`)} class="font-medium text-fg hover:text-accent">{designer?.data.name}</a>
+      <span aria-hidden="true">•</span>
+      <span>{t('{n} стиль', { n: d.styles.length })}</span>
+      <span aria-hidden="true">•</span>
+      <span>{t('{n} жүктеу', { n: d.downloads })}</span>
+      <span aria-hidden="true">•</span>
+      <span>{license?.data.name}</span>
+    </p>
+    {d.description && <p class="mt-4 max-w-3xl">{d.description}</p>}
+    <div class="mt-6">
+      <FontActions client:load slug={font.id} zip={d.zip} zipName={d.zipName} purchaseUrl={d.purchaseUrl} lang={lang} />
+    </div>
+  </header>
+
+  <FontDetail
+    client:load
+    lang={lang}
+    name={d.name}
+    slug={font.id}
+    previewText={d.previewText}
+    styles={styles}
+    primary={d.primary}
+    license={{
+      slug: license!.id,
+      name: license!.data.name,
+      description: license!.data.description,
+      url: license!.data.url,
+      commercial: license!.data.commercial,
+      modification: license!.data.modification,
+      distribution: license!.data.distribution,
+      attribution: license!.data.attribution,
+      hasPage: Boolean(license!.body?.trim()) || license!.data.prices.length > 0,
+    }}
+    css={publicCss(font, Astro.site!)}
+    cssUrl={cssUrl}
+    info={info}
+    stats={stats}
+    files={files}
+  />
+
+  {
+    similar.length > 0 && (
+      <section class="mt-24">
+        <SectionHead title={t('Ұқсас қаріптер')} href={localePath(lang, `/fonts?category=${d.category.id}`)} linkLabel={t('Барлығы')} />
+        <FontBrowser client:visible fonts={similar} lang={lang} prefKey="similar" initialSize={28} />
+      </section>
+    )
+  }
+</Base>

@@ -1,0 +1,47 @@
+{
+  "name": "Hiykaya",
+  "designer": "abay-emes",
+  "category": "handwritten",
+  "tags": [
+    "cyrillic",
+    "latin"
+  ],
+  "purposes": [
+    "headings",
+    "print"
+  ],
+  "license": "hiykaya",
+  "our": true,
+  "featured": true,
+  "description": "A comic book font made by a designer from Qazaqstan. The font has Cyrillic and basic Latin. Regular version is free for personal use, and you can use it in your non-commercial projects. Hiykäyä translates from Qazaq as Story.",
+  "purchaseUrl": "mailto:info@qarip.kz?subject=Hiykaya",
+  "addedDate": "2024-03-05",
+  "downloads": 0,
+  "primary": 0,
+  "scripts": [
+    "latin",
+    "cyrillic",
+    "kazakh"
+  ],
+  "zip": "/fonts/hiykaya/hiykaya.zip",
+  "zipSize": 45602,
+  "styles": [
+    {
+      "name": "Regular",
+      "slug": "regular",
+      "file": "/fonts/hiykaya/Hiykaya-Regular.ttf",
+      "web": "/fonts/hiykaya/web/hiykaya-regular.woff2",
+      "format": "ttf",
+      "size": 112196,
+      "weight": 400,
+      "italic": false,
+      "variable": false,
+      "glyphs": 296,
+      "scripts": [
+        "latin",
+        "cyrillic",
+        "kazakh"
+      ]
+    }
+  ]
+}

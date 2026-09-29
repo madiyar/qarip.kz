@@ -1,8 +1,5 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
-declare global {
-  interface Window {
-    netlifyIdentity: any;
-  }
-}
+// opentype.js ships without type declarations.
+declare module 'opentype.js';

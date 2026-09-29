@@ -1,79 +1,167 @@
 backend:
   name: git-gateway
   branch: main
-  repo: madiyar/qarip.kz #replace with your githu repo
-  # squash_merges: true
-  # open_authoring: true
+  repo: madiyar/qarip.kz
 
 publish_mode: editorial_workflow
-media_folder: src/assets
-public_folder: /src/assets
-# site_url: "https://qarip.kz" # your site name
+media_folder: public/images
+public_folder: /images
+site_url: https://qarip.kz
+locale: en
 
 collections:
-  - name: blog
-    label: Мақала
-    identifier_field: url
-    folder: src/content/blog
-    create: true
-    delete: true
-    slug: '{{slug}}'
-    # format: frontmatter
-    # preview_path: post/{{slug}}
-    fields:
-      - { name: title, label: Title, widget: string }
-      - { name: url, label: URL, widget: string }
-      - { name: pubDate, label: Publish Date, widget: datetime }
-      - { name: author, label: Author, widget: string, required: false }
-      - { name: cover, label: Poster, widget: image }
-      - { name: body, label: Body, widget: markdown }
-
-  - name: typography
-    label: Типография
-    folder: src/content/typography
-    create: false
-    delete: false
-    slug: '{{slug}}'
-    extension: json
-    fields:
-      - name: words
-        label: Сөздер
-        label_singular: сөз
-        widget: list
-        fields:
-          - { name: title, label: Title, widget: string }
-          - { name: description, label: Description, widget: string }
-
+  # Fonts. Style metadata (weight, italic, glyphs, alphabets) is best generated with
+  #   npm run font:add -- --name "Font" --designer slug --category sans --license ofl files…
+  # and then edited here.
   - name: fonts
     label: Қаріптер
-    folder: src/content/qaripter
-    identifier_field: url
+    label_singular: Қаріп
+    folder: src/content/fonts
+    extension: json
+    format: json
+    create: true
+    delete: true
+    identifier_field: name
+    slug: '{{slug}}'
+    summary: '{{name}} — {{designer}}'
+    fields:
+      - { name: name, label: Атауы, widget: string }
+      - { name: designer, label: Дизайнер, widget: relation, collection: designers, value_field: '{{slug}}', search_fields: [name], display_fields: [name] }
+      - name: category
+        label: Категория
+        widget: select
+        options: [sans, serif, display, slab, handwritten, monospace]
+      - { name: tags, label: Тегтер, widget: select, multiple: true, required: false, options: [cyrillic, latin, free, commercial, variable] }
+      - { name: purposes, label: Мақсаты, widget: select, multiple: true, required: false, options: [headings, body, logo, screen, print] }
+      - { name: license, label: Лицензия, widget: relation, collection: licenses, value_field: '{{slug}}', search_fields: [name], display_fields: [name] }
+      - { name: our, label: Біздің қаріп, widget: boolean, default: false }
+      - { name: featured, label: Ұсынылған, widget: boolean, default: false }
+      - { name: description, label: Сипаттамасы, widget: text, required: false }
+      - { name: previewText, label: Превью мәтіні, widget: string, required: false }
+      - { name: purchaseUrl, label: Сатып алу сілтемесі, widget: string, required: false }
+      - { name: addedDate, label: Қосылған күні, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: downloads, label: Жүктеулер, widget: number, default: 0, value_type: int }
+      - { name: primary, label: Негізгі стиль (индекс), widget: number, default: 0, value_type: int }
+      - { name: scripts, label: Әліпбилер, widget: select, multiple: true, options: [kazakh, kazakh-latin, cyrillic, latin] }
+      - { name: zip, label: ZIP архив, widget: file, media_folder: /public/fonts, public_folder: /fonts }
+      - { name: zipSize, label: ZIP өлшемі (байт), widget: number, default: 0, value_type: int }
+      - name: styles
+        label: Стильдер
+        widget: list
+        summary: '{{name}} {{weight}}'
+        fields:
+          - { name: name, label: Атауы, widget: string }
+          - { name: slug, label: Slug, widget: string }
+          - { name: file, label: Файл (жүктеу), widget: file, media_folder: /public/fonts, public_folder: /fonts }
+          - { name: web, label: Веб файл (woff2), widget: file, media_folder: /public/fonts, public_folder: /fonts }
+          - { name: format, label: Формат, widget: select, options: [ttf, otf, woff, woff2] }
+          - { name: size, label: Өлшемі (байт), widget: number, value_type: int, default: 0 }
+          - { name: weight, label: Салмағы, widget: select, options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], default: '400' }
+          - { name: italic, label: Italic, widget: boolean, default: false }
+          - { name: variable, label: Вариативті, widget: boolean, default: false }
+          - { name: glyphs, label: Глиф саны, widget: number, value_type: int, required: false }
+
+  - name: designers
+    label: Дизайнерлер
+    label_singular: Дизайнер
+    folder: src/content/designers
+    extension: json
+    format: json
+    create: true
+    delete: true
+    identifier_field: name
+    slug: '{{slug}}'
+    fields:
+      - { name: name, label: Аты, widget: string }
+      - { name: bio, label: Био, widget: text, required: false }
+      - { name: photo, label: Фото, widget: image, required: false, media_folder: /public/images/designers, public_folder: /images/designers }
+      - name: links
+        label: Сілтемелер
+        widget: object
+        required: false
+        fields:
+          - { name: website, label: Сайт, widget: string, required: false }
+          - { name: telegram, label: Telegram, widget: string, required: false }
+          - { name: instagram, label: Instagram, widget: string, required: false }
+          - { name: behance, label: Behance, widget: string, required: false }
+
+  - name: journal
+    label: Журнал
+    label_singular: Мақала
+    folder: src/content/journal
     create: true
     delete: true
     slug: '{{slug}}'
     fields:
-      - { name: title, label: Title, widget: string }
-      - { name: author, label: Author, widget: string }
-      - { name: url, label: URL, widget: string }
-      - { name: summary, label: Summary, widget: string, required: false }
-      - { name: pubDate, label: Publish Date, widget: datetime }
-      - { name: tags, label: Tags, widget: select, options: ['serif', 'sans-serif', 'display', 'free', 'our'], multiple: true }
-      - name: download
-        label: ZIP Архив
-        widget: file
-        media_folder: /public/fonts
-        public_folder: /fonts
-        media_library:
-          allow_multiple: false
-      - { name: body, label: Description, widget: markdown }
-      - name: files
-        label: Files
+      - { name: title, label: Тақырып, widget: string }
+      - { name: excerpt, label: Қысқаша, widget: text, required: false }
+      - { name: pubDate, label: Жарияланған күні, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: author, label: Авторы, widget: string, required: false }
+      - { name: authorLink, label: Автор сілтемесі, widget: string, required: false }
+      - { name: cover, label: Мұқаба, widget: image, required: false, media_folder: /public/images/journal, public_folder: /images/journal }
+      - { name: draft, label: Черновик, widget: boolean, default: false }
+      - { name: body, label: Мәтін, widget: markdown }
+
+  - name: licenses
+    label: Лицензиялар
+    label_singular: Лицензия
+    folder: src/content/licenses
+    create: true
+    delete: true
+    identifier_field: name
+    slug: '{{slug}}'
+    fields:
+      - { name: name, label: Атауы, widget: string }
+      - { name: description, label: Қысқаша сипаттамасы, widget: text }
+      - { name: url, label: Сілтеме, widget: string, required: false }
+      - { name: commercial, label: Коммерциялық қолдану, widget: boolean, default: false }
+      - { name: modification, label: Өзгерту, widget: boolean, default: false }
+      - { name: distribution, label: Тарату, widget: boolean, default: false }
+      - { name: attribution, label: Авторды көрсету, widget: boolean, default: false }
+      - name: prices
+        label: Бағалар
         widget: list
+        required: false
         fields:
-          - { name: title, required: false, label: Title, widget: string }
-          - { name: url, label: URL, widget: file, media_library: { allow_multiple: false } }
-          - { name: weight, label: Weight, widget: select, options: ['100', '200', '300', '400', '500', '600', '700', '800'] }
-          - { name: isItalic, required: false, label: Italic, widget: boolean, default: false }
-          - { name: isMain, required: false, label: Main, widget: boolean, default: false }
+          - { name: title, label: Атауы, widget: string }
+          - { name: price, label: Бағасы, widget: string }
+          - { name: href, label: Сілтеме, widget: string }
+          - { name: cta, label: Батырма, widget: string }
+          - { name: highlight, label: Ерекшелеу, widget: boolean, default: false }
+          - { name: features, label: Мүмкіндіктер, widget: list }
+      - { name: body, label: Толық мәтін, widget: markdown, required: false }
 
-
+  - name: settings
+    label: Анықтамалықтар
+    files:
+      - name: glossary
+        label: Типографиялық сөздік
+        file: src/content/glossary.json
+        format: json
+        fields:
+          - name: terms
+            label: Терминдер
+            widget: list
+            root: true
+            summary: '{{term}}'
+            fields:
+              - { name: id, label: ID, widget: string }
+              - { name: term, label: Термин, widget: string }
+              - { name: en, label: English, widget: string, required: false }
+              - { name: definition, label: Анықтамасы, widget: text }
+              - { name: category, label: Категория, widget: select, options: [fonts, typography, design, other], default: typography }
+              - { name: example, label: Мысал, widget: string, required: false }
+      - name: categories
+        label: Категориялар
+        file: src/data/categories.json
+        format: json
+        fields:
+          - name: items
+            label: Категориялар
+            widget: list
+            root: true
+            fields:
+              - { name: id, label: ID, widget: string }
+              - { name: name, label: Атауы, widget: string }
+              - { name: description, label: Сипаттамасы, widget: string }
+              - { name: color, label: Түсі, widget: color }

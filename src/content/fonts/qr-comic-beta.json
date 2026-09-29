@@ -1,0 +1,43 @@
+{
+  "name": "QR Comic Beta",
+  "designer": "abay-emes",
+  "category": "display",
+  "tags": [
+    "cyrillic"
+  ],
+  "purposes": [
+    "headings"
+  ],
+  "license": "personal",
+  "our": true,
+  "featured": false,
+  "addedDate": "2025-02-15",
+  "downloads": 0,
+  "primary": 0,
+  "scripts": [
+    "latin",
+    "cyrillic",
+    "kazakh"
+  ],
+  "zip": "/fonts/qr-comic-beta/qr-comic-beta.zip",
+  "zipSize": 18138,
+  "styles": [
+    {
+      "name": "Regular",
+      "slug": "regular",
+      "file": "/fonts/qr-comic-beta/QRComicBeta.otf",
+      "web": "/fonts/qr-comic-beta/web/qrcomicbeta.woff2",
+      "format": "otf",
+      "size": 31376,
+      "weight": 400,
+      "italic": false,
+      "variable": false,
+      "glyphs": 219,
+      "scripts": [
+        "latin",
+        "cyrillic",
+        "kazakh"
+      ]
+    }
+  ]
+}

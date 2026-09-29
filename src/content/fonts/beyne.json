@@ -1,0 +1,46 @@
+{
+  "name": "Beyne",
+  "designer": "abay-emes",
+  "category": "display",
+  "tags": [
+    "cyrillic",
+    "latin"
+  ],
+  "purposes": [
+    "headings"
+  ],
+  "license": "personal",
+  "our": true,
+  "featured": false,
+  "description": "Beyne — жеке мақсатқа тегін көрнекі қаріп.",
+  "purchaseUrl": "mailto:info@qarip.kz?subject=Beyne",
+  "addedDate": "2024-03-31",
+  "downloads": 0,
+  "primary": 0,
+  "scripts": [
+    "latin",
+    "cyrillic",
+    "kazakh"
+  ],
+  "zip": "/fonts/beyne/beyne.zip",
+  "zipSize": 20242,
+  "styles": [
+    {
+      "name": "Regular",
+      "slug": "regular",
+      "file": "/fonts/beyne/Beyne-Regular.otf",
+      "web": "/fonts/beyne/web/beyne-regular.woff2",
+      "format": "otf",
+      "size": 26184,
+      "weight": 400,
+      "italic": false,
+      "variable": false,
+      "glyphs": 244,
+      "scripts": [
+        "latin",
+        "cyrillic",
+        "kazakh"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import ArticleCard from '../components/common/ArticleCard.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, useT } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const posts = (await getCollection('journal', (p) => !p.data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Base lang={lang} title="Journal" description={t('Типография, қаріптер және дизайн туралы мақалалар')}>
+  <PageHeader eyebrow={t('Мақалалар')} title="Journal" description={t('Типография, қаріптер және дизайн туралы мақалалар')} center>
+    <label class="relative mx-auto mt-8 block max-w-md">
+      <Icon name="search" size={16} className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
+      <input type="search" class="input pl-11" placeholder={t('Мақала іздеу...')} aria-label={t('Мақала іздеу...')} data-journal-search />
+    </label>
+  </PageHeader>
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-journal-list>
+    {posts.map((post) => <ArticleCard post={post} lang={lang} />)}
+  </div>
+  <p class="hidden py-16 text-center text-muted" data-journal-empty>{t('Ештеңе табылмады')}</p>
+</Base>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('[data-journal-search]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-journal-list] > [data-search]')];
+  const empty = document.querySelector<HTMLElement>('[data-journal-empty]');
+  input?.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let shown = 0;
+    for (const el of items) {
+      const match = !q || el.dataset.search!.includes(q);
+      el.hidden = !match;
+      if (match) shown++;
+    }
+    empty?.classList.toggle('hidden', shown > 0);
+  });
+</script>

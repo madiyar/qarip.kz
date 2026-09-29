@@ -1,0 +1,143 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Design tokens. Dark is the default theme, light is opt-in via data-theme. */
+:root {
+  --bg: #ffffff;
+  --surface: #f6f6f7;
+  --surface-2: #ececef;
+  --line: #e4e4e7;
+  --fg: #0a0a0a;
+  --muted: #71717a;
+  --accent: #3b63f0;
+  --accent-hover: #2f54d8;
+  --accent-soft: rgb(59 99 240 / 0.12);
+  --accent-fg: #ffffff;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0a0a0a;
+  --surface: #141416;
+  --surface-2: #1c1c20;
+  --line: #27272a;
+  --fg: #fafafa;
+  --muted: #a1a1aa;
+  --accent: #3b63f0;
+  --accent-hover: #5277ff;
+  --accent-soft: rgb(82 119 255 / 0.16);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-fg: var(--accent-fg);
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg text-fg font-sans;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-[0.14em] text-muted uppercase;
+}
+@utility page-title {
+  @apply text-4xl font-bold tracking-tight break-words sm:text-5xl;
+}
+@utility card {
+  @apply rounded-2xl border border-line bg-surface;
+}
+@utility btn {
+  @apply inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold whitespace-nowrap transition-colors disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-accent-fg hover:bg-accent-hover;
+}
+@utility btn-secondary {
+  @apply btn border border-line bg-surface hover:bg-surface-2;
+}
+@utility btn-ghost {
+  @apply btn hover:bg-surface-2;
+}
+@utility icon-btn {
+  @apply inline-flex size-10 items-center justify-center rounded-xl text-muted transition-colors hover:bg-surface-2 hover:text-fg;
+}
+@utility input {
+  @apply h-11 w-full rounded-xl border border-line bg-bg px-4 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none;
+}
+@utility badge {
+  @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold;
+}
+@utility badge-accent {
+  @apply badge bg-accent text-accent-fg;
+}
+@utility chip {
+  @apply inline-flex h-9 items-center gap-2 rounded-xl border border-line bg-bg px-3 text-sm transition-colors hover:border-muted;
+  &[aria-pressed='true'] {
+    @apply border-accent bg-accent-soft text-fg;
+  }
+}
+@utility segmented {
+  @apply inline-flex rounded-xl bg-surface-2 p-1;
+  & > button {
+    @apply rounded-lg px-3 py-1.5 text-sm text-muted transition-colors;
+  }
+  & > button[aria-pressed='true'] {
+    @apply bg-bg text-fg shadow-sm;
+  }
+}
+@utility link {
+  @apply text-accent underline-offset-4 hover:underline;
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}

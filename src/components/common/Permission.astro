@@ -1,0 +1,16 @@
+---
+interface Props {
+  label: string;
+  ok: boolean;
+  yes: string;
+  no: string;
+  neutral?: boolean;
+}
+const { label, ok, yes, no, neutral = false } = Astro.props;
+const color = neutral ? (ok ? 'text-amber-500' : 'text-muted') : ok ? 'text-emerald-500' : 'text-rose-500';
+---
+
+<div class="rounded-xl border border-line p-4">
+  <p class="text-sm text-muted">{label}</p>
+  <p class:list={['mt-1 font-semibold', color]}>{ok ? yes : no}</p>
+</div>

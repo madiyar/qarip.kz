@@ -1,0 +1,47 @@
+{
+  "name": "Balpaq",
+  "designer": "abay-emes",
+  "category": "display",
+  "tags": [
+    "free",
+    "cyrillic",
+    "latin"
+  ],
+  "purposes": [
+    "headings",
+    "logo"
+  ],
+  "license": "ofl",
+  "our": true,
+  "featured": true,
+  "description": "Balpaq is a comic book font made by a designer from Kazakhstan. The font is perfect for anything from quotes and packaging designs to greeting cards and children's books. Add a playful and cheerful vibe to your designs with Balpaq font.",
+  "addedDate": "2024-02-26",
+  "downloads": 0,
+  "primary": 0,
+  "scripts": [
+    "latin",
+    "cyrillic",
+    "kazakh"
+  ],
+  "zip": "/fonts/balpaq/balpaq.zip",
+  "zipSize": 44616,
+  "styles": [
+    {
+      "name": "Normal",
+      "slug": "normal",
+      "file": "/fonts/balpaq/Balpaq.ttf",
+      "web": "/fonts/balpaq/web/balpaq.woff2",
+      "format": "ttf",
+      "size": 72500,
+      "weight": 400,
+      "italic": false,
+      "variable": false,
+      "glyphs": 186,
+      "scripts": [
+        "latin",
+        "cyrillic",
+        "kazakh"
+      ]
+    }
+  ]
+}

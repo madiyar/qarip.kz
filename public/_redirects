@@ -1,6 +1,6 @@
 # Domain
-https://qarip.netlify.app/* https://qarip.kz/:splat 301!
-http://qarip.netlify.app/* https://qarip.kz/:splat 301!
+https://qarip.netlify.app/* https://qarip.netlify.app/:splat 301!
+http://qarip.netlify.app/* https://qarip.netlify.app/:splat 301!
 
 # v1 (legacy) URLs
 /qaripter                     /fonts                301

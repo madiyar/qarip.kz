@@ -1,7 +1,9 @@
 export const SITE = {
   name: 'Qarip',
-  url: 'https://qarip.kz',
-  email: 'info@qarip.kz',
+  /** Comes from `site` in astro.config.mjs. */
+  url: import.meta.env.SITE.replace(/\/$/, ''),
+  host: new URL(import.meta.env.SITE).host,
+  email: 'abayemes@gmail.com',
   city: 'Алматы, Қазақстан',
   telegram: 'https://t.me/qarip',
   instagram: 'https://www.instagram.com/qarip_kz',

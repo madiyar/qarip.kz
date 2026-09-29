@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Dropzone from './Dropzone';
 import Icon from '../ui/Icon';
 import { loadFontFile, type LoadedFont } from '../../lib/userfont';
-import { CHARSETS } from '../../lib/site';
+import { CHARSETS, SITE } from '../../lib/site';
 import { type Lang, localePath, useT } from '../../i18n';
 import type { FontSummary } from '../../lib/types';
 
@@ -108,7 +108,7 @@ export default function Proofing({ fonts, lang }: { fonts: FontSummary[]; lang: 
       <div className="rounded-2xl border border-line p-6 sm:p-10 print:border-0 print:p-0" style={{ background: bg, color: fg }}>
         <p className="mb-8 flex justify-between border-b pb-3 font-mono text-xs opacity-60" style={{ borderColor: `${fg}33` }}>
           <span>{name}</span>
-          <span>{t(MODES.find((m) => m[0] === mode)![1])} · qarip.kz</span>
+          <span>{t(MODES.find((m) => m[0] === mode)![1])} · {SITE.host}</span>
         </p>
         <div style={{ fontFamily: `${family}, system-ui` }}>
           {mode === 'waterfall' && (

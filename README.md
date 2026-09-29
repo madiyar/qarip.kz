@@ -1,9 +1,16 @@
 # Qarip
 
-Қазақ тілін қолдайтын қаріптер қоры — [qarip.kz](https://qarip.kz).
+Қазақ тілін қолдайтын қаріптер қоры — [qarip.netlify.app](https://qarip.netlify.app).
 
 Static site on [Astro](https://astro.build) + React islands + Tailwind CSS 4, deployed to Netlify.
 Content is edited in Git (or via Decap CMS at `/admin`).
+
+## Domain
+
+The public URL is set in one place: `SITE_URL` in `astro.config.mjs` (or the `SITE_URL`
+environment variable on Netlify). Canonical links, sitemap, hosted CSS and the site name
+in the UI all derive from it. When moving to a custom domain also update `site_url` in
+`public/admin/config.yml` and uncomment the redirect at the top of `public/_redirects`.
 
 ## Development
 

@@ -13,13 +13,13 @@ prices:
     features: [Regular нұсқасы, Жеке мақсатта]
   - title: Негізгі лицензия
     price: "$50"
-    href: "mailto:info@qarip.kz?subject=Hiykaya%20license"
+    href: "mailto:abayemes@gmail.com?subject=Hiykaya%20license"
     cta: Сатып алу
     highlight: true
     features: ["Regular нұсқасы", "Коммерциялық мақсатта", "Лого, баспа, бейне"]
   - title: Ауқымды лицензия
     price: "$500"
-    href: "mailto:info@qarip.kz?subject=Hiykaya%20extended%20license"
+    href: "mailto:abayemes@gmail.com?subject=Hiykaya%20extended%20license"
     cta: Жазу
     features: [Regular нұсқасы, Шектеусіз, Жеке шарттар]
 ---

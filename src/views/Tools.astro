@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, localePath, useT } from '../i18n';
+import { TOOLS } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+---
+
+<Base lang={lang} title={t('Құралдар')} description={t('Қаріппен жұмыс істеуге арналған тегін құралдар. Файлдар серверге жүктелмейді.')}>
+  <PageHeader eyebrow={t('Құралдар')} title={t('Дизайнерге арналған құралдар')} description={t('Қаріппен жұмыс істеуге арналған тегін құралдар. Файлдар серверге жүктелмейді.')} />
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      TOOLS.map((tool) => (
+        <a href={localePath(lang, tool.href)} class="card group p-6 transition-colors hover:border-muted">
+          <span class="flex size-12 items-center justify-center rounded-xl bg-accent-soft text-accent">
+            <Icon name={tool.icon} size={22} />
+          </span>
+          <span class="mt-5 flex items-center justify-between text-lg font-semibold">
+            {t(tool.title)}
+            <Icon name="arrowRight" size={16} className="text-muted transition-transform group-hover:translate-x-0.5" />
+          </span>
+          <span class="mt-1 block text-sm text-muted">{t(tool.description)}</span>
+        </a>
+      ))
+    }
+  </div>
+</Base>

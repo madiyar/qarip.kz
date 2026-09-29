@@ -1,0 +1,11 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import Designer from '../../views/Designer.astro';
+
+export const getStaticPaths = (async () => (await getCollection('designers')).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+---
+
+<Designer lang="kk" designer={entry} />

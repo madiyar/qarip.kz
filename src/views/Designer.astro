@@ -1,0 +1,53 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import FontBrowser from '../components/fonts/FontBrowser';
+import Icon from '../components/ui/Icon';
+import { type Lang, localePath, useT } from '../i18n';
+import { getFonts, primaryFaces, toSummaries } from '../lib/fonts';
+
+interface Props {
+  lang: Lang;
+  designer: CollectionEntry<'designers'>;
+}
+const { lang, designer } = Astro.props;
+const t = useT(lang);
+const fonts = await toSummaries((await getFonts()).filter((f) => f.data.designer.id === designer.id));
+const LINKS = { website: ['globe', 'Сайт'], telegram: ['send', 'Telegram'], instagram: ['instagram', 'Instagram'], behance: ['globe', 'Behance'], twitter: ['globe', 'X'], facebook: ['globe', 'Facebook'] } as const;
+const links = Object.entries(designer.data.links).filter(([, v]) => v) as [keyof typeof LINKS, string][];
+---
+
+<Base lang={lang} title={designer.data.name} description={designer.data.bio} fontCss={primaryFaces(fonts)}>
+  <a href={localePath(lang, '/fonts')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
+    <Icon name="arrowLeft" size={16} />
+    {t('Барлық қаріп')}
+  </a>
+  <header class="mb-12 flex flex-col gap-6 sm:flex-row sm:items-center">
+    {
+      designer.data.photo ? (
+        <img src={designer.data.photo} alt="" class="size-24 rounded-full object-cover" />
+      ) : (
+        <div class="flex size-24 items-center justify-center rounded-full bg-accent-soft text-3xl font-bold text-accent">{designer.data.name.slice(0, 1)}</div>
+      )
+    }
+    <div>
+      <p class="eyebrow mb-2">{t('Дизайнер')}</p>
+      <h1 class="page-title">{designer.data.name}</h1>
+      {designer.data.bio && <p class="mt-3 max-w-2xl text-muted">{designer.data.bio}</p>}
+      {
+        links.length > 0 && (
+          <div class="mt-4 flex flex-wrap gap-2">
+            {links.map(([key, url]) => (
+              <a href={url} target="_blank" rel="noopener noreferrer" class="chip">
+                <Icon name={LINKS[key][0]} size={15} />
+                {LINKS[key][1]}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </header>
+  <h2 class="mb-6 text-2xl font-bold">{t('Қаріптері')} <span class="text-muted">({fonts.length})</span></h2>
+  <FontBrowser client:load fonts={fonts} lang={lang} prefKey="designer" />
+</Base>

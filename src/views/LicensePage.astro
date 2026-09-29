@@ -1,0 +1,52 @@
+---
+import { type CollectionEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, localePath, useT } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  license: CollectionEntry<'licenses'>;
+}
+const { lang, license } = Astro.props;
+const t = useT(lang);
+const { Content } = await render(license);
+const prices = license.data.prices;
+---
+
+<Base lang={lang} title={license.data.name} description={license.data.description}>
+  <div class="mx-auto max-w-4xl">
+    <a href={localePath(lang, '/licenses')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
+      <Icon name="arrowLeft" size={16} />
+      {t('Лицензиялар')}
+    </a>
+    <h1 class="page-title">{license.data.name}</h1>
+    <p class="mt-4 text-lg text-muted">{license.data.description}</p>
+    {
+      prices.length > 0 && (
+        <div class="mt-10 grid gap-4 md:grid-cols-3">
+          {prices.map((p) => (
+            <div class:list={['card flex flex-col p-6', p.highlight && 'border-accent ring-1 ring-accent']}>
+              <h2 class="font-semibold">{t(p.title)}</h2>
+              <p class="my-4 text-4xl font-extrabold">{p.price}</p>
+              <ul class="mb-6 flex-1 space-y-2 text-sm">
+                {p.features.map((f) => (
+                  <li class="flex gap-2">
+                    <Icon name="check" size={16} className="mt-0.5 shrink-0 text-emerald-500" />
+                    {t(f)}
+                  </li>
+                ))}
+              </ul>
+              <a href={localePath(lang, p.href)} class={p.highlight ? 'btn-primary' : 'btn-secondary'}>
+                {t(p.cta)}
+              </a>
+            </div>
+          ))}
+        </div>
+      )
+    }
+    <div class="prose mt-12 max-w-none dark:prose-invert prose-headings:tracking-tight prose-a:text-accent">
+      <Content />
+    </div>
+  </div>
+</Base>

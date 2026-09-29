@@ -1,7 +1,12 @@
 [build]
-command = "npm run build"
-publish = "dist/"
+  command = "npm run build"
+  publish = "dist/"
 
+[build.environment]
+  NODE_VERSION = "22"
 
-[functions]
-  node_bundler = "esbuild"
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=604800"

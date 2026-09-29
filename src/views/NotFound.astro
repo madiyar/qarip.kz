@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import { type Lang, localePath, useT } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+---
+
+<Base lang={lang} title={t('Бет табылмады')}>
+  <meta name="robots" content="noindex" slot="head" />
+  <section class="flex flex-col items-center py-20 text-center">
+    <p class="text-[9rem] leading-none font-extrabold tracking-tighter text-accent">404</p>
+    <h1 class="mt-4 text-3xl font-bold">{t('Бет табылмады')}</h1>
+    <p class="mt-2 text-muted">{t('Сілтеме ескірген не бет жойылған болуы мүмкін.')}</p>
+    <div class="mt-8 flex gap-3">
+      <a href={localePath(lang, '/')} class="btn-primary">{t('Басты бетке')}</a>
+      <a href={localePath(lang, '/fonts')} class="btn-secondary">{t('Қаріптер')}</a>
+    </div>
+  </section>
+</Base>

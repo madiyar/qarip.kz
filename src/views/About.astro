@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, localePath, useT } from '../i18n';
+import { SITE } from '../lib/site';
+import { getFonts } from '../lib/fonts';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const fonts = await getFonts();
+const features = [
+  { icon: 'type', title: 'Қазақ әріптері', text: 'Әр қаріп ӘҒҚҢӨҰҮҺІ әріптеріне тексерілген' },
+  { icon: 'gift', title: 'Тегін қолжетімділік', text: 'Қаріптердің көбі жеке және коммерциялық қолдануға тегін' },
+  { icon: 'globe', title: 'Қазақша интерфейс', text: 'Қазақ тілінде толық локализацияланған платформа' },
+  { icon: 'wrench', title: 'Құралдар', text: 'Тестер, конвертер, үйлесім, баспа тексту және басқа құралдар' },
+] as const;
+---
+
+<Base lang={lang} title={t('Біз туралы')} description={t('Қазақ қолдана алатын тегін қаріптің бәрін бір жерге жинадық')}>
+  <section class="mx-auto max-w-3xl py-8 text-center">
+    <p class="eyebrow mb-4">{t('Біз туралы')}</p>
+    <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl">Qarip —<br /><span class="text-accent">{t('қазақ қаріп қоры')}</span></h1>
+    <p class="mt-6 text-lg text-muted">{t('Қазақ қолдана алатын тегін қаріптің бәрін бір жерге жинадық')}</p>
+  </section>
+
+  <section class="mt-16">
+    <p class="eyebrow mb-2">{t('Мүмкіндіктер')}</p>
+    <h2 class="mb-6 text-3xl font-bold tracking-tight">{t('Неге Qarip?')}</h2>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        features.map((f) => (
+          <div class="card p-6">
+            <span class="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+              <Icon name={f.icon} />
+            </span>
+            <h3 class="mt-4 font-semibold">{t(f.title)}</h3>
+            <p class="mt-1 text-sm text-muted">{t(f.text)}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="card mt-16 grid gap-8 p-8 md:grid-cols-[1fr_auto] md:items-center">
+    <div>
+      <p class="eyebrow mb-2">{t('Миссия')}</p>
+      <h2 class="text-3xl font-bold tracking-tight">{t('Біздің миссиямыз')}</h2>
+      <p class="mt-4 max-w-2xl text-muted">
+        {t('Типографиканы барлығына қолжетімді ету және қазақ тілін қолдайтын қаріптердің таңдауын кеңейту. Әрбір жоба — өз стилі мен жеке сипатына лайық қаріпті табуға құқылы.')}
+      </p>
+    </div>
+    <div class="text-center md:text-right">
+      <p class="text-6xl font-extrabold text-accent tabular-nums">{fonts.length}</p>
+      <p class="text-sm text-muted">{t('қаріп қорда')}</p>
+    </div>
+  </section>
+
+  <section class="mt-16 grid gap-4 md:grid-cols-2">
+    <div class="card p-8">
+      <p class="eyebrow mb-2">{t('Байланыс')}</p>
+      <h2 class="text-2xl font-bold">{t('Байланыс көзі')}</h2>
+      <p class="mt-2 text-muted">{t('Сұрағыңыз бар ма? Жаңа қаріп қосқыңыз келе ме?')}</p>
+      <ul class="mt-6 space-y-3">
+        <li class="flex items-center gap-3"><Icon name="mail" className="text-muted" /><a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+        <li class="flex items-center gap-3"><Icon name="send" className="text-muted" /><a class="link" href={SITE.telegram} target="_blank" rel="noopener noreferrer">Telegram</a></li>
+        <li class="flex items-center gap-3"><Icon name="instagram" className="text-muted" /><a class="link" href={SITE.instagram} target="_blank" rel="noopener noreferrer">Instagram</a></li>
+        <li class="flex items-center gap-3"><Icon name="mapPin" className="text-muted" /><span>{t(SITE.city)}</span></li>
+      </ul>
+    </div>
+    <div class="card flex flex-col p-8">
+      <p class="eyebrow mb-2">{t('Жазылу')}</p>
+      <h2 class="text-2xl font-bold">{t('Жаңалықтан құр қалма')}</h2>
+      <p class="mt-2 text-muted">{t('Жаңадан қызық мақала, қаріп шықса Telegram арнамызда жариялаймыз.')}</p>
+      <div class="mt-auto flex flex-wrap gap-3 pt-6">
+        <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class="btn-primary"><Icon name="send" size={16} />{t('Жазылу')}</a>
+        <a href={localePath(lang, '/support')} class="btn-secondary">{t('Жобаны қолдау')}</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import FontBrowser from '../components/fonts/FontBrowser';
+import { type Lang, useT } from '../i18n';
+import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
+
+interface Props {
+  lang: Lang;
+  top?: boolean;
+}
+const { lang, top = false } = Astro.props;
+const t = useT(lang);
+const fonts = await toSummaries(await getFonts());
+const topFonts = [...fonts].sort((a, b) => b.downloads - a.downloads || Number(b.featured) - Number(a.featured)).slice(0, 20);
+const categories = await getCategories();
+---
+
+<Base
+  lang={lang}
+  title={top ? t('Топ қаріптер') : t('Қаріптер')}
+  description={top ? t('Қолданушылар арасында ең танымал қаріптер') : t('Қазақ тілін қолдайтын барлық қаріп: іздеңіз, сүзгілеңіз, өз мәтініңізбен тексеріңіз.')}
+  fontCss={primaryFaces(fonts)}
+>
+  {
+    top ? (
+      <PageHeader eyebrow={t('Ең танымал')} title={t('Топ қаріптер')} description={t('Қолданушылар арасында ең танымал және сұранысқа ие қаріптер')} />
+    ) : (
+      <PageHeader title={t('Түгел қаріп')} description={t('Қазақ тілін қолдайтын қаріптен керегін таңдап ал')} />
+    )
+  }
+  {
+    top ? (
+      <FontBrowser client:load fonts={topFonts} lang={lang} ranked prefKey="top" />
+    ) : (
+      <FontBrowser client:load fonts={fonts} categories={categories} lang={lang} filters syncUrl prefKey="catalog" />
+    )
+  }
+</Base>

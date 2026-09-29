@@ -1,0 +1,9 @@
+{
+  "name": "Free for personal use",
+  "description": "Free for personal use — лицензия түрі, мұнда материалды (қаріп, сурет, софт) тек жеке, коммерциялық емес мақсатта тегін қолдануға болады.\n\nКоммерциялық жобаларға рұқсат жоқ, ол үшін бөлек лицензия сатып алу керек.",
+  "commercial": false,
+  "modification": false,
+  "distribution": true,
+  "attribution": false,
+  "featured": true
+}

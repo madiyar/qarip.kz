@@ -1,2 +1,30 @@
+# Domain
 https://qarip.netlify.app/* https://qarip.kz/:splat 301!
 http://qarip.netlify.app/* https://qarip.kz/:splat 301!
+
+# v1 (legacy) URLs
+/qaripter                     /fonts                301
+/qaripter/bizdin              /fonts?our=1          301
+/qaripter/qrcomicbeta/*       /fonts/qr-comic-beta  301
+/qaripter/qrcomicbeta         /fonts/qr-comic-beta  301
+/qaripter/:slug/description   /fonts/:slug          301
+/qaripter/:slug               /fonts/:slug          301
+/blog                         /journal              301
+/blog/:slug                   /journal/:slug        301
+/pricing                      /services             301
+/about-us                     /about                301
+/terms-of-use                 /terms                301
+
+# font.base44.app-style URLs
+/home                         /                     301
+/fontdetail                   /fonts                302
+/creatordetail slug=:slug     /designers/:slug      301
+/creatordetail                /fonts                302
+/articledetail                /journal              302
+/fonttester                   /tools/tester         301
+/fontconverter                /tools/converter      301
+/fontpairing                  /tools/pairing        301
+/fontproofing                 /tools/proofing       301
+/fontfreezer                  /tools/freezer        301
+/kerningpairs                 /tools/kerning        301
+/licensesinfo                 /licenses             301

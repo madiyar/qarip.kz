@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import Accordion from '../components/common/Accordion.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, localePath, useT } from '../i18n';
+import { SITE } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'kk'));
+const CATS = [
+  ['', 'Барлығы'],
+  ['fonts', 'Қаріптер'],
+  ['typography', 'Типография'],
+  ['design', 'Дизайн'],
+  ['other', 'Басқа'],
+] as const;
+const present = new Set(terms.map((x) => x.data.category));
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+---
+
+<Base lang={lang} title={t('Типографиялық сөздік')} description={t('Қаріп және типография саласындағы негізгі терминдер')}>
+  <div class="mx-auto max-w-3xl">
+    <PageHeader eyebrow={t('Білім базасы')} title={t('Типографиялық сөздік')} description={t('Қаріп және типография саласындағы негізгі терминдер')} />
+    <div class="mb-6 space-y-3">
+      <label class="relative block">
+        <Icon name="search" size={16} className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
+        <input type="search" class="input pl-11" placeholder={t('Термин іздеу...')} aria-label={t('Термин іздеу...')} data-glossary-search />
+      </label>
+      <div class="flex flex-wrap gap-2" data-glossary-cats>
+        {
+          CATS.filter(([id]) => !id || present.has(id as never)).map(([id, label]) => (
+            <button type="button" class="chip" aria-pressed={id === '' ? 'true' : 'false'} data-cat={id}>
+              {t(label)}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+    <div data-glossary-list>
+      <Accordion
+        items={terms.map((x) => ({
+          id: x.id,
+          title: x.data.term,
+          meta: x.data.en,
+          group: x.data.category,
+          search: `${x.data.term} ${x.data.en ?? ''} ${x.data.definition}`.toLowerCase(),
+          html: `<p>${esc(x.data.definition)}</p>${x.data.example ? `<p><em>${esc(t('Мысал'))}:</em> ${esc(x.data.example)}</p>` : ''}`,
+        }))}
+      />
+    </div>
+    <p class="mt-8 text-center text-sm text-muted">
+      {t('Қате таптыңыз ба не жаңа термин ұсынасыз ба?')} <a class="link" href={SITE.telegram} target="_blank" rel="noopener noreferrer">{t('Бізге жазыңыз')}</a> ·
+      <a class="link" href={localePath(lang, '/typography')}>{t('Типография негіздері')}</a>
+    </p>
+  </div>
+</Base>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('[data-glossary-search]')!;
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-glossary-cats] [data-cat]')];
+  const items = [...document.querySelectorAll<HTMLDetailsElement>('[data-glossary-list] details')];
+  let cat = '';
+  const apply = () => {
+    const q = input.value.trim().toLowerCase();
+    for (const el of items) el.hidden = !((!cat || el.dataset.group === cat) && (!q || el.dataset.search!.includes(q)));
+  };
+  input.addEventListener('input', apply);
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      cat = b.dataset.cat!;
+      buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      apply();
+    }),
+  );
+  // Open a term linked by #id.
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  if (target instanceof HTMLDetailsElement) target.open = true;
+</script>

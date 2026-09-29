@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import Icon from '../components/ui/Icon';
+import Tester from '../components/tools/Tester';
+import Converter from '../components/tools/Converter';
+import Pairing from '../components/tools/Pairing';
+import Proofing from '../components/tools/Proofing';
+import Freezer from '../components/tools/Freezer';
+import Kerning from '../components/tools/Kerning';
+import { type Lang, localePath, useT } from '../i18n';
+import { TOOLS } from '../lib/site';
+import { getFonts, primaryFaces, toSummaries } from '../lib/fonts';
+
+export type ToolId = 'tester' | 'converter' | 'pairing' | 'proofing' | 'freezer' | 'kerning';
+
+interface Props {
+  lang: Lang;
+  tool: ToolId;
+}
+const { lang, tool } = Astro.props;
+const t = useT(lang);
+const meta = TOOLS.find((x) => x.href === `/tools/${tool}`)!;
+const entries = await getFonts();
+const needsCatalog = tool === 'pairing' || tool === 'proofing';
+const fonts = needsCatalog ? await toSummaries(entries) : [];
+const catalog = tool === 'freezer' ? entries.map((f) => ({ name: f.data.name, styles: f.data.styles.map((s) => ({ name: s.name, file: s.file })) })) : [];
+const intro: Record<ToolId, string> = {
+  tester: 'Қаріп файлын тастап, оны браузерде тексеріңіз: қазақ әріптері, глифтер, OpenType мүмкіндіктері, вариативті осьтер.',
+  converter: 'TTF, OTF, WOFF немесе WOFF2 файлдарын конвертациялаңыз. Файлдар серверге жүктелмейді — барлығы тікелей браузерде өңделеді.',
+  pairing: 'Сайттағы қаріптерден автоматты үйлесім жасаңыз',
+  proofing: 'Қаріпті түрлі өлшемде және мәтінде тексеріп, басып шығарыңыз',
+  freezer: 'Стилистикалық жиындар мен баламалы әріптерді қаріптің әдепкі түріне айналдырыңыз — OpenType қолдамайтын бағдарламаларда да жұмыс істейді.',
+  kerning: 'Қаріп кернингін тексеру және баптау үшін таңба комбинацияларын жасаңыз.',
+};
+---
+
+<Base lang={lang} title={t(meta.title)} description={t(intro[tool])} fontCss={fonts.length ? primaryFaces(fonts) : undefined}>
+  <PageHeader eyebrow={t('Құралдар')} title={t(meta.title)} description={t(intro[tool])} />
+  {tool === 'tester' && <Tester client:only="react" lang={lang} />}
+  {tool === 'converter' && <Converter client:only="react" lang={lang} />}
+  {tool === 'pairing' && <Pairing client:only="react" lang={lang} fonts={fonts} />}
+  {tool === 'proofing' && <Proofing client:only="react" lang={lang} fonts={fonts} />}
+  {tool === 'freezer' && <Freezer client:only="react" lang={lang} catalog={catalog} />}
+  {tool === 'kerning' && <Kerning client:only="react" lang={lang} />}
+
+  <nav class="no-print mt-20 border-t border-line pt-10" aria-label={t('Басқа құралдар')}>
+    <p class="eyebrow mb-4">{t('Басқа құралдар')}</p>
+    <div class="flex flex-wrap gap-2">
+      {
+        TOOLS.filter((x) => x !== meta).map((x) => (
+          <a href={localePath(lang, x.href)} class="chip">
+            <Icon name={x.icon} size={15} />
+            {t(x.label)}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+</Base>

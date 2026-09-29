@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import Accordion from '../components/common/Accordion.astro';
+import { type Lang, localePath, useT } from '../i18n';
+import { FAQ } from '../data/faq';
+import { SITE } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f[lang].q, acceptedAnswer: { '@type': 'Answer', text: f[lang].a } })),
+};
+// Internal links inside answers must follow the current locale.
+const localize = (html: string) => html.replace(/href="(\/[^"]*)"/g, (_, p) => `href="${localePath(lang, p)}"`);
+---
+
+<Base lang={lang} title={t('Жиі қойылатын сұрақтар')}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <div class="mx-auto max-w-3xl">
+    <PageHeader eyebrow="FAQ" title={t('Жиі қойылатын сұрақтар')} />
+    <Accordion items={FAQ.map((f) => ({ title: f[lang].q, html: localize(f[lang].a) }))} />
+    <p class="mt-8 text-center text-sm text-muted">
+      {t('Жауап таппадыңыз ба?')} <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </p>
+  </div>
+</Base>

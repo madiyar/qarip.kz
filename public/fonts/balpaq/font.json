@@ -18,31 +18,8 @@
   "descriptionRu": "Balpaq — шрифт в стиле комиксов от дизайнера из Казахстана. Подходит для цитат, упаковки, открыток и детских книг — добавит дизайну игривое и весёлое настроение.",
   "addedDate": "2024-02-26",
   "downloads": 0,
-  "primary": 0,
-  "scripts": [
-    "latin",
-    "cyrillic",
-    "kazakh"
+  "files": [
+    "Balpaq.ttf"
   ],
-  "zip": "/fonts/balpaq/balpaq.zip",
-  "zipSize": 44616,
-  "styles": [
-    {
-      "name": "Normal",
-      "slug": "normal",
-      "file": "/fonts/balpaq/Balpaq.ttf",
-      "web": "/fonts/balpaq/web/balpaq.woff2",
-      "format": "ttf",
-      "size": 72500,
-      "weight": 400,
-      "italic": false,
-      "variable": false,
-      "glyphs": 186,
-      "scripts": [
-        "latin",
-        "cyrillic",
-        "kazakh"
-      ]
-    }
-  ]
+  "archive": "balpaq.zip"
 }

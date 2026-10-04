@@ -3,7 +3,7 @@
 Қазақ тілін қолдайтын қаріптер қоры — [qarip.netlify.app](https://qarip.netlify.app).
 
 Static site on [Astro](https://astro.build) + React islands + Tailwind CSS 4, deployed to Netlify.
-Content is edited in Git (or via Decap CMS at `/admin`).
+Content is edited in Git (or via Sveltia CMS at `/admin`).
 
 ## Domain
 
@@ -33,25 +33,28 @@ npm run build    # static output in dist/
 npm run check    # type check
 ```
 
-## Adding a font
+## Adding content
+
+Editors use the admin at `/admin` (Sveltia CMS, sign in with GitHub). To add a font there:
+enter its name, drop the TTF/OTF files, pick the designer, category and license, save.
+Each font is a folder — `public/fonts/<slug>/font.json` plus the uploaded files. Style names,
+weights, glyph counts, supported alphabets, WOFF2 previews and the ZIP archive are derived
+from the files when the site is built (`src/lib/fontLoader.ts`).
+
+The same from the command line:
 
 ```sh
 npm run font:add -- --name "Font Name" --designer abay-emes --category sans \
-  --license ofl --tags free,cyrillic --our [--zip archive.zip] path/to/*.otf
+  --license ofl --tags free,cyrillic --our [--archive designer.zip] path/to/*.otf
 ```
-
-The script copies the files to `public/fonts/<slug>/`, builds WOFF2 previews and a ZIP,
-and writes `src/content/fonts/<slug>.json` with style metadata read from the font files
-(weight, italic, glyph count, supported alphabets). Edit the JSON afterwards for the
-description, preview text, etc.
 
 ## Structure
 
 | Path | What |
 | --- | --- |
-| `src/content/fonts/*.json` | Fonts (styles, license, designer, category…) |
+| `public/fonts/<slug>/` | One folder per font: `font.json` + font files (`web/` is generated) |
 | `src/content/designers/*.json` | Designers |
-| `src/content/licenses/*.{json,md}` | Licenses (Markdown body + pricing is optional) |
+| `src/content/licenses/*.md` | Licenses (Markdown body + pricing is optional) |
 | `src/content/journal/*.md` | Journal articles |
 | `src/content/glossary.json` | Typography glossary |
 | `src/data/*.json` | Categories, tags, purposes |

@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ props, site }) => {
   const designer = await getEntry(font.data.designer);
   const png = await renderOg({
     title: font.data.name,
-    titleFont: path.resolve('public', `.${primaryStyle(font).file}`),
+    titleFont: path.resolve('public', `.${decodeURIComponent(primaryStyle(font).file)}`),
     subtitle: `Қазақша шрифт · Казахский шрифт · ${designer?.data.name ?? ''}`,
     footer: site!.host,
   });

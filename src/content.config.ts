@@ -1,6 +1,7 @@
 import { defineCollection, reference } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { fontLoader } from './lib/fontLoader';
 
 const style = z.object({
   name: z.string(),
@@ -19,7 +20,8 @@ const style = z.object({
 });
 
 const fonts = defineCollection({
-  loader: glob({ pattern: '*.json', base: './src/content/fonts' }),
+  // One folder per font in public/fonts; styles, archive and alphabets are derived from the files.
+  loader: fontLoader(),
   schema: z.object({
     name: z.string(),
     designer: reference('designers'),
@@ -69,7 +71,7 @@ const designers = defineCollection({
 });
 
 const licenses = defineCollection({
-  loader: glob({ pattern: '*.{json,md}', base: './src/content/licenses' }),
+  loader: glob({ pattern: '*.md', base: './src/content/licenses' }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
@@ -96,7 +98,7 @@ const licenses = defineCollection({
 });
 
 const categories = defineCollection({
-  // Wrapped in an object ({ items: [...] }) so Decap CMS can edit the file.
+  // Wrapped in an object ({ items: [...] }): the CMS edits it as a list field and relation fields point at items.*.id.
   loader: file('src/data/categories.json', { parser: (text) => JSON.parse(text).items }),
   schema: z.object({ name: z.string(), description: z.string(), color: z.string() }),
 });

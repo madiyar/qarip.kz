@@ -75,8 +75,6 @@ const ogImage = new URL(image ?? '/og.png', Astro.site);
           document.documentElement.dataset.nav = localStorage.getItem('nav') || 'top';
           document.documentElement.dataset.side = localStorage.getItem('side') || 'open';
         } catch {}
-        // Netlify Identity invite/recovery links land on the site root: hand them to the CMS.
-        if (/(invite|recovery|confirmation|email_change)_token=/.test(location.hash)) location.replace('/admin/' + location.hash);
       })();
     </script>
     {fontCss && <style is:inline set:html={fontCss} />}

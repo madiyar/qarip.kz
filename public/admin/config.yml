@@ -38,6 +38,7 @@ collections:
       - { name: featured, label: Ұсынылған, widget: boolean, default: false }
       - { name: description, label: Сипаттамасы, widget: text, required: false }
       - { name: descriptionEn, label: Сипаттамасы (English), widget: text, required: false }
+      - { name: descriptionRu, label: Сипаттамасы (Русский), widget: text, required: false }
       - { name: quality, label: Сапа (1–10), widget: number, value_type: int, min: 1, max: 10, required: false }
       - { name: previewText, label: Превью мәтіні, widget: string, required: false }
       - { name: purchaseUrl, label: Сатып алу сілтемесі, widget: string, required: false }

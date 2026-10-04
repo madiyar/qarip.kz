@@ -1,5 +1,6 @@
 ---
-import { type Lang, localePath, switchLocale, useT } from '../i18n';
+import { type Lang, barePath, localePath, useT } from '../i18n';
+import LangSwitch from './LangSwitch.astro';
 import { NAV, SITE, TOOLS } from '../lib/site';
 import Icon from './ui/Icon';
 import NavTree from './NavTree.astro';
@@ -9,7 +10,7 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const path = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+const path = barePath(Astro.url.pathname);
 const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
 const toolsActive = TOOLS.some((tool) => isActive(tool.href));
 ---
@@ -62,10 +63,7 @@ const toolsActive = TOOLS.some((tool) => isActive(tool.href));
       <a href={localePath(lang, '/profile')} class="icon-btn" aria-label={t('Жеке кабинет')} title={t('Жеке кабинет')}>
         <Icon name="user" />
       </a>
-      <div class="segmented mx-1 hidden sm:inline-flex" role="group" aria-label={t('Тіл')}>
-        <a href={switchLocale(Astro.url.pathname, 'kk')} hreflang="kk" class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'kk' ? 'bg-bg text-fg' : 'text-muted']}>KK</a>
-        <a href={switchLocale(Astro.url.pathname, 'en')} hreflang="en" class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'en' ? 'bg-bg text-fg' : 'text-muted']}>EN</a>
-      </div>
+      <LangSwitch lang={lang} class="mx-1 hidden sm:inline-flex" />
       <button class="icon-btn hidden lg:inline-flex" data-nav-mode="side" aria-label={t('Бүйір мәзір')} title={t('Бүйір мәзір')}>
         <Icon name="panelLeft" />
       </button>
@@ -105,10 +103,7 @@ const toolsActive = TOOLS.some((tool) => isActive(tool.href));
       <a href={SITE.instagram} class="icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Icon name="instagram" size={16} /></a>
     </div>
     <div class="flex items-center gap-1">
-      <div class="segmented">
-        <a href={switchLocale(Astro.url.pathname, 'kk')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'kk' ? 'bg-bg text-fg' : 'text-muted']}>KK</a>
-        <a href={switchLocale(Astro.url.pathname, 'en')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'en' ? 'bg-bg text-fg' : 'text-muted']}>EN</a>
-      </div>
+      <LangSwitch lang={lang} />
       <button class="icon-btn" data-theme-toggle aria-label={t('Тақырыпты ауыстыру')}>
         <Icon name="sun" size={16} className="hidden dark:block" />
         <Icon name="moon" size={16} className="block dark:hidden" />
@@ -128,10 +123,7 @@ const toolsActive = TOOLS.some((tool) => isActive(tool.href));
     <NavTree lang={lang} />
   </nav>
   <div class="side-footer flex shrink-0 items-center justify-between gap-1 border-t border-line px-2 py-2">
-    <div class="segmented" data-nav-label>
-      <a href={switchLocale(Astro.url.pathname, 'kk')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'kk' ? 'bg-bg text-fg' : 'text-muted']}>KK</a>
-      <a href={switchLocale(Astro.url.pathname, 'en')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'en' ? 'bg-bg text-fg' : 'text-muted']}>EN</a>
-    </div>
+    <div data-nav-label><LangSwitch lang={lang} /></div>
     <div class="side-footer-actions flex">
       <button class="icon-btn size-8" data-theme-toggle aria-label={t('Тақырыпты ауыстыру')}>
         <Icon name="sun" size={16} className="hidden dark:block" />
@@ -192,7 +184,7 @@ const toolsActive = TOOLS.some((tool) => isActive(tool.href));
   document.addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
 
   // Highlight the link matching the current URL, including its query (?category=…).
-  const here = location.pathname.replace(/^\/en(?=\/|$)/, '').replace(/\/$/, '') || '/';
+  const here = location.pathname.replace(/^\/(en|ru)(?=\/|$)/, '').replace(/\/$/, '') || '/';
   const query = new URLSearchParams(location.search);
   document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]').forEach((a) => {
     const [p, q] = a.dataset.navLink!.split('?');

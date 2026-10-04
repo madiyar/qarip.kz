@@ -31,3 +31,8 @@
 /fontfreezer                  /tools/freezer        301
 /kerningpairs                 /tools/kerning        301
 /licensesinfo                 /licenses             301
+
+# Category filter links from older versions → static category pages
+/fonts category=:id   /fonts/category/:id/   301
+/ru/fonts category=:id   /ru/fonts/category/:id/   301
+/en/fonts category=:id   /en/fonts/category/:id/   301

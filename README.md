@@ -12,6 +12,18 @@ environment variable on Netlify). Canonical links, sitemap, hosted CSS and the s
 in the UI all derive from it. When moving to a custom domain also update `site_url` in
 `public/admin/config.yml` and uncomment the redirect at the top of `public/_redirects`.
 
+## SEO
+
+- Three locales: Kazakh (`/`), Russian (`/ru/`), English (`/en/`), linked with `hreflang`.
+  Search-facing titles, descriptions and intro texts live in `src/lib/seo.ts`.
+- Static category pages: `/fonts/category/<id>/`.
+- `sitemap-index.xml`, `robots.txt`, canonical URLs (with trailing slash), JSON-LD
+  (WebSite, BreadcrumbList, ItemList, SoftwareApplication, FAQPage, BlogPosting).
+- Social preview images are rendered at build time: `/og.png` and `/og/<font>.png`.
+- Search Console / Yandex Webmaster: put the verification codes into the
+  `GOOGLE_SITE_VERIFICATION` and `YANDEX_VERIFICATION` environment variables
+  (or `SITE.verification` in `src/lib/site.ts`), then submit `/sitemap-index.xml`.
+
 ## Development
 
 ```sh

@@ -143,14 +143,16 @@ export default function FontBrowser({ fonts, lang, categories = [], tags = [], p
               <Icon name="filter" size={14} />
               {t('Іріктеу')}
             </span>
-            <select className="chip pr-8" value={f.category} onChange={(e) => update({ category: e.target.value })} aria-label={t('Категория')}>
-              <option value="">{t('Барлық категориялар')}</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} — {t(c.description)}
-                </option>
-              ))}
-            </select>
+            {categories.length > 0 && (
+              <select className="chip pr-8" value={f.category} onChange={(e) => update({ category: e.target.value })} aria-label={t('Категория')}>
+                <option value="">{t('Барлық категориялар')}</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} — {t(c.description)}
+                  </option>
+                ))}
+              </select>
+            )}
             {tags.length > 0 && (
               <select className="chip pr-8" value={f.tag} onChange={(e) => update({ tag: e.target.value })} aria-label={t('Тег')}>
                 <option value="">{t('Барлық тегтер')}</option>

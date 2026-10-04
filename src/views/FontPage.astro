@@ -6,6 +6,7 @@ import FontActions from '../components/fonts/FontActions';
 import FontDetail from '../components/fonts/FontDetail';
 import FontBrowser from '../components/fonts/FontBrowser';
 import Icon from '../components/ui/Icon';
+import { CATEGORY, breadcrumbLd, fontSummary, fontTitle } from '../lib/seo';
 import QualityIndicator from '../components/fonts/QualityIndicator';
 import { type Lang, formatDate, localePath, useT } from '../i18n';
 import { type FontEntry, familyName, formatBytes, getFonts, primaryFaces, publicCssBlocks, similarFonts, styleFaces, toSummaries } from '../lib/fonts';
@@ -22,7 +23,7 @@ const [designer, category, license, all] = await Promise.all([getEntry(d.designe
 const tags = await Promise.all(d.tags.map((x) => getEntry(x)));
 const purposes = await Promise.all(d.purposes.map((x) => getEntry(x)));
 const similar = await toSummaries(await similarFonts(font, all, 4));
-const description = lang === 'en' ? (d.descriptionEn ?? d.description) : d.description;
+const description = { kk: d.description, ru: d.descriptionRu ?? d.description, en: d.descriptionEn ?? d.description }[lang];
 
 const SCRIPT_LABELS: Record<string, string> = { kazakh: 'Қазақ кирилл', 'kazakh-latin': 'Қазақ латын', cyrillic: 'Кирилл', latin: 'Латын' };
 const glyphs = Math.max(0, ...d.styles.map((s) => s.glyphs ?? 0));
@@ -52,26 +53,61 @@ const stats = [
 const files = d.styles.map((s) => ({ name: s.file.split('/').pop()!, format: s.format, size: formatBytes(s.size), style: s.name }));
 files.push({ name: d.zipName ?? `${font.id}.zip`, format: 'zip', size: formatBytes(d.zipSize), style: '' });
 
+const site = Astro.site!;
+const pageUrl = new URL(localePath(lang, `/fonts/${font.id}`), site).toString();
+const ogImage = `/og/${font.id}.png`;
+// Factual summary used for the meta description and shown on the page.
+const summary = fontSummary(lang, {
+  name: d.name,
+  designer: designer?.data.name ?? '',
+  category: d.category.id,
+  styles: d.styles.length,
+  glyphs,
+  scripts: d.scripts,
+  license: license?.data.name ?? '',
+  commercial: Boolean(license?.data.commercial),
+  formats,
+});
+const catName = CATEGORY[d.category.id]?.name[lang] ?? category?.data.name ?? '';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
+  '@id': `${pageUrl}#font`,
   name: d.name,
+  description: summary,
+  url: pageUrl,
+  image: new URL(ogImage, site).toString(),
   applicationCategory: 'DesignApplication',
+  applicationSubCategory: 'Font',
   operatingSystem: 'Windows, macOS, Linux',
-  author: { '@type': 'Person', name: designer?.data.name },
-  offers: { '@type': 'Offer', price: 0, priceCurrency: 'KZT' },
+  inLanguage: ['kk', 'ru', 'en'],
+  datePublished: d.addedDate.toISOString().slice(0, 10),
+  author: { '@type': 'Person', name: designer?.data.name, url: new URL(localePath(lang, `/designers/${d.designer.id}`), site).toString() },
+  publisher: { '@id': new URL('/#organization', site).toString() },
+  offers: { '@type': 'Offer', price: 0, priceCurrency: 'KZT', availability: 'https://schema.org/InStock' },
   license: license?.data.url,
-  downloadUrl: new URL(d.zip, Astro.site).toString(),
+  downloadUrl: new URL(d.zip, site).toString(),
+  fileFormat: d.styles.map((s) => `font/${s.format}`).filter((v, i, a) => a.indexOf(v) === i),
+  keywords: ['қазақша шрифт', 'қазақша қаріп', 'казахский шрифт', 'kazakh font', catName, d.name].join(', '),
 };
+const crumbs = breadcrumbLd(site, [
+  { name: 'Qarip', path: localePath(lang, '/') },
+  { name: t('Қаріптер'), path: localePath(lang, '/fonts') },
+  { name: catName, path: localePath(lang, `/fonts/category/${d.category.id}`) },
+  { name: d.name, path: localePath(lang, `/fonts/${font.id}`) },
+]);
+const downloadHeading = { kk: `${d.name} шрифтін жүктеу`, ru: `Скачать шрифт ${d.name}`, en: `Download the ${d.name} font` }[lang];
 ---
 
 <Base
   lang={lang}
-  title={`${d.name} — ${t('қазақша қаріп')}`}
-  description={description ?? t('{name} қарпін тегін жүктеп алыңыз. {n} стиль, қазақ әріптері бар.', { name: d.name, n: d.styles.length })}
+  fullTitle={`${fontTitle(lang, d.name)} | Qarip`}
+  description={summary}
+  image={ogImage}
   fontCss={`${styleFaces(font)}\n${primaryFaces(similar)}`}
 >
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(crumbs)} />
   <a href={localePath(lang, '/fonts')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg" data-back>
     <Icon name="arrowLeft" size={16} />
     {t('Артқа')}
@@ -81,7 +117,7 @@ const jsonLd = {
     <div class="mb-4 flex flex-wrap gap-2">
       {
         category && (
-          <a href={localePath(lang, `/fonts?category=${category.id}`)} class="badge" style={`background:${category.data.color}22;color:${category.data.color}`}>
+          <a href={localePath(lang, `/fonts/category/${category.id}`)} class="badge" style={`background:${category.data.color}22;color:${category.data.color}`}>
             {category.data.name}
           </a>
         )
@@ -137,10 +173,23 @@ const jsonLd = {
     files={files}
   />
 
+  <section class="mt-20 max-w-3xl">
+    <h2 class="text-2xl font-bold tracking-tight">{downloadHeading}</h2>
+    <p class="mt-3 text-muted">{summary}</p>
+    <p class="mt-4 flex flex-wrap gap-2">
+      <a href={d.zip} download={d.zipName ?? true} class="btn-secondary">
+        <Icon name="download" size={16} />
+        {t('Жүктеу')} · ZIP · {formatBytes(d.zipSize)}
+      </a>
+      <a href={localePath(lang, `/fonts/category/${d.category.id}`)} class="btn-ghost">{catName}</a>
+      <a href={localePath(lang, `/licenses#${d.license.id}`)} class="btn-ghost">{license?.data.name}</a>
+    </p>
+  </section>
+
   {
     similar.length > 0 && (
       <section class="mt-24">
-        <SectionHead title={t('Ұқсас қаріптер')} href={localePath(lang, `/fonts?category=${d.category.id}`)} linkLabel={t('Барлығы')} />
+        <SectionHead title={t('Ұқсас қаріптер')} href={localePath(lang, `/fonts/category/${d.category.id}`)} linkLabel={t('Барлығы')} />
         <FontBrowser client:visible fonts={similar} lang={lang} prefKey="similar" />
       </section>
     )

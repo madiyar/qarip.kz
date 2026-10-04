@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { T } from '../../i18n';
+import { pathData } from '../../lib/glyphPath';
 
 interface GlyphInfo {
   index: number;
@@ -68,7 +69,7 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
             name: g.name ?? `glyph${i}`,
             unicode: g.unicode,
             advance: g.advanceWidth ?? font.unitsPerEm,
-            path: g.getPath(0, 0, font.unitsPerEm).toPathData(2),
+            path: pathData(g.getPath(0, 0, font.unitsPerEm).commands),
           });
         }
         if (!cancelled) {

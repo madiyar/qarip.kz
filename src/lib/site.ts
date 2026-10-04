@@ -7,6 +7,14 @@ export const SITE = {
   city: 'Алматы, Қазақстан',
   telegram: 'https://t.me/qarip',
   instagram: 'https://www.instagram.com/qarip_kz',
+  /**
+   * Search engine ownership codes (the `content` value of their meta tag).
+   * Set them here or as GOOGLE_SITE_VERIFICATION / YANDEX_VERIFICATION environment variables.
+   */
+  verification: {
+    google: import.meta.env.GOOGLE_SITE_VERIFICATION ?? '',
+    yandex: import.meta.env.YANDEX_VERIFICATION ?? '',
+  },
   /** Card details for donations. Leave empty to hide the donation block. */
   donation: { bank: 'Kaspi', card: '', holder: '' },
   /** Keyboard layout installer archive (public/…). Leave empty to hide the download button. */
@@ -43,7 +51,7 @@ export const SIDE_NAV: { label: string; href?: string; icon: string; children?: 
       { label: 'Барлығы', href: '/fonts' },
       { label: 'Біздің қаріп', href: '/fonts?our=1' },
       { label: 'Топ қаріптер', href: '/top' },
-      ...CATEGORY_LINKS.map((c) => ({ label: c, href: `/fonts?category=${c.toLowerCase()}`, raw: true })),
+      ...CATEGORY_LINKS.map((c) => ({ label: c, href: `/fonts/category/${c.toLowerCase()}`, raw: true })),
     ],
   },
   {

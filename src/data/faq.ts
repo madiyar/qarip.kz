@@ -11,6 +11,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
       q: 'How do I install a font on Windows?',
       a: '<p>Download the font, open the font file (.otf or .ttf) inside the .zip archive and click “Install”. On older systems copy the file into <code>C:\\Windows\\Fonts</code>.</p>',
     },
+    ru: {
+      q: 'Как установить шрифт в Windows?',
+      a: '<p>Скачайте шрифт, откройте файл шрифта (.otf или .ttf) внутри .zip-архива и нажмите «Установить». В старых версиях системы скопируйте файл в папку <code>C:\\Windows\\Fonts</code>.</p>',
+    },
   },
   {
     kk: {
@@ -20,6 +24,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
     en: {
       q: 'How do I install a font on macOS?',
       a: '<p>Extract the archive and double-click the font file. Font Book opens — click “Install Font”. Or copy the file into <code>~/Library/Fonts</code>.</p>',
+    },
+    ru: {
+      q: 'Как установить шрифт в macOS?',
+      a: '<p>Распакуйте архив и дважды щёлкните по файлу шрифта. Откроется программа «Шрифты» (Font Book) — нажмите «Установить». Или скопируйте файл в папку <code>~/Library/Fonts</code>.</p>',
     },
   },
   {
@@ -31,6 +39,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
       q: 'How do I install a font on Linux?',
       a: '<p>Copy the font files (.ttf or .otf) into <code>~/.local/share/fonts</code> and run <code>fc-cache -f</code>. Some file managers also accept copying into <code>fonts://</code>.</p>',
     },
+    ru: {
+      q: 'Как установить шрифт в Linux?',
+      a: '<p>Скопируйте файлы шрифта (.ttf или .otf) в папку <code>~/.local/share/fonts</code> и выполните команду <code>fc-cache -f</code>. В некоторых файловых менеджерах достаточно скопировать файлы в <code>fonts://</code>.</p>',
+    },
   },
   {
     kk: {
@@ -40,6 +52,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
     en: {
       q: 'What should I know about licenses?',
       a: '<p>Every font’s license sets its own limits.</p><p>Fonts for <strong>personal use</strong> may only be used where you make no money: a small book for yourself, graphics for a personal site or blog, invitations for friends and family, charities, clothing designs for yourself.</p><p>Fonts licensed for <strong>commercial use</strong> may be used to make money: books for sale, client work, invitations to paid events, merchandise and so on.</p><p>Even with a commercial license you may not sell the font itself — the copyright stays with its author. <a href="/licenses">License types</a></p>',
+    },
+    ru: {
+      q: 'Что нужно знать о лицензиях?',
+      a: '<p>У каждого шрифта свои ограничения, они зависят от лицензии.</p><p>Шрифт <strong>для личного использования</strong> можно применять только там, где вы не зарабатываете: небольшая книга для себя, графика для личного сайта или блога, приглашение для друзей и родных, благотворительные организации, дизайн одежды для себя.</p><p>Шрифт с <strong>коммерческой</strong> лицензией можно использовать для заработка: книги на продажу, работа на заказ, приглашения на платные мероприятия, одежда на продажу и так далее.</p><p>Даже с коммерческой лицензией продавать сам шрифт нельзя — авторское право остаётся у автора. <a href="/licenses">Виды лицензий</a></p>',
     },
   },
   {
@@ -51,6 +67,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
       q: 'Why doesn’t the font show up after installing?',
       a: '<p>If the font does not appear in your app, restart the app. If it is still missing, restart your computer.</p>',
     },
+    ru: {
+      q: 'Почему шрифт не появился после установки?',
+      a: '<p>Если установленного шрифта нет в программе, закройте и снова откройте её. Если это не помогло — перезагрузите компьютер.</p>',
+    },
   },
   {
     kk: {
@@ -60,6 +80,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
     en: {
       q: 'Why can’t I find many of the Kazakh fonts I’ve seen online here?',
       a: '<p>Many Kazakh versions of paid fonts circulate online. We have no right to publish them — look for paid fonts on their authors’ sites. <a href="/journal/license-turleri">More about licenses</a></p>',
+    },
+    ru: {
+      q: 'Почему на сайте нет многих казахских шрифтов из интернета?',
+      a: '<p>В интернете гуляет много казахских версий платных шрифтов. Публиковать их у нас нет права. Платный шрифт ищите на сайте его правообладателя. <a href="/journal/license-turleri">Подробнее о лицензиях</a></p>',
     },
   },
   {
@@ -71,6 +95,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
       q: 'I can’t find the font I need.',
       a: '<p>If a paid font lacks Kazakh letters, ask its author for a Kazakh version. If you can’t find a Kazakh version of a free font, you can <a href="/services">order one from us</a>.</p>',
     },
+    ru: {
+      q: 'Не могу найти нужный шрифт.',
+      a: '<p>Если шрифт платный и в нём нет казахских букв, напишите правообладателю и попросите казахскую версию. Если не можете найти казахскую версию бесплатного шрифта, у нас можно <a href="/services">заказать добавление казахских букв</a>.</p>',
+    },
   },
   {
     kk: {
@@ -81,6 +109,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
       q: 'The font I downloaded has no Kazakh letters.',
       a: '<p>If the font lacks ӘәІіҢңҒғҮүҰұҚқӨөҺһ, tell us which font it is. We will check it and upload a fixed version or remove it. You can check any file with the <a href="/tools/tester">Font tester</a>.</p>',
     },
+    ru: {
+      q: 'В скачанном шрифте нет казахских букв.',
+      a: '<p>Если в шрифте нет букв ӘәІіҢңҒғҮүҰұҚқӨөҺһ, напишите нам, какой это шрифт. Мы проверим файл и загрузим исправленную версию или уберём шрифт. Свой файл можно проверить в <a href="/tools/tester">тестере шрифтов</a>.</p>',
+    },
   },
   {
     kk: {
@@ -90,6 +122,10 @@ export const FAQ: Record<Lang, { q: string; a: string }>[] = [
     en: {
       q: 'Where are favorites and catalogs stored?',
       a: '<p>Favorites, download history and catalogs are stored only in your browser (localStorage). Nothing is sent to a server and no sign-up is needed.</p>',
+    },
+    ru: {
+      q: 'Где хранятся избранное и каталоги?',
+      a: '<p>Избранное, история загрузок и каталоги хранятся только в вашем браузере (localStorage). На сервер ничего не отправляется, регистрация не нужна.</p>',
     },
   },
 ];

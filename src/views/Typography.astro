@@ -40,7 +40,7 @@ const tips = [
       <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {
           categories.map((c) => (
-            <a href={localePath(lang, `/fonts?category=${c.id}`)} class="card p-5 transition-colors hover:border-muted">
+            <a href={localePath(lang, `/fonts/category/${c.id}`)} class="card p-5 transition-colors hover:border-muted">
               <p class="text-5xl" style={`font-family:${SAMPLE[c.id] ?? 'inherit'};font-weight:${c.id === 'display' ? 900 : 400}`}>Аа Әә</p>
               <p class="mt-4 font-semibold">{c.name}</p>
               <p class="text-sm text-muted">{t(c.description)}</p>

@@ -14,8 +14,8 @@ interface Props {
 const { lang } = Astro.props;
 const t = useT(lang);
 const siteUrl = SITE.url;
-// src/data/donators.json: [{ "name": "…", "amount": 10000, "message": "…" }]
-const donators = (donatorsData as { name: string; amount?: number; message?: string }[]).sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)).slice(0, 10);
+// src/data/donators.json: { "items": [{ "name": "…", "amount": 10000, "message": "…" }] }
+const donators = (donatorsData.items as { name: string; amount?: number; message?: string }[]).sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)).slice(0, 10);
 const medal = ['bg-yellow-400 text-yellow-900', 'bg-neutral-300 text-neutral-700', 'bg-amber-600 text-white'];
 ---
 

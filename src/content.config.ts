@@ -95,7 +95,8 @@ const licenses = defineCollection({
 });
 
 const categories = defineCollection({
-  loader: file('src/data/categories.json'),
+  // Wrapped in an object ({ items: [...] }) so Decap CMS can edit the file.
+  loader: file('src/data/categories.json', { parser: (text) => JSON.parse(text).items }),
   schema: z.object({ name: z.string(), description: z.string(), color: z.string() }),
 });
 
@@ -123,7 +124,7 @@ const journal = defineCollection({
 });
 
 const glossary = defineCollection({
-  loader: file('src/content/glossary.json'),
+  loader: file('src/content/glossary.json', { parser: (text) => JSON.parse(text).terms }),
   schema: z.object({
     term: z.string(),
     en: z.string().optional(),

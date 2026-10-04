@@ -144,7 +144,6 @@ collections:
           - name: terms
             label: Терминдер
             widget: list
-            root: true
             summary: '{{term}}'
             fields:
               - { name: id, label: ID, widget: string }
@@ -161,7 +160,6 @@ collections:
           - name: items
             label: Донаторлар
             widget: list
-            root: true
             summary: '{{name}} — {{amount}} ₸'
             fields:
               - { name: name, label: Аты, widget: string }
@@ -175,7 +173,6 @@ collections:
           - name: items
             label: Категориялар
             widget: list
-            root: true
             fields:
               - { name: id, label: ID, widget: string }
               - { name: name, label: Атауы, widget: string }

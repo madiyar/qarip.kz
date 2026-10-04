@@ -1,134 +1,136 @@
-[
-  {
-    "id": "paragraph",
-    "term": "Азатжол",
-    "en": "Paragraph",
-    "definition": "Жаңа жолдан басталған сөйлемнің, терімнің сол жағына қалдырылған бос орынды атаймыз.",
-    "category": "typography"
-  },
-  {
-    "id": "letter",
-    "term": "Әріп",
-    "en": "Letter",
-    "definition": "Әріп — белгілі бір дыбысты білдіру үшін арналған графикалық таңба.",
-    "category": "typography"
-  },
-  {
-    "id": "alphabet",
-    "term": "Әліпби",
-    "en": "Alphabet",
-    "definition": "Белгілі бір ретпен орналасқан әріптер жинағы.",
-    "category": "typography"
-  },
-  {
-    "id": "font",
-    "term": "Қаріп​",
-    "en": "Font",
-    "definition": "Әліпбидегі әріптер мен тыныс белгілері ортақ графикалық стилде жасалған таңбалар жиыны.",
-    "category": "typography"
-  },
-  {
-    "id": "font-family-typeface",
-    "term": "Қаріп​ отбасы",
-    "en": "Font family / Typeface",
-    "definition": "Белгілі бір атауы бар, бір ортақ стилде жасалған қаріптер жүйесі. Қаріп отбасында қаріптің бірнеше түрі болады, мысалы: әдепкі (regular), жуан (bold), қисық (italic), және т.б.",
-    "category": "typography"
-  },
-  {
-    "id": "kerning",
-    "term": "Керниң",
-    "en": "Kerning",
-    "definition": "Екі әріптің арасындағы қашықты өзгерту. Жағдайына қарай әріптердің арасындағы бос орынды өңдеуге болады. Мысалы: ҒА, АТА, AVA деген әріптердің арасындағы қашықты азайту.",
-    "category": "typography"
-  },
-  {
-    "id": "tracking",
-    "term": "Трекиң",
-    "en": "Tracking",
-    "definition": "Мәтіндегі түгел әріптер арасындағы қашықты өзгерту.",
-    "category": "typography"
-  },
-  {
-    "id": "letterspace",
-    "term": "Апрош",
-    "en": "Letterspace",
-    "definition": "Екі әріптің арасындағы арақашықты апрош деп атайды. Франсуз тілінен аударғанда, approche — жақындату.",
-    "category": "typography"
-  },
-  {
-    "id": "layout-design-lettering",
-    "term": "Беттеу",
-    "en": "Layout Design / Lettering",
-    "definition": "Мәтінді графикалық кенепке қаріппен теру.",
-    "category": "typography"
-  },
-  {
-    "id": "беттеуші",
-    "term": "Беттеуші",
-    "definition": "Беттеу жұмысын істейтін адам. Әдетте беттеушінің басты мақсаты — оқырманға ыңғайлы болатындай мәтінді графикалық кенепке енгізу. Кейбір кезде назар аудару үшін мәтіннің ыңғайлы оқылуын құрбан етуге болады.",
-    "category": "typography"
-  },
-  {
-    "id": "typography",
-    "term": "Типография",
-    "en": "Typography",
-    "definition": "Типография — мәтінмен графикалық кенеп аясында жұмыс істеу.",
-    "category": "typography"
-  },
-  {
-    "id": "print",
-    "term": "Баспахана",
-    "en": "Print",
-    "definition": "Баспахана — баспа өнімін басып шығаратын кәсіпорын.",
-    "category": "typography"
-  },
-  {
-    "id": "at-sign-et-commercial",
-    "term": "Айқұлақ",
-    "en": "at sign @ / et commercial",
-    "definition": "Электрондық поштада кездесетін таңба. Әдетте шиыршық сызықпен оралған «а» әрпі арқылы жасалады.",
-    "category": "typography"
-  },
-  {
-    "id": "serif-font",
-    "term": "Кертілген қаріп",
-    "en": "Serif Font",
-    "definition": "Таңбалардың шет жағы кертілген қаріп. Бірыңғай мәтінді беттеуге ыңғайлы болады.",
-    "category": "typography"
-  },
-  {
-    "id": "sans-serif-font",
-    "term": "Кесілген қаріп",
-    "en": "Sans Serif Font",
-    "definition": "Таңбалардың шет жағы кесілген қаріп.",
-    "category": "typography"
-  },
-  {
-    "id": "display-font",
-    "term": "Көрнекі қаріп",
-    "en": "Display Font",
-    "definition": "Сан түрлі, әдетте көрнекі ақпаратта қолдануға арналған қаріп түрі.",
-    "category": "typography"
-  },
-  {
-    "id": "handwriting-font",
-    "term": "Қолжазба қаріп",
-    "en": "Handwriting Font",
-    "definition": "Адам қолмен жазғандай стилде жасалған қаріп.",
-    "category": "typography"
-  },
-  {
-    "id": "slab-serif-font",
-    "term": "Кесек қаріп",
-    "en": "Slab Serif Font",
-    "definition": "Кесек-кесек төртбұрыш кертілгені бар қаріп.",
-    "category": "typography"
-  },
-  {
-    "id": "monospace-font",
-    "term": "Біркеңді қаріп",
-    "en": "Monospace Font",
-    "definition": "Түгел әріптің еңі бірдей қаріп. Әрине, түгел таңбасын бірдей қылсақ оқуға жарамсыз болып қалады. Сондықтан кейбір әріптің кені кішірек.",
-    "category": "typography"
-  }
-]
+{
+  "terms": [
+    {
+      "id": "paragraph",
+      "term": "Азатжол",
+      "en": "Paragraph",
+      "definition": "Жаңа жолдан басталған сөйлемнің, терімнің сол жағына қалдырылған бос орынды атаймыз.",
+      "category": "typography"
+    },
+    {
+      "id": "letter",
+      "term": "Әріп",
+      "en": "Letter",
+      "definition": "Әріп — белгілі бір дыбысты білдіру үшін арналған графикалық таңба.",
+      "category": "typography"
+    },
+    {
+      "id": "alphabet",
+      "term": "Әліпби",
+      "en": "Alphabet",
+      "definition": "Белгілі бір ретпен орналасқан әріптер жинағы.",
+      "category": "typography"
+    },
+    {
+      "id": "font",
+      "term": "Қаріп​",
+      "en": "Font",
+      "definition": "Әліпбидегі әріптер мен тыныс белгілері ортақ графикалық стилде жасалған таңбалар жиыны.",
+      "category": "typography"
+    },
+    {
+      "id": "font-family-typeface",
+      "term": "Қаріп​ отбасы",
+      "en": "Font family / Typeface",
+      "definition": "Белгілі бір атауы бар, бір ортақ стилде жасалған қаріптер жүйесі. Қаріп отбасында қаріптің бірнеше түрі болады, мысалы: әдепкі (regular), жуан (bold), қисық (italic), және т.б.",
+      "category": "typography"
+    },
+    {
+      "id": "kerning",
+      "term": "Керниң",
+      "en": "Kerning",
+      "definition": "Екі әріптің арасындағы қашықты өзгерту. Жағдайына қарай әріптердің арасындағы бос орынды өңдеуге болады. Мысалы: ҒА, АТА, AVA деген әріптердің арасындағы қашықты азайту.",
+      "category": "typography"
+    },
+    {
+      "id": "tracking",
+      "term": "Трекиң",
+      "en": "Tracking",
+      "definition": "Мәтіндегі түгел әріптер арасындағы қашықты өзгерту.",
+      "category": "typography"
+    },
+    {
+      "id": "letterspace",
+      "term": "Апрош",
+      "en": "Letterspace",
+      "definition": "Екі әріптің арасындағы арақашықты апрош деп атайды. Франсуз тілінен аударғанда, approche — жақындату.",
+      "category": "typography"
+    },
+    {
+      "id": "layout-design-lettering",
+      "term": "Беттеу",
+      "en": "Layout Design / Lettering",
+      "definition": "Мәтінді графикалық кенепке қаріппен теру.",
+      "category": "typography"
+    },
+    {
+      "id": "беттеуші",
+      "term": "Беттеуші",
+      "definition": "Беттеу жұмысын істейтін адам. Әдетте беттеушінің басты мақсаты — оқырманға ыңғайлы болатындай мәтінді графикалық кенепке енгізу. Кейбір кезде назар аудару үшін мәтіннің ыңғайлы оқылуын құрбан етуге болады.",
+      "category": "typography"
+    },
+    {
+      "id": "typography",
+      "term": "Типография",
+      "en": "Typography",
+      "definition": "Типография — мәтінмен графикалық кенеп аясында жұмыс істеу.",
+      "category": "typography"
+    },
+    {
+      "id": "print",
+      "term": "Баспахана",
+      "en": "Print",
+      "definition": "Баспахана — баспа өнімін басып шығаратын кәсіпорын.",
+      "category": "typography"
+    },
+    {
+      "id": "at-sign-et-commercial",
+      "term": "Айқұлақ",
+      "en": "at sign @ / et commercial",
+      "definition": "Электрондық поштада кездесетін таңба. Әдетте шиыршық сызықпен оралған «а» әрпі арқылы жасалады.",
+      "category": "typography"
+    },
+    {
+      "id": "serif-font",
+      "term": "Кертілген қаріп",
+      "en": "Serif Font",
+      "definition": "Таңбалардың шет жағы кертілген қаріп. Бірыңғай мәтінді беттеуге ыңғайлы болады.",
+      "category": "typography"
+    },
+    {
+      "id": "sans-serif-font",
+      "term": "Кесілген қаріп",
+      "en": "Sans Serif Font",
+      "definition": "Таңбалардың шет жағы кесілген қаріп.",
+      "category": "typography"
+    },
+    {
+      "id": "display-font",
+      "term": "Көрнекі қаріп",
+      "en": "Display Font",
+      "definition": "Сан түрлі, әдетте көрнекі ақпаратта қолдануға арналған қаріп түрі.",
+      "category": "typography"
+    },
+    {
+      "id": "handwriting-font",
+      "term": "Қолжазба қаріп",
+      "en": "Handwriting Font",
+      "definition": "Адам қолмен жазғандай стилде жасалған қаріп.",
+      "category": "typography"
+    },
+    {
+      "id": "slab-serif-font",
+      "term": "Кесек қаріп",
+      "en": "Slab Serif Font",
+      "definition": "Кесек-кесек төртбұрыш кертілгені бар қаріп.",
+      "category": "typography"
+    },
+    {
+      "id": "monospace-font",
+      "term": "Біркеңді қаріп",
+      "en": "Monospace Font",
+      "definition": "Түгел әріптің еңі бірдей қаріп. Әрине, түгел таңбасын бірдей қылсақ оқуға жарамсыз болып қалады. Сондықтан кейбір әріптің кені кішірек.",
+      "category": "typography"
+    }
+  ]
+}

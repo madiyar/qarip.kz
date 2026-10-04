@@ -1,5 +1,6 @@
 import Icon from '../ui/Icon';
 import FavoriteButton from './FavoriteButton';
+import QualityIndicator from './QualityIndicator';
 import { caseStyle, type PreviewState } from './PreviewToolbar';
 import { type Lang, localePath, useT } from '../../i18n';
 import type { FontSummary } from '../../lib/types';
@@ -37,6 +38,9 @@ export function FontRow({ font, lang, preview, rank }: Props) {
           </span>
         )}
         {font.our && <span className="badge-accent">{t('Біздің қаріп')}</span>}
+        <span className="hidden sm:inline-flex">
+          <QualityIndicator quality={font.quality} label="" />
+        </span>
         <span className="ml-auto flex items-center">
           <a href={font.zip} download className="icon-btn opacity-0 group-hover:opacity-100 focus:opacity-100" aria-label={t('Жүктеу')} title={t('Жүктеу')}>
             <Icon name="download" size={17} />

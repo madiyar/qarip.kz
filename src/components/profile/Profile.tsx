@@ -15,7 +15,7 @@ interface Props {
 export default function Profile({ fonts, lang }: Props) {
   const t = useT(lang);
   const { favorites, downloads, catalogs } = useStore();
-  const [preview, setPreview] = usePreview('profile', { text: '', size: 28, textCase: 'none', view: 'list' });
+  const [preview, setPreview] = usePreview('profile', { text: '', size: 24, textCase: 'none', view: 'list' });
   const [newName, setNewName] = useState('');
   const [editing, setEditing] = useState<string | null>(null);
   const [shared, setShared] = useState<{ name: string; fonts: string[] } | null>(null);
@@ -217,6 +217,21 @@ export default function Profile({ fonts, lang }: Props) {
                         </li>
                       ))}
                   </ul>
+                )}
+                {favFonts.some((f) => !c.fonts.includes(f.slug)) && (
+                  <div className="mt-4 border-t border-line pt-3">
+                    <p className="mb-2 text-xs text-muted">{t('Таңдаулылардан қосу:')}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {favFonts
+                        .filter((f) => !c.fonts.includes(f.slug))
+                        .map((f) => (
+                          <button key={f.slug} type="button" className="chip h-8 border-dashed text-xs" onClick={() => store.toggleInCatalog(c.id, f.slug)}>
+                            <Icon name="folderPlus" size={13} />
+                            {f.name}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
                 )}
               </div>
             ))}

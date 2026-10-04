@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
 import FontBrowser from '../components/fonts/FontBrowser';
@@ -14,6 +15,8 @@ const t = useT(lang);
 const fonts = await toSummaries(await getFonts());
 const topFonts = [...fonts].sort((a, b) => b.downloads - a.downloads || Number(b.featured) - Number(a.featured)).slice(0, 20);
 const categories = await getCategories();
+const tags = (await getCollection('tags')).map((x) => ({ id: x.id, name: x.data.name }));
+const purposes = (await getCollection('purposes')).map((x) => ({ id: x.id, name: x.data.name }));
 ---
 
 <Base
@@ -33,7 +36,7 @@ const categories = await getCategories();
     top ? (
       <FontBrowser client:load fonts={topFonts} lang={lang} ranked prefKey="top" />
     ) : (
-      <FontBrowser client:load fonts={fonts} categories={categories} lang={lang} filters syncUrl prefKey="catalog" />
+      <FontBrowser client:load fonts={fonts} categories={categories} tags={tags} purposes={purposes} perPage={100} lang={lang} filters syncUrl prefKey="catalog" />
     )
   }
 </Base>

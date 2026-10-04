@@ -5,6 +5,8 @@ export interface FontSummary {
   designer: { slug: string; name: string };
   category: { id: string; name: string; color: string };
   tags: string[];
+  purposes: string[];
+  quality?: number;
   our: boolean;
   featured: boolean;
   /** Free for commercial use. */

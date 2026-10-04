@@ -1,15 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Dropzone from './Dropzone';
 import GlyphGrid from '../fonts/GlyphGrid';
 import PreviewToolbar, { caseStyle, type PreviewState } from '../fonts/PreviewToolbar';
 import Icon from '../ui/Icon';
 import { featureName, loadFontFile, type LoadedFont } from '../../lib/userfont';
 import { formatSize } from './util';
+import { FontMeta, inspectFontFile } from '../fonts/FontInfo';
 import { CHARSETS, DEFAULT_PREVIEW } from '../../lib/site';
 import { type Lang, useT } from '../../i18n';
 
 const SCRIPT_LABELS: Record<string, string> = { kazakh: 'Қазақ кирилл', 'kazakh-latin': 'Қазақ латын', cyrillic: 'Кирилл', latin: 'Латын' };
 const WATERFALL = [96, 72, 56, 48, 36, 28, 24, 20, 16, 14, 12];
+const PRESETS: [string, string][] = [
+  ['Қазақша', DEFAULT_PREVIEW],
+  ['Ағылшынша', 'The quick brown fox jumps over the lazy dog.'],
+  ['Орысша', 'Съешь же ещё этих мягких французских булок, да выпей чаю.'],
+  ['Қаз. алфавит', 'АаӘәБбВвГгҒғДдЕеЁёЖжЗзИиЙйКкҚқЛлМмНнҢңОоӨөПпРрСсТтУуҰұҮүФфХхҺһЦцЧчШшЩщЪъЫыІіЬьЭэЮюЯя'],
+  ['Латын', 'AaÄäBbCcDdEeFfGgĞğHhIıİiJjKkLlMmNnÑñOoÖöPpQqRrSsŞşTtUuŪūÜüVvWwXxYyZz'],
+  ['Цифрлар', '0123456789 ₸ $ € % № + − × ÷ = . , : ; ! ?'],
+];
 
 export default function Tester({ lang }: { lang: Lang }) {
   const t = useT(lang);
@@ -21,9 +30,13 @@ export default function Tester({ lang }: { lang: Lang }) {
   const [tracking, setTracking] = useState(0);
   const [features, setFeatures] = useState<Record<string, boolean>>({});
   const [axes, setAxes] = useState<Record<string, number>>({});
-  const [tab, setTab] = useState<'preview' | 'waterfall' | 'letters' | 'glyphs'>('preview');
+  const [tab, setTab] = useState<'preview' | 'waterfall' | 'letters' | 'glyphs' | 'meta'>('preview');
+  const [meta, setMeta] = useState<Record<string, [string, string][]>>({});
 
   const active = fonts.find((f) => f.id === activeId) ?? fonts[0];
+  useEffect(() => {
+    if (active && !meta[active.id]) inspectFontFile(active.sfnt).then((r) => setMeta((m) => ({ ...m, [active.id]: r.meta }))).catch(() => {});
+  }, [active?.id]);
   const add = async (files: File[]) => {
     setError('');
     const loaded: LoadedFont[] = [];
@@ -173,6 +186,7 @@ export default function Tester({ lang }: { lang: Lang }) {
               ['waterfall', 'Сарқырама'],
               ['letters', 'Әріптер'],
               ['glyphs', 'Глиф'],
+              ['meta', 'Метадеректер'],
             ] as const
           ).map(([id, label]) => (
             <button key={id} type="button" aria-pressed={tab === id} onClick={() => setTab(id)}>
@@ -183,7 +197,14 @@ export default function Tester({ lang }: { lang: Lang }) {
         {tab === 'preview' && (
           <>
             <PreviewToolbar t={t} state={preview} onChange={(n) => setPreview((p) => ({ ...p, ...n }))} showView={false} max={240} />
-            <div contentEditable suppressContentEditableWarning spellCheck={false} className="min-h-40 break-words py-6 outline-none" style={{ ...style, fontSize: preview.size }}>
+            <div className="flex flex-wrap gap-1.5">
+              {PRESETS.map(([label, sample]) => (
+                <button key={label} type="button" className="chip h-8 text-xs" aria-pressed={text === sample} onClick={() => setPreview((p) => ({ ...p, text: sample }))}>
+                  {t(label)}
+                </button>
+              ))}
+            </div>
+            <div key={text} contentEditable suppressContentEditableWarning spellCheck={false} className="min-h-40 break-words py-6 outline-none" style={{ ...style, fontSize: preview.size }}>
               {text}
             </div>
           </>
@@ -213,6 +234,7 @@ export default function Tester({ lang }: { lang: Lang }) {
           </div>
         )}
         {tab === 'glyphs' && <GlyphGrid key={active.id} buffer={active.sfnt} t={t} />}
+        {tab === 'meta' && (meta[active.id]?.length ? <FontMeta meta={meta[active.id]} t={t} /> : <p className="text-sm text-muted">{t('Метадеректер табылмады')}</p>)}
       </section>
     </div>
   );

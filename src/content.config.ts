@@ -30,6 +30,9 @@ const fonts = defineCollection({
     our: z.boolean().default(false),
     featured: z.boolean().default(false),
     description: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    /** Editorial quality score, 1 (poor) – 10 (excellent). */
+    quality: z.number().min(1).max(10).optional(),
     previewText: z.string().optional(),
     purchaseUrl: z.string().optional(),
     releaseDate: z.string().optional(),

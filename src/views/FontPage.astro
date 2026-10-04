@@ -6,8 +6,9 @@ import FontActions from '../components/fonts/FontActions';
 import FontDetail from '../components/fonts/FontDetail';
 import FontBrowser from '../components/fonts/FontBrowser';
 import Icon from '../components/ui/Icon';
+import QualityIndicator from '../components/fonts/QualityIndicator';
 import { type Lang, formatDate, localePath, useT } from '../i18n';
-import { type FontEntry, familyName, formatBytes, getFonts, primaryFaces, publicCss, similarFonts, styleFaces, toSummaries } from '../lib/fonts';
+import { type FontEntry, familyName, formatBytes, getFonts, primaryFaces, publicCssBlocks, similarFonts, styleFaces, toSummaries } from '../lib/fonts';
 
 interface Props {
   lang: Lang;
@@ -20,7 +21,8 @@ const d = font.data;
 const [designer, category, license, all] = await Promise.all([getEntry(d.designer), getEntry(d.category), getEntry(d.license), getFonts()]);
 const tags = await Promise.all(d.tags.map((x) => getEntry(x)));
 const purposes = await Promise.all(d.purposes.map((x) => getEntry(x)));
-const similar = await toSummaries(await similarFonts(font, all));
+const similar = await toSummaries(await similarFonts(font, all, 4));
+const description = lang === 'en' ? (d.descriptionEn ?? d.description) : d.description;
 
 const SCRIPT_LABELS: Record<string, string> = { kazakh: 'Қазақ кирилл', 'kazakh-latin': 'Қазақ латын', cyrillic: 'Кирилл', latin: 'Латын' };
 const glyphs = Math.max(0, ...d.styles.map((s) => s.glyphs ?? 0));
@@ -66,13 +68,13 @@ const jsonLd = {
 <Base
   lang={lang}
   title={`${d.name} — ${t('қазақша қаріп')}`}
-  description={d.description ?? t('{name} қарпін тегін жүктеп алыңыз. {n} стиль, қазақ әріптері бар.', { name: d.name, n: d.styles.length })}
+  description={description ?? t('{name} қарпін тегін жүктеп алыңыз. {n} стиль, қазақ әріптері бар.', { name: d.name, n: d.styles.length })}
   fontCss={`${styleFaces(font)}\n${primaryFaces(similar)}`}
 >
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
-  <a href={localePath(lang, '/fonts')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
+  <a href={localePath(lang, '/fonts')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg" data-back>
     <Icon name="arrowLeft" size={16} />
-    {t('Барлық қаріп')}
+    {t('Артқа')}
   </a>
 
   <header class="mb-10">
@@ -84,8 +86,10 @@ const jsonLd = {
           </a>
         )
       }
+      {d.featured && <span class="badge bg-gradient-to-r from-orange-500 to-pink-500 text-white">{t('Топ қаріп')}</span>}
       {d.our && <span class="badge-accent">{t('Біздің қаріп')}</span>}
-      {tags.map((tag) => tag && <span class="badge bg-surface-2 text-muted">{t(tag.data.name)}</span>)}
+      {purposes.map((p) => p && <a href={localePath(lang, `/fonts?purpose=${p.id}`)} class="badge border border-line text-muted hover:text-fg">{t(p.data.name)}</a>)}
+      {tags.map((tag) => tag && <a href={localePath(lang, `/fonts?tag=${tag.id}`)} class="badge bg-surface-2 text-muted hover:text-fg">{t(tag.data.name)}</a>)}
     </div>
     <h1 class="text-5xl font-extrabold tracking-tight break-words sm:text-7xl" style={`font-family:'${styles[d.primary]?.family ?? styles[0].family}', system-ui`}>
       {d.name}
@@ -100,7 +104,8 @@ const jsonLd = {
       <span aria-hidden="true">•</span>
       <span>{license?.data.name}</span>
     </p>
-    {d.description && <p class="mt-4 max-w-3xl">{d.description}</p>}
+    {d.quality && <p class="mt-3"><QualityIndicator quality={d.quality} label={t('Сапа')} /></p>}
+    {description && <p class="mt-4 max-w-3xl">{description}</p>}
     <div class="mt-6">
       <FontActions client:load slug={font.id} zip={d.zip} zipName={d.zipName} purchaseUrl={d.purchaseUrl} lang={lang} />
     </div>
@@ -125,7 +130,7 @@ const jsonLd = {
       attribution: license!.data.attribution,
       hasPage: Boolean(license!.body?.trim()) || license!.data.prices.length > 0,
     }}
-    css={publicCss(font, Astro.site!)}
+    cssBlocks={publicCssBlocks(font, Astro.site!)}
     cssUrl={cssUrl}
     info={info}
     stats={stats}
@@ -136,8 +141,18 @@ const jsonLd = {
     similar.length > 0 && (
       <section class="mt-24">
         <SectionHead title={t('Ұқсас қаріптер')} href={localePath(lang, `/fonts?category=${d.category.id}`)} linkLabel={t('Барлығы')} />
-        <FontBrowser client:visible fonts={similar} lang={lang} prefKey="similar" initialSize={28} />
+        <FontBrowser client:visible fonts={similar} lang={lang} prefKey="similar" />
       </section>
     )
   }
 </Base>
+
+<script>
+  // "Back" returns to the previous page (keeping catalog filters) when we came from this site.
+  document.querySelector<HTMLAnchorElement>('[data-back]')?.addEventListener('click', (e) => {
+    if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
+      e.preventDefault();
+      history.back();
+    }
+  });
+</script>

@@ -20,6 +20,12 @@ const WATERFALL = [96, 84, 72, 60, 48, 36, 30, 24, 20, 18, 16, 14, 12];
 const LINE = 'Бұл гүлді қызға һәм ұлға бер, ал көрші Францияны Пырансы де.';
 const PARAGRAPH =
   'Қазақ жазуы ғасырлар бойы дамып келеді. Көне түркі руникасынан бастап, араб, латын және кирилл әліпбилеріне дейін — әр кезең өз ізін қалдырды. Бүгінгі типографтың міндеті — осы бай мұраны заманауи құралдармен жалғастыру, мәтінді оқуға жеңіл әрі көзге жағымды ету. Жақсы қаріп оқырманға байқалмайды: ол ойды жеткізуге қызмет етеді, өзіне назар аудартпайды.';
+const WORD_GROUPS: [string, string[]][] = [
+  ['Тіркестер', ['Қазақстан', 'Алматы', 'Астана', 'Шымкент', 'Қарағанды', 'Атырау', 'Семей', 'Павлодар', 'Тараз', 'Ақтөбе']],
+  ['Сан', ['бір', 'екі', 'үш', 'төрт', 'бес', 'алты', 'жеті', 'сегіз', 'тоғыз', 'он']],
+  ['Реңктер', ['қара', 'ақ', 'қызыл', 'сары', 'жасыл', 'көк', 'қоңыр', 'сұр', 'күлгін', 'қызғылт']],
+];
+const KERN_LINES = ['АВАКАЛ ТО ТА ТУ ТЫ ТА ТО', 'VA Va VА Vа WA Wa', 'Та Тo Ту То Тe Тi', '«Сөз» „Текст“ ‘Жазу’ “Font”', 'ААААА ОООOO ЕЕЕЕЕЕ'];
 const WORDS = ['Әлемге', 'Ғасыр', 'Қазақстан', 'Ұлттық', 'Үйірме', 'Өнер', 'Һәм', 'Іңкәр', 'Жаңғыру', 'Түркістан', 'Өркениет', 'Құрылтай', 'Шаңырақ', 'Тәуелсіздік', 'Ақмешіт', 'Ұлытау', 'әсем', 'ғылым', 'қағаз', 'өлең', 'ұлағат', 'үміт', 'іңір', 'шығарма'];
 const KERN = ['AV', 'AW', 'AY', 'AT', 'LT', 'LY', 'PA', 'TA', 'Te', 'To', 'Ty', 'VA', 'Va', 'WA', 'Wa', 'YA', 'Yo', 'ГА', 'Го', 'ТА', 'То', 'Тә', 'ҮА', 'УА', 'Уа', 'ЧА', 'ЛТ', 'ҚА', 'Қу', 'ГҰ', 'Ғұ', 'Р.', 'Т,', 'Ү.', 'Г.', 'Ә«', 'f.', 'r,', 'y.'];
 
@@ -161,9 +167,29 @@ export default function Proofing({ fonts, lang }: { fonts: FontSummary[]; lang: 
             </div>
           )}
           {mode === 'words' && (
-            <div className="flex flex-wrap gap-x-8 gap-y-2" style={{ fontSize: size * 2.5 }}>
-              {(text ? text.split(/\s+/) : WORDS).map((w, i) => (
-                <span key={w + i}>{w}</span>
+            <div className="space-y-8">
+              {(text ? [['', text.split(/\s+/)] as [string, string[]]] : [...WORD_GROUPS, ['Мысалдар', WORDS] as [string, string[]]]).map(([label, words]) => (
+                <div key={label}>
+                  {label && (
+                    <p className="mb-2 font-mono text-[10px] uppercase opacity-50" style={{ fontFamily: 'var(--font-mono)' }}>
+                      {t(label)}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-x-8 gap-y-2" style={{ fontSize: size * 2 }}>
+                    {words.map((w, i) => (
+                      <span key={w + i}>{w}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {mode === 'kerning' && (
+            <div className="mb-10 space-y-3" style={{ fontSize: size * 2.5 }}>
+              {KERN_LINES.map((l) => (
+                <p key={l} className="leading-tight break-words">
+                  {l}
+                </p>
               ))}
             </div>
           )}

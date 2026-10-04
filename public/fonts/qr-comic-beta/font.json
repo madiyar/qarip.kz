@@ -1,0 +1,19 @@
+{
+  "name": "QR Comic Beta",
+  "designer": "abay-emes",
+  "category": "display",
+  "tags": [
+    "cyrillic"
+  ],
+  "purposes": [
+    "headings"
+  ],
+  "license": "personal",
+  "our": true,
+  "featured": false,
+  "addedDate": "2025-02-15",
+  "downloads": 0,
+  "files": [
+    "QRComicBeta.otf"
+  ]
+}

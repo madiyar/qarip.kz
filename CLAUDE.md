@@ -13,9 +13,11 @@ This repo was a small legacy Astro 4 site. It was rebuilt to match the feature s
 newer SPA made on base44 (`font.base44.app`; its source is at `~/Downloads/Qarip/`, React +
 base44 SDK). Only the *engine* was ported — content was deliberately **not** imported from
 base44. The catalog holds the fonts that were already in this repo (Balpaq, Beyne, Hiykaya,
-QR Comic Beta, all by Abay Emes); more are added with `npm run font:add`.
+QR Comic Beta, all by Abay Emes); more are added in the CMS at `/admin` (or with
+`npm run font:add`). The content editor is the owner's brother, who is not a developer —
+the admin UI must stay simple, and adding a font must never require technical fields.
 
-Not ported on purpose: base44 admin pages and auth (Decap CMS at `/admin` plays that role),
+Not ported on purpose: base44 admin pages and auth (Sveltia CMS at `/admin` plays that role),
 server-side download counter (site is static), the email newsletter form (it was a dead
 stub in the source), `Dictionary`/`New`/`ApiDocs` pages.
 
@@ -29,7 +31,7 @@ npm run dev      # http://localhost:4321
 npm run build    # static site in dist/
 npm run check    # astro check — must stay at 0 errors
 npm run font:add -- --name "Font" --designer abay-emes --category sans --license ofl \
-  [--tags free,cyrillic] [--our] [--quality 8] [--description-ru "…"] [--zip a.zip] files…
+  [--tags free,cyrillic] [--our] [--quality 8] [--description-ru "…"] [--archive a.zip] files…
 ```
 
 There is no test suite. Verify with `npm run check`, `npm run build`, and the browser.
@@ -40,8 +42,9 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | --- | --- |
 | `astro.config.mjs` | `SITE_URL` — the single place for the domain (or `SITE_URL` env var) |
 | `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary |
-| `src/content/fonts/*.json` | One font each: styles (file, web woff2, weight, italic, glyphs, scripts), license, designer… |
-| `src/content/{designers,licenses,journal}/` | Designers (JSON), licenses (JSON or MD with pricing), articles (MD) |
+| `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `files` (uploaded TTF/OTF) + optional `archive` |
+| `src/lib/fontLoader.ts` | Content loader: derives styles, weights, glyphs, alphabets, WOFF2 previews and the ZIP from the files |
+| `src/content/{designers,licenses,journal}/` | Designers (JSON), licenses (MD frontmatter, optional pricing + body), articles (MD) |
 | `src/content/glossary.json`, `src/data/{categories,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }` |
 | `src/data/{tags,purposes}.json`, `faq.ts`, `unicode.ts` | Taxonomies, FAQ (per language), Unicode reference sections |
 | `src/views/*.astro` | Page logic, each takes `lang` |
@@ -54,8 +57,8 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `src/lib/sfnt.ts` | Font binary toolkit: SFNT parse/build, WOFF, WOFF2, cmap rebuild, family rename |
 | `src/lib/store.ts` | localStorage store: favorites, download history, catalogs, prefs |
 | `src/lib/og.ts`, `src/pages/og*.ts` | Social preview PNGs rendered at build time |
-| `scripts/add-font.mjs` | Adds a font: copies files, builds woff2 + zip, reads metadata from the binary |
-| `public/admin/config.yml` | Decap CMS config (keep in sync with `content.config.ts`) |
+| `scripts/add-font.mjs` | CLI equivalent of the CMS form: copies files and writes `font.json` |
+| `public/admin/` | Sveltia CMS (`index.html` + `config.yml`; keep fields in sync with `content.config.ts`) |
 | `public/_redirects` | Netlify redirects: legacy v1 URLs and base44-style URLs |
 
 ## Conventions
@@ -87,16 +90,20 @@ in Tailwind 4. `--header-h` lets sticky elements sit under the header or the sid
 preview text and size) is browser-only via `src/lib/store.ts`.
 
 **Fonts.** Preview families are `qf-<slug>` (primary style) and `qf-<slug>-<style>`; the
-`@font-face` rules are injected per page through `Base`'s `fontCss` prop. Style metadata must
-come from the font binary (`scripts/add-font.mjs`), never guessed from file names.
+`@font-face` rules are injected per page through `Base`'s `fontCss` prop. Style metadata is
+read from the font binaries by `src/lib/fontLoader.ts` at build time — never stored by hand
+and never guessed from file names. `public/fonts/*/web/` (WOFF2 previews, generated ZIPs) is
+build output and is gitignored; a font with no usable files is skipped with a warning.
 
 ## Gotchas
 
 - **opentype.js `toPathData()` is broken** — it can glue coordinates ("42.4 0" → "42.40")
   and cut outlines short. Use `pathData()` from `src/lib/glyphPath.ts` instead.
-- **Decap CMS cannot edit JSON files whose root is an array.** Keep `glossary.json`,
-  `categories.json`, `donators.json` wrapped in an object; their loaders use a `parser`.
-  Saving a root-array file from the CMS wipes it.
+- `glossary.json`, `categories.json`, `donators.json` are wrapped in an object
+  (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`. Keep that shape —
+  the CMS config and the category relation field (`items.*.id`) depend on it.
+- The CMS config can be validated against Sveltia's JSON schema
+  (`https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json`) with ajv + js-yaml.
 - **Restart `astro dev` after changing `content.config.ts` or the shape of a data file** —
   a running server keeps the old content store and renders empty lists. If a server is
   stuck: `npx astro dev stop`.
@@ -116,11 +123,18 @@ sitemap, hosted CSS (`/fonts/<slug>.css`), OG URLs and the host shown in the UI.
 custom domain is connected: change `SITE_URL`, `site_url` in `public/admin/config.yml`, and
 uncomment the first rule in `public/_redirects`. Contact email is `SITE.email`.
 
-## Netlify
+## Admin (Sveltia CMS)
 
-Admin login uses Netlify Identity + Git Gateway. If `/admin` shows "reissue the Git Gateway
-token": Netlify → project `qarip` → **Identity** (left menu) → **Services** tab → Git Gateway →
-Edit settings → "Generate access token in GitHub" → Save.
+`/admin` runs Sveltia CMS with the GitHub backend: editors sign in with a GitHub account that
+has write access to `madiyar/qarip.kz`. Saving commits straight to `main` (no editorial
+workflow) and Netlify redeploys. Sign-in options: "Sign In with GitHub" needs a GitHub OAuth
+app registered in Netlify (project → Access & security → OAuth) or a Sveltia authenticator
+(`backend.base_url`); "Sign In Using Access Token" works without any setup. On localhost,
+"Work with Local Repository" edits the working copy directly (Chromium only).
+
+The fonts collection lives in `public/fonts` with `path: '{{slug}}/font'` and entry-relative
+media (`media_folder: ''`), so uploaded files land next to `font.json` and are removed with
+the entry. Netlify Identity and Git Gateway are no longer used.
 
 ## Open items
 

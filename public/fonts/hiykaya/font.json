@@ -18,31 +18,8 @@
   "purchaseUrl": "mailto:abayemes@gmail.com?subject=Hiykaya",
   "addedDate": "2024-03-05",
   "downloads": 0,
-  "primary": 0,
-  "scripts": [
-    "latin",
-    "cyrillic",
-    "kazakh"
+  "files": [
+    "Hiykaya-Regular.ttf"
   ],
-  "zip": "/fonts/hiykaya/hiykaya.zip",
-  "zipSize": 45602,
-  "styles": [
-    {
-      "name": "Regular",
-      "slug": "regular",
-      "file": "/fonts/hiykaya/Hiykaya-Regular.ttf",
-      "web": "/fonts/hiykaya/web/hiykaya-regular.woff2",
-      "format": "ttf",
-      "size": 112196,
-      "weight": 400,
-      "italic": false,
-      "variable": false,
-      "glyphs": 296,
-      "scripts": [
-        "latin",
-        "cyrillic",
-        "kazakh"
-      ]
-    }
-  ]
+  "archive": "hiykaya.zip"
 }

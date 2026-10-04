@@ -1,0 +1,26 @@
+---
+import { type Lang, LANGS, LANG_LABEL, LOCALE_TAG, switchLocale } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  class?: string;
+}
+const { lang, class: className } = Astro.props;
+---
+
+<div class:list={['segmented', className]} role="group" aria-label="Language">
+  {
+    LANGS.map((l) => (
+      <a
+        href={switchLocale(Astro.url.pathname, l)}
+        hreflang={LOCALE_TAG[l]}
+        lang={LOCALE_TAG[l]}
+        title={LANG_LABEL[l]}
+        aria-current={lang === l ? 'true' : undefined}
+        class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === l ? 'bg-bg text-fg' : 'text-muted hover:text-fg']}
+      >
+        {l.toUpperCase()}
+      </a>
+    ))
+  }
+</div>

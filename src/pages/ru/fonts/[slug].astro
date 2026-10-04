@@ -1,0 +1,11 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import FontPage from '../../../views/FontPage.astro';
+
+export const getStaticPaths = (async () => (await getCollection('fonts')).map((font) => ({ params: { slug: font.id }, props: { font } }))) satisfies GetStaticPaths;
+
+const { font } = Astro.props;
+---
+
+<FontPage lang="ru" font={font} />

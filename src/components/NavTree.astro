@@ -1,5 +1,5 @@
 ---
-import { type Lang, localePath, useT } from '../i18n';
+import { type Lang, barePath, localePath, useT } from '../i18n';
 import { SIDE_NAV } from '../lib/site';
 import Icon, { type IconName } from './ui/Icon';
 
@@ -8,7 +8,7 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const path = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '').replace(/\/$/, '') || '/';
+const path = barePath(Astro.url.pathname).replace(/\/$/, '') || '/';
 const bare = (href: string) => href.split('?')[0];
 const isActive = (href: string) => path === bare(href) || path.startsWith(`${bare(href)}/`);
 ---

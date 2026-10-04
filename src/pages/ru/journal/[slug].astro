@@ -1,0 +1,11 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import Article from '../../../views/Article.astro';
+
+export const getStaticPaths = (async () => (await getCollection('journal', (p) => !p.data.draft)).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+---
+
+<Article lang="ru" post={entry} />

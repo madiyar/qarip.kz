@@ -1,0 +1,11 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import Fonts from '../../../../views/Fonts.astro';
+
+export const getStaticPaths = (async () => (await getCollection('categories')).map((c) => ({ params: { id: c.id } }))) satisfies GetStaticPaths;
+
+const { id } = Astro.params;
+---
+
+<Fonts lang="en" category={id} />

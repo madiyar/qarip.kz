@@ -2,40 +2,49 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { type Lang, switchLocale, useT } from '../i18n';
+import { type Lang, LANGS, LOCALE_TAG, switchLocale, useT, withSlash } from '../i18n';
+import { HOME } from '../lib/seo';
 import { SITE } from '../lib/site';
 
 interface Props {
   lang: Lang;
   title?: string;
+  /** Complete <title>, used as is (no " — Qarip" suffix). */
+  fullTitle?: string;
   description?: string;
+  /** Social preview image; defaults to the site-wide one. */
   image?: string;
+  /** Keep the page out of search results. */
+  noindex?: boolean;
   /** Inline CSS (e.g. @font-face rules for previews). */
   fontCss?: string;
   wide?: boolean;
 }
 
-const { lang, title, description, image, fontCss, wide = false } = Astro.props;
+const { lang, title, description, image, fontCss, wide = false, noindex = false } = Astro.props;
 const t = useT(lang);
-const fullTitle = title ? `${title} — Qarip` : `Qarip — ${t('Қазақ қаріп қоры')}`;
-const desc = description ?? t('Қазақ тілін қолдайтын тегін қаріптер жинағы. Қаріпті іздеп, тексеріп, тегін жүктеп алыңыз.');
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const kkUrl = new URL(switchLocale(Astro.url.pathname, 'kk'), Astro.site);
-const enUrl = new URL(switchLocale(Astro.url.pathname, 'en'), Astro.site);
-const ogImage = image ? new URL(image, Astro.site) : undefined;
+const fullTitle = Astro.props.fullTitle ?? (title ? `${title} — Qarip` : HOME.title[lang]);
+const desc = (description ?? HOME.description[lang]).replace(/\s+/g, ' ').trim();
+// One canonical form per page: with a trailing slash, as the host serves it.
+const pathname = withSlash(Astro.url.pathname);
+const canonical = new URL(pathname, Astro.site);
+const alternates = LANGS.map((l) => ({ tag: LOCALE_TAG[l], href: new URL(switchLocale(pathname, l), Astro.site) }));
+const ogImage = new URL(image ?? '/og.png', Astro.site);
 ---
 
 <!doctype html>
-<html lang={lang === 'kk' ? 'kk-KZ' : 'en'} data-theme="dark">
+<html lang={LOCALE_TAG[lang]} data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="kk" href={kkUrl} />
-    <link rel="alternate" hreflang="en" href={enUrl} />
-    <link rel="alternate" hreflang="x-default" href={kkUrl} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    {alternates.map((a) => <link rel="alternate" hreflang={a.tag} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={alternates[0].href} />
+    {SITE.verification.google && <meta name="google-site-verification" content={SITE.verification.google} />}
+    {SITE.verification.yandex && <meta name="yandex-verification" content={SITE.verification.yandex} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:type" content="website" />
@@ -43,8 +52,14 @@ const ogImage = image ? new URL(image, Astro.site) : undefined;
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
     <meta property="og:url" content={canonical} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta property="og:locale" content={{ kk: 'kk_KZ', ru: 'ru_RU', en: 'en_US' }[lang]} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="theme-color" content="#0a0a0a" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

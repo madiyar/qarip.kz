@@ -8,6 +8,7 @@ import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
 import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
 import { TOOLS } from '../lib/site';
+import { CATEGORY, HOME, websiteLd } from '../lib/seo';
 
 interface Props {
   lang: Lang;
@@ -31,7 +32,8 @@ const stats = [
 ];
 ---
 
-<Base lang={lang} fontCss={primaryFaces(fonts)} wide>
+<Base lang={lang} fullTitle={HOME.title[lang]} description={HOME.description[lang]} fontCss={primaryFaces(fonts)} wide>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(websiteLd(Astro.site!, lang))} />
   <section class="relative overflow-hidden border-b border-line">
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,var(--accent-soft),transparent)]"></div>
     <div class="container-page relative flex flex-col items-center py-20 text-center sm:py-28">
@@ -69,7 +71,7 @@ const stats = [
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {
           categories.map((c) => (
-            <a href={localePath(lang, `/fonts?category=${c.id}`)} class="card group flex flex-col justify-between gap-8 p-4 transition-colors hover:border-muted">
+            <a href={localePath(lang, `/fonts/category/${c.id}`)} class="card group flex flex-col justify-between gap-8 p-4 transition-colors hover:border-muted">
               <span class="badge w-fit" style={`background:${c.color}22;color:${c.color}`}>{c.name}</span>
               <span class="flex items-end justify-between gap-2">
                 <span>
@@ -134,6 +136,18 @@ const stats = [
         </section>
       )
     }
+
+    <section class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{HOME.aboutTitle[lang]}</h2>
+      <div class="mt-4 space-y-4 text-muted">
+        {HOME.about[lang].map((p) => <p>{p}</p>)}
+      </div>
+      <p class="mt-6 flex flex-wrap gap-2">
+        {categories.map((c) => (
+          <a href={localePath(lang, `/fonts/category/${c.id}`)} class="chip">{CATEGORY[c.id]?.name[lang] ?? c.name}</a>
+        ))}
+      </p>
+    </section>
 
     <section class="relative overflow-hidden rounded-3xl bg-accent px-6 py-14 text-center text-accent-fg sm:px-12">
       <div class="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-white/10 blur-2xl"></div>

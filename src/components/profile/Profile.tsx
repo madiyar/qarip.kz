@@ -4,7 +4,7 @@ import { FontRow } from '../fonts/FontRow';
 import PreviewToolbar from '../fonts/PreviewToolbar';
 import { usePreview } from '../fonts/usePreview';
 import { store, useStore } from '../../lib/store';
-import { type Lang, localePath, useT } from '../../i18n';
+import { type Lang, LOCALE_TAG, localePath, useT } from '../../i18n';
 import type { FontSummary } from '../../lib/types';
 
 interface Props {
@@ -120,7 +120,7 @@ export default function Profile({ fonts, lang }: Props) {
                 <a href={localePath(lang, `/fonts/${d.slug}`)} className="flex-1 truncate text-xl hover:text-accent" style={{ fontFamily: `'qf-${d.slug}', system-ui` }}>
                   {bySlug[d.slug].name}
                 </a>
-                <time className="text-sm text-muted">{new Date(d.at).toLocaleString(lang === 'kk' ? 'kk-KZ' : 'en-GB')}</time>
+                <time className="text-sm text-muted">{new Date(d.at).toLocaleString(LOCALE_TAG[lang])}</time>
                 <a href={bySlug[d.slug].zip} download className="icon-btn" aria-label={t('Қайта жүктеу')} onClick={() => store.recordDownload(d.slug)}>
                   <Icon name="download" size={16} />
                 </a>

@@ -16,11 +16,11 @@ export default defineConfig({
   site: SITE_URL,
   trailingSlash: 'ignore',
   i18n: {
-    locales: ['kk', 'en'],
+    locales: ['kk', 'ru', 'en'],
     defaultLocale: 'kk',
     routing: { prefixDefaultLocale: false },
   },
-  integrations: [react(), mdx(), sitemap({ i18n: { defaultLocale: 'kk', locales: { kk: 'kk-KZ', en: 'en' } } })],
+  integrations: [react(), mdx(), sitemap({ i18n: { defaultLocale: 'kk', locales: { kk: 'kk-KZ', ru: 'ru', en: 'en' } }, filter: (page) => !/\/(profile|404)\/?$/.test(page) })],
   vite: {
     plugins: [tailwindcss()],
   },

@@ -3,40 +3,77 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
 import FontBrowser from '../components/fonts/FontBrowser';
-import { type Lang, useT } from '../i18n';
+import { type Lang, localePath, useT } from '../i18n';
 import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
+import { CATALOG, CATEGORY, TOP, breadcrumbLd, categoryTitle, itemListLd } from '../lib/seo';
 
 interface Props {
   lang: Lang;
   top?: boolean;
+  /** Static category page (/fonts/category/<id>). */
+  category?: string;
 }
-const { lang, top = false } = Astro.props;
+const { lang, top = false, category } = Astro.props;
 const t = useT(lang);
-const fonts = await toSummaries(await getFonts());
-const topFonts = [...fonts].sort((a, b) => b.downloads - a.downloads || Number(b.featured) - Number(a.featured)).slice(0, 20);
+const all = await toSummaries(await getFonts());
 const categories = await getCategories();
 const tags = (await getCollection('tags')).map((x) => ({ id: x.id, name: x.data.name }));
 const purposes = (await getCollection('purposes')).map((x) => ({ id: x.id, name: x.data.name }));
+
+const cat = categories.find((c) => c.id === category);
+const fonts = top
+  ? [...all].sort((a, b) => b.downloads - a.downloads || Number(b.featured) - Number(a.featured)).slice(0, 20)
+  : cat
+    ? all.filter((f) => f.category.id === cat.id)
+    : all;
+
+const catName = cat ? (CATEGORY[cat.id]?.name[lang] ?? cat.name) : '';
+const title = top ? TOP.title[lang] : cat ? categoryTitle(lang, cat.id, cat.name) : CATALOG.title[lang];
+const catText = cat ? (CATEGORY[cat.id]?.description[lang] ?? t(cat.description)) : '';
+const catOffer = { kk: `Қазақ әріптері бар ${fonts.length} шрифт — тегін жүктеу.`, ru: `Шрифтов с казахскими буквами: ${fonts.length} — скачать бесплатно.`, en: `${fonts.length} fonts with Kazakh letters — free download.` }[lang];
+const description = top ? TOP.description[lang] : cat ? `${catText} ${catOffer}` : CATALOG.description[lang];
+const h1 = top ? t('Топ қаріптер') : cat ? catName : CATALOG.h1[lang];
+const lead = top ? t('Қолданушылар арасында ең танымал және сұранысқа ие қаріптер') : cat ? catText : CATALOG.lead[lang];
+const countIn = (id: string) => all.filter((f) => f.category.id === id).length;
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Qarip', path: localePath(lang, '/') },
+  { name: t('Қаріптер'), path: localePath(lang, '/fonts') },
+  ...(cat ? [{ name: catName, path: localePath(lang, `/fonts/category/${cat.id}`) }] : []),
+  ...(top ? [{ name: t('Топ қаріптер'), path: localePath(lang, '/top') }] : []),
+];
 ---
 
-<Base
-  lang={lang}
-  title={top ? t('Топ қаріптер') : t('Қаріптер')}
-  description={top ? t('Қолданушылар арасында ең танымал қаріптер') : t('Қазақ тілін қолдайтын барлық қаріп: іздеңіз, сүзгілеңіз, өз мәтініңізбен тексеріңіз.')}
-  fontCss={primaryFaces(fonts)}
->
+<Base lang={lang} fullTitle={`${title} | Qarip`} description={description} fontCss={primaryFaces(fonts)} noindex={Boolean(cat) && fonts.length === 0}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(itemListLd(site, lang, h1, fonts))} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbLd(site, crumbs))} />
+
+  <PageHeader eyebrow={top ? t('Ең танымал') : cat ? t('Категория') : undefined} title={h1} description={lead} />
+
   {
-    top ? (
-      <PageHeader eyebrow={t('Ең танымал')} title={t('Топ қаріптер')} description={t('Қолданушылар арасында ең танымал және сұранысқа ие қаріптер')} />
-    ) : (
-      <PageHeader title={t('Түгел қаріп')} description={t('Қазақ тілін қолдайтын қаріптен керегін таңдап ал')} />
+    !top && (
+      <nav class="-mt-4 mb-8 flex flex-wrap gap-2" aria-label={t('Категориялар')}>
+        <a href={localePath(lang, '/fonts')} class="chip" aria-current={!cat ? 'page' : undefined} aria-pressed={!cat ? 'true' : 'false'}>
+          {t('Барлығы')} <span class="text-muted">{all.length}</span>
+        </a>
+        {categories.map((c) => (
+          <a href={localePath(lang, `/fonts/category/${c.id}`)} class="chip" aria-current={cat?.id === c.id ? 'page' : undefined} aria-pressed={cat?.id === c.id ? 'true' : 'false'}>
+            <span class="size-2 rounded-full" style={`background:${c.color}`} />
+            {c.name} <span class="text-muted">{countIn(c.id)}</span>
+          </a>
+        ))}
+      </nav>
     )
   }
+
   {
     top ? (
-      <FontBrowser client:load fonts={topFonts} lang={lang} ranked prefKey="top" />
+      <FontBrowser client:load fonts={fonts} lang={lang} ranked prefKey="top" />
+    ) : cat ? (
+      <FontBrowser client:load fonts={fonts} tags={tags} purposes={purposes} perPage={100} lang={lang} filters syncUrl prefKey="catalog" />
     ) : (
-      <FontBrowser client:load fonts={fonts} categories={categories} tags={tags} purposes={purposes} perPage={100} lang={lang} filters syncUrl prefKey="catalog" />
+      <FontBrowser client:load fonts={fonts} tags={tags} purposes={purposes} perPage={100} lang={lang} filters syncUrl prefKey="catalog" />
     )
   }
 </Base>

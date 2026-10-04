@@ -1,0 +1,52 @@
+---
+import { type Lang, localePath, useT } from '../i18n';
+import { SIDE_NAV } from '../lib/site';
+import Icon, { type IconName } from './ui/Icon';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const path = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '').replace(/\/$/, '') || '/';
+const bare = (href: string) => href.split('?')[0];
+const isActive = (href: string) => path === bare(href) || path.startsWith(`${bare(href)}/`);
+---
+
+<ul class="space-y-0.5" data-nav-tree>
+  {
+    SIDE_NAV.map((item) =>
+      item.children ? (
+        <li>
+          <details class="group/nav" open={item.children.some((c) => isActive(c.href))}>
+            <summary class="flex cursor-pointer list-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:text-fg [&::-webkit-details-marker]:hidden" title={t(item.label)}>
+              <Icon name={item.icon as IconName} size={16} className="shrink-0" />
+              <span class="flex-1" data-nav-label>{t(item.label)}</span>
+              <Icon name="chevronDown" size={14} className="transition-transform group-open/nav:rotate-180" data-nav-label />
+            </summary>
+            <ul class="mt-0.5 ml-5 border-l-2 border-line pl-2" data-nav-label>
+              {item.children.map((c) => (
+                <li>
+                  <a href={localePath(lang, c.href)} data-nav-link={c.href} class="block rounded-md px-2 py-1.5 text-sm text-muted transition-colors hover:text-fg">
+                    {c.raw ? c.label : t(c.label)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </li>
+      ) : (
+        <li>
+          <a
+            href={localePath(lang, item.href!)}
+            title={t(item.label)}
+            class:list={['flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:text-fg', isActive(item.href!) ? 'font-semibold text-fg' : 'text-muted']}
+          >
+            <Icon name={item.icon as IconName} size={16} className="shrink-0" />
+            <span data-nav-label>{t(item.label)}</span>
+          </a>
+        </li>
+      ),
+    )
+  }
+</ul>

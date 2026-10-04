@@ -48,6 +48,8 @@ export async function toSummaries(fonts: FontEntry[]): Promise<FontSummary[]> {
       designer: { slug: f.data.designer.id, name: d[f.data.designer.id]?.data.name ?? f.data.designer.id },
       category: { id: f.data.category.id, name: cat?.data.name ?? f.data.category.id, color: cat?.data.color ?? '#71717a' },
       tags: f.data.tags.map((t) => t.id),
+      purposes: f.data.purposes.map((t) => t.id),
+      quality: f.data.quality,
       our: f.data.our,
       featured: f.data.featured,
       free: f.data.tags.some((t) => t.id === 'free') || Boolean(lic?.data.commercial),
@@ -84,7 +86,7 @@ export function styleFaces(font: FontEntry): string {
 }
 
 /** Public, copy-pasteable CSS for using the font on a website. */
-export function publicCss(font: FontEntry, site: URL | string): string {
+export function publicCssBlocks(font: FontEntry, site: URL | string): string[] {
   const format = (f: string) => ({ woff2: 'woff2', woff: 'woff', otf: 'opentype', ttf: 'truetype' })[f] ?? f;
   return font.data.styles
     .map((s) => {
@@ -97,8 +99,11 @@ export function publicCss(font: FontEntry, site: URL | string): string {
   font-style: ${s.italic ? 'italic' : 'normal'};
   font-display: swap;
 }`;
-    })
-    .join('\n\n');
+    });
+}
+
+export function publicCss(font: FontEntry, site: URL | string): string {
+  return publicCssBlocks(font, site).join('\n\n');
 }
 
 export async function similarFonts(font: FontEntry, all: FontEntry[], limit = 3): Promise<FontEntry[]> {

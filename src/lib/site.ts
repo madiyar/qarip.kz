@@ -28,7 +28,42 @@ export const TOOLS = [
   { href: '/tools/freezer', label: 'Font Freezer', title: 'Font Freezer', description: 'OpenType мүмкіндіктерін қаріпке бекіту', icon: 'snowflake' },
   { href: '/tools/kerning', label: 'Кернинг жұптары', title: 'Кернинг жұптары генераторы', description: 'Кернинг тексеруге арналған таңба комбинациялары', icon: 'kerning' },
   { href: '/keyboard', label: 'Пернетақта', title: 'Қазақ пернетақтасы', description: 'Раскладка және виртуалды пернетақта', icon: 'keyboard' },
+  { href: '/tools/unicode', label: 'Юникодтар', title: 'Типографиялық юникодтар', description: 'Тире, пробел, тырнақша және басқа таңбаларды көшіру', icon: 'hash' },
 ] as const;
+
+const CATEGORY_LINKS = ['Sans', 'Serif', 'Display', 'Slab', 'Handwritten', 'Monospace'];
+
+/** Navigation tree for the mobile drawer and the desktop sidebar mode. */
+export const SIDE_NAV: { label: string; href?: string; icon: string; children?: { label: string; href: string; raw?: boolean }[] }[] = [
+  { label: 'Жеке кабинет', href: '/profile', icon: 'user' },
+  {
+    label: 'Қаріптер',
+    icon: 'type',
+    children: [
+      { label: 'Барлығы', href: '/fonts' },
+      { label: 'Біздің қаріп', href: '/fonts?our=1' },
+      { label: 'Топ қаріптер', href: '/top' },
+      ...CATEGORY_LINKS.map((c) => ({ label: c, href: `/fonts?category=${c.toLowerCase()}`, raw: true })),
+    ],
+  },
+  {
+    label: 'Қызметтер',
+    icon: 'wrench',
+    children: [{ label: 'Қызмет', href: '/services' }, ...TOOLS.map((x) => ({ label: x.label as string, href: x.href as string }))],
+  },
+  { label: 'Journal', href: '/journal', icon: 'book' },
+  { label: 'Сөздік', href: '/glossary', icon: 'search' },
+  {
+    label: 'Заңды',
+    icon: 'shield',
+    children: [
+      { label: 'Лицензия түрлері', href: '/licenses' },
+      { label: 'Құпия саясаты', href: '/privacy' },
+      { label: 'Қолдану шарты', href: '/terms' },
+    ],
+  },
+  { label: 'Біз туралы', href: '/about', icon: 'info' },
+];
 
 export const PANGRAMS = [
   { label: 'Қазақша панграмма 1', text: 'Бұл гүлді қызға һәм ұлға бер, ал көрші Францияны Пырансы де, ой туғанда хатыңды жаз.' },

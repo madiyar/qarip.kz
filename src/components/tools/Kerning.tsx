@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Icon from '../ui/Icon';
 import CopyButton from '../ui/CopyButton';
+import { loadFontFile, type LoadedFont } from '../../lib/userfont';
 import { type Lang, useT } from '../../i18n';
 
 const PRESETS = [
@@ -50,6 +51,9 @@ export default function Kerning({ lang }: { lang: Lang }) {
   const [lowerCtx, setLowerCtx] = useState('non');
   const [upperCtx, setUpperCtx] = useState('HOH');
   const [result, setResult] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewSize, setPreviewSize] = useState(40);
+  const [previewFont, setPreviewFont] = useState<LoadedFont | null>(null);
 
   const L = split(left);
   const R = split(right);
@@ -118,13 +122,42 @@ export default function Kerning({ lang }: { lang: Lang }) {
             {t('Нәтиже')} <span className="text-sm font-normal text-muted">{result ? `${[...result].length} ${t('таңба')}` : ''}</span>
           </p>
           <div className="flex gap-2">
+            <button type="button" className="btn-ghost h-9 px-3" aria-pressed={showPreview} disabled={!result} onClick={() => setShowPreview((p) => !p)}>
+              <Icon name="type" size={15} />
+              {t('Алдын ала көру')}
+            </button>
             <CopyButton text={result} label={t('Көшіру')} done={t('Көшірілді')} />
             <button type="button" className="btn-ghost h-9 px-3" onClick={() => setResult('')}>
               {t('Тазалау')}
             </button>
           </div>
         </div>
-        <textarea className="input h-56 resize-y py-3 font-mono text-base" value={result} onChange={(e) => setResult(e.target.value)} spellCheck={false} />
+        <textarea className="input h-56 resize-y py-3 font-mono text-base" value={result} onChange={(e) => setResult(e.target.value)} spellCheck={false} placeholder={t('Нәтиже осында шығады... Қолмен өзгертуге болады.')} />
+        {showPreview && result && (
+          <div className="mt-4 border-t border-line pt-4">
+            <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-muted">
+              <span className="eyebrow">{t('Алдын ала көру')}</span>
+              <input type="range" min={16} max={120} value={previewSize} onChange={(e) => setPreviewSize(Number(e.target.value))} className="w-28 accent-[var(--accent)]" />
+              <span className="tabular-nums">{previewSize}px</span>
+              <label className="chip ml-auto h-8 cursor-pointer text-xs">
+                <Icon name="upload" size={13} />
+                {previewFont ? previewFont.name : t('Өз қарпіңізбен көру')}
+                <input
+                  type="file"
+                  accept=".ttf,.otf,.woff,.woff2"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setPreviewFont(await loadFontFile(file).catch(() => null));
+                  }}
+                />
+              </label>
+            </div>
+            <p className="leading-loose break-all" style={{ fontSize: previewSize, fontFamily: previewFont ? `'${previewFont.family}'` : undefined }}>
+              {result}
+            </p>
+          </div>
+        )}
       </section>
 
       <div className="text-sm text-muted">

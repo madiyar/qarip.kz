@@ -37,6 +37,8 @@ collections:
       - { name: our, label: Біздің қаріп, widget: boolean, default: false }
       - { name: featured, label: Ұсынылған, widget: boolean, default: false }
       - { name: description, label: Сипаттамасы, widget: text, required: false }
+      - { name: descriptionEn, label: Сипаттамасы (English), widget: text, required: false }
+      - { name: quality, label: Сапа (1–10), widget: number, value_type: int, min: 1, max: 10, required: false }
       - { name: previewText, label: Превью мәтіні, widget: string, required: false }
       - { name: purchaseUrl, label: Сатып алу сілтемесі, widget: string, required: false }
       - { name: addedDate, label: Қосылған күні, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
@@ -151,6 +153,20 @@ collections:
               - { name: definition, label: Анықтамасы, widget: text }
               - { name: category, label: Категория, widget: select, options: [fonts, typography, design, other], default: typography }
               - { name: example, label: Мысал, widget: string, required: false }
+      - name: donators
+        label: Донаторлар
+        file: src/data/donators.json
+        format: json
+        fields:
+          - name: items
+            label: Донаторлар
+            widget: list
+            root: true
+            summary: '{{name}} — {{amount}} ₸'
+            fields:
+              - { name: name, label: Аты, widget: string }
+              - { name: amount, label: Сомасы (₸), widget: number, value_type: int, default: 0 }
+              - { name: message, label: Хабарлама, widget: text, required: false }
       - name: categories
         label: Категориялар
         file: src/data/categories.json

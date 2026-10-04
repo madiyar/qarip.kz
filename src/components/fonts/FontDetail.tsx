@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import Icon from '../ui/Icon';
 import { CodeBlock } from '../ui/CopyButton';
 import GlyphGrid from './GlyphGrid';
+import FontInfo from './FontInfo';
+import VariableTab from './VariableTab';
 import PreviewToolbar, { caseStyle } from './PreviewToolbar';
 import { usePreview } from './usePreview';
 import { CHARSETS, DEFAULT_PREVIEW } from '../../lib/site';
@@ -35,7 +37,8 @@ interface Props {
   styles: StyleInfo[];
   primary: number;
   license: LicenseInfo;
-  css: string;
+  /** One @font-face block per style, same order as `styles`. */
+  cssBlocks: string[];
   cssUrl: string;
   info: { label: string; value: string }[];
   stats: { label: string; value: string }[];
@@ -48,6 +51,7 @@ const TABS = [
   ['glyphs', 'Глиф'],
   ['license', 'Лицензия'],
   ['css', 'CSS'],
+  ['variable', 'Вариативтілік'],
   ['info', 'Инфо'],
 ] as const;
 type Tab = (typeof TABS)[number][0];
@@ -56,7 +60,12 @@ export default function FontDetail(props: Props) {
   const { lang, styles, license } = props;
   const t = useT(lang);
   const [tab, setTab] = useState<Tab>('preview');
-  const [preview, setPreview] = usePreview('detail', { text: '', size: 40, textCase: 'none', view: 'list' });
+  const [preview, setPreview] = usePreview('detail', { text: '', size: 40, textCase: 'none', view: 'list' }, true);
+  const [letterSize, setLetterSize] = useState(36);
+  const [cssSelected, setCssSelected] = useState<number[]>(() => styles.map((_, i) => i));
+  const variable = styles.find((s) => s.variable);
+  const tabs = TABS.filter(([id]) => id !== 'variable' || variable);
+  const css = props.cssBlocks.filter((_, i) => cssSelected.includes(i)).join('\n\n');
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [styleIdx, setStyleIdx] = useState(props.primary);
 
@@ -88,7 +97,7 @@ export default function FontDetail(props: Props) {
     <div>
       <div className="no-scrollbar -mx-4 mb-8 overflow-x-auto px-4">
         <div className="segmented" role="tablist">
-          {TABS.map(([id, label]) => (
+          {tabs.map(([id, label]) => (
             <button key={id} type="button" role="tab" aria-selected={tab === id} aria-pressed={tab === id} onClick={() => select(id)} className="whitespace-nowrap">
               {t(label)}
             </button>
@@ -98,10 +107,11 @@ export default function FontDetail(props: Props) {
 
       {tab === 'preview' && (
         <div className="space-y-2">
-          <PreviewToolbar t={t} state={preview} onChange={(n) => (setPreview(n), 'text' in n && setOverrides({}))} showView={false} />
+          <PreviewToolbar t={t} state={preview} onChange={(n) => (setPreview(n), 'text' in n && setOverrides({}))} />
           <p className="px-1 pt-2 text-xs text-muted">{t('Мәтінді өзгерту үшін превьюге басыңыз — әр стиль үшін жеке.')}</p>
+          <div className={preview.view === 'grid' ? 'grid gap-4 pt-2 sm:grid-cols-2' : ''}>
           {styles.map((s, i) => (
-            <div key={s.slug + i} className="border-b border-line py-6">
+            <div key={s.slug + i} className={preview.view === 'grid' ? 'card p-5' : 'border-b border-line py-6'}>
               <p className="mb-3 text-sm">
                 <span className="font-semibold">{props.name}</span> <span className="text-muted">{s.name}</span>
                 <span className="ml-2 font-mono text-xs text-muted">
@@ -121,17 +131,25 @@ export default function FontDetail(props: Props) {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
 
       {tab === 'letters' && (
         <div className="space-y-4">
-          <StylePicker />
+          <div className="flex flex-wrap items-center gap-3">
+            <StylePicker />
+            <label className="ml-auto flex items-center gap-2 text-sm text-muted">
+              {t('Кегль өлшемі')}
+              <input type="range" min={16} max={120} value={letterSize} onChange={(e) => setLetterSize(Number(e.target.value))} className="w-32 accent-[var(--accent)]" />
+              <span className="w-12 tabular-nums">{letterSize}px</span>
+            </label>
+          </div>
           <div className="card space-y-8 p-6">
             {CHARSETS.map((set) => (
               <div key={set.label}>
                 <p className="mb-3 text-sm text-muted">{t(set.label)}</p>
-                <p className="text-3xl leading-snug tracking-wide break-all sm:text-4xl" style={{ fontFamily: `'${current.family}', system-ui` }}>
+                <p className="leading-snug tracking-wide break-all" style={{ fontFamily: `'${current.family}', system-ui`, fontSize: letterSize }}>
                   {set.chars.split('').join(' ')}
                 </p>
               </div>
@@ -193,9 +211,31 @@ export default function FontDetail(props: Props) {
             <h3 className="mb-3 font-semibold">{t('Ендіру')}</h3>
             <CodeBlock code={`<link rel="stylesheet" href="${props.cssUrl}">`} label={t('Көшіру')} done={t('Көшірілді')} />
           </section>
+          {styles.length > 1 && (
+            <section>
+              <h3 className="mb-3 font-semibold">{t('Қаріп түрлері')}</h3>
+              <div className="flex flex-wrap gap-2">
+                {styles.map((s, i) => (
+                  <button
+                    key={s.slug + i}
+                    type="button"
+                    className="chip"
+                    aria-pressed={cssSelected.includes(i)}
+                    onClick={() => setCssSelected((sel) => (sel.includes(i) ? sel.filter((x) => x !== i) : [...sel, i]))}
+                  >
+                    {s.name} <span className="font-mono text-xs text-muted">{s.variable ? 'var' : s.weight}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
           <section>
             <h3 className="mb-3 font-semibold">@font-face</h3>
-            <CodeBlock code={props.css} label={t('Көшіру')} done={t('Көшірілді')} />
+            <CodeBlock code={css} label={t('CSS көшіру')} done={t('Көшірілді')} />
+          </section>
+          <section>
+            <h3 className="mb-3 font-semibold">{'<style>'}</h3>
+            <CodeBlock code={`<style>\n${css}\n</style>`} label={t('Ендіруді көшіру')} done={t('Көшірілді')} />
           </section>
           <section>
             <h3 className="mb-3 font-semibold">{t('Қолдану мысалы')}</h3>
@@ -208,6 +248,8 @@ export default function FontDetail(props: Props) {
           <p className="text-sm text-muted">{t('Сайтта қолданбас бұрын лицензия веб-қолдануға рұқсат беретінін тексеріңіз.')}</p>
         </div>
       )}
+
+      {tab === 'variable' && variable && <VariableTab name={props.name} family={variable.family} url={variable.file} t={t} />}
 
       {tab === 'info' && (
         <div className="space-y-6">
@@ -247,6 +289,7 @@ export default function FontDetail(props: Props) {
               </ul>
             </section>
           </div>
+          {glyphSource && <FontInfo url={glyphSource.file} t={t} />}
         </div>
       )}
     </div>

@@ -1,7 +1,8 @@
 ---
 import { type Lang, localePath, switchLocale, useT } from '../i18n';
-import { NAV, TOOLS } from '../lib/site';
+import { NAV, SITE, TOOLS } from '../lib/site';
 import Icon from './ui/Icon';
+import NavTree from './NavTree.astro';
 
 interface Props {
   lang: Lang;
@@ -13,11 +14,11 @@ const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
 const toolsActive = TOOLS.some((tool) => isActive(tool.href));
 ---
 
-<header class="sticky top-0 z-50 border-b border-line bg-bg/80 backdrop-blur-xl">
+<header class="site-header sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-xl">
   <div class="container-page flex h-16 items-center gap-4">
     <a href={localePath(lang, '/')} class="text-lg font-extrabold tracking-tight">Qarip</a>
 
-    <nav class="mx-auto hidden items-center gap-1 md:flex" aria-label={t('Жоғарғы мәзір')}>
+    <nav class="mx-auto hidden items-center gap-1 lg:flex" aria-label={t('Жоғарғы мәзір')}>
       {
         NAV.map((item) => (
           <a
@@ -57,7 +58,7 @@ const toolsActive = TOOLS.some((tool) => isActive(tool.href));
       </div>
     </nav>
 
-    <div class="ml-auto flex items-center gap-1 md:ml-0">
+    <div class="ml-auto flex items-center gap-1 lg:ml-0">
       <a href={localePath(lang, '/profile')} class="icon-btn" aria-label={t('Жеке кабинет')} title={t('Жеке кабинет')}>
         <Icon name="user" />
       </a>
@@ -65,70 +66,147 @@ const toolsActive = TOOLS.some((tool) => isActive(tool.href));
         <a href={switchLocale(Astro.url.pathname, 'kk')} hreflang="kk" class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'kk' ? 'bg-bg text-fg' : 'text-muted']}>KK</a>
         <a href={switchLocale(Astro.url.pathname, 'en')} hreflang="en" class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'en' ? 'bg-bg text-fg' : 'text-muted']}>EN</a>
       </div>
+      <button class="icon-btn hidden lg:inline-flex" data-nav-mode="side" aria-label={t('Бүйір мәзір')} title={t('Бүйір мәзір')}>
+        <Icon name="panelLeft" />
+      </button>
       <button class="icon-btn" data-theme-toggle aria-label={t('Тақырыпты ауыстыру')} title={t('Тақырыпты ауыстыру')}>
         <Icon name="sun" className="hidden dark:block" />
         <Icon name="moon" className="block dark:hidden" />
       </button>
-      <button class="icon-btn md:hidden" data-menu-open aria-label={t('Мәзірді ашу')} aria-expanded="false" aria-controls="mobile-menu">
+      <button class="icon-btn lg:hidden" data-menu-open aria-label={t('Мәзірді ашу')} aria-expanded="false" aria-controls="mobile-menu">
         <Icon name="menu" />
       </button>
     </div>
   </div>
-
-  <div id="mobile-menu" class="fixed inset-0 z-50 hidden overflow-y-auto bg-bg md:hidden" data-menu>
-    <div class="container-page flex h-16 items-center justify-between border-b border-line">
-      <a href={localePath(lang, '/')} class="text-lg font-extrabold tracking-tight">Qarip</a>
-      <button class="icon-btn" data-menu-close aria-label={t('Мәзірді жабу')}><Icon name="x" /></button>
-    </div>
-    <nav class="container-page flex flex-col gap-1 py-6" aria-label={t('Мобильді мәзір')}>
-      {
-        NAV.map((item) => (
-          <a href={localePath(lang, item.href)} class="rounded-xl px-3 py-3 text-2xl font-semibold hover:bg-surface">
-            {t(item.label)}
-          </a>
-        ))
-      }
-      <p class="eyebrow mt-6 mb-2 px-3">{t('Құралдар')}</p>
-      {
-        TOOLS.map((tool) => (
-          <a href={localePath(lang, tool.href)} class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-base hover:bg-surface">
-            <Icon name={tool.icon} className="text-muted" />
-            {t(tool.label)}
-          </a>
-        ))
-      }
-      <div class="mt-6 flex gap-2 px-3">
-        <a href={switchLocale(Astro.url.pathname, 'kk')} class:list={['chip', lang === 'kk' && 'border-accent']}>Қазақша</a>
-        <a href={switchLocale(Astro.url.pathname, 'en')} class:list={['chip', lang === 'en' && 'border-accent']}>English</a>
-      </div>
-    </nav>
-  </div>
 </header>
 
+<!--
+  The drawer and the sidebar live outside <header>: its backdrop-filter would
+  otherwise become the containing block for position: fixed children.
+-->
+<div class="fixed inset-0 z-50 hidden bg-black/50 lg:hidden" data-menu-backdrop></div>
+<aside
+  id="mobile-menu"
+  class="fixed top-0 right-0 z-50 flex h-dvh w-72 max-w-[85vw] translate-x-full flex-col border-l border-line bg-bg transition-transform duration-300 lg:hidden"
+  aria-label={t('Мобильді мәзір')}
+  data-menu
+  inert
+>
+  <div class="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
+    <a href={localePath(lang, '/')} class="text-lg font-extrabold tracking-tight">Qarip</a>
+    <button class="icon-btn" data-menu-close aria-label={t('Мәзірді жабу')}><Icon name="x" /></button>
+  </div>
+  <nav class="flex-1 overflow-y-auto px-2 py-3">
+    <NavTree lang={lang} />
+  </nav>
+  <div class="flex h-14 shrink-0 items-center justify-between border-t border-line px-3">
+    <div class="flex">
+      <a href={SITE.telegram} class="icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><Icon name="send" size={16} /></a>
+      <a href={SITE.instagram} class="icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Icon name="instagram" size={16} /></a>
+    </div>
+    <div class="flex items-center gap-1">
+      <div class="segmented">
+        <a href={switchLocale(Astro.url.pathname, 'kk')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'kk' ? 'bg-bg text-fg' : 'text-muted']}>KK</a>
+        <a href={switchLocale(Astro.url.pathname, 'en')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'en' ? 'bg-bg text-fg' : 'text-muted']}>EN</a>
+      </div>
+      <button class="icon-btn" data-theme-toggle aria-label={t('Тақырыпты ауыстыру')}>
+        <Icon name="sun" size={16} className="hidden dark:block" />
+        <Icon name="moon" size={16} className="block dark:hidden" />
+      </button>
+    </div>
+  </div>
+</aside>
+
+<aside class="site-sidebar fixed top-0 left-0 z-40 hidden h-dvh flex-col border-r border-line bg-surface" aria-label={t('Бүйір мәзір')}>
+  <div class="flex h-14 shrink-0 items-center justify-between border-b border-line px-3">
+    <a href={localePath(lang, '/')} class="text-lg font-extrabold tracking-tight" data-nav-label>Qarip</a>
+    <button class="icon-btn size-8" data-side-collapse aria-label={t('Мәзірді жию')}>
+      <Icon name="chevronLeft" size={16} className="side-collapse-icon transition-transform" />
+    </button>
+  </div>
+  <nav class="flex-1 overflow-x-hidden overflow-y-auto px-2 py-3">
+    <NavTree lang={lang} />
+  </nav>
+  <div class="side-footer flex shrink-0 items-center justify-between gap-1 border-t border-line px-2 py-2">
+    <div class="segmented" data-nav-label>
+      <a href={switchLocale(Astro.url.pathname, 'kk')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'kk' ? 'bg-bg text-fg' : 'text-muted']}>KK</a>
+      <a href={switchLocale(Astro.url.pathname, 'en')} class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === 'en' ? 'bg-bg text-fg' : 'text-muted']}>EN</a>
+    </div>
+    <div class="side-footer-actions flex">
+      <button class="icon-btn size-8" data-theme-toggle aria-label={t('Тақырыпты ауыстыру')}>
+        <Icon name="sun" size={16} className="hidden dark:block" />
+        <Icon name="moon" size={16} className="block dark:hidden" />
+      </button>
+      <button class="icon-btn size-8" data-nav-mode="top" aria-label={t('Жоғарғы мәзір')} title={t('Жоғарғы мәзір')}>
+        <Icon name="panelTop" size={16} />
+      </button>
+    </div>
+  </div>
+</aside>
+
 <script>
+  const root = document.documentElement;
+  const save = (k: string, v: string) => {
+    try {
+      localStorage.setItem(k, v);
+    } catch {}
+  };
+
   document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((btn) =>
     btn.addEventListener('click', () => {
-      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-      document.documentElement.dataset.theme = next;
-      try {
-        localStorage.setItem('theme', next);
-      } catch {}
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      save('theme', next);
     }),
   );
 
-  const menu = document.querySelector<HTMLElement>('[data-menu]');
-  const openBtn = document.querySelector<HTMLElement>('[data-menu-open]');
-  const setMenu = (open: boolean) => {
-    menu?.classList.toggle('hidden', !open);
-    document.body.style.overflow = open ? 'hidden' : '';
-    openBtn?.setAttribute('aria-expanded', String(open));
-  };
-  openBtn?.addEventListener('click', () => setMenu(true));
-  document.querySelector('[data-menu-close]')?.addEventListener('click', () => setMenu(false));
+  // Desktop navigation mode: top bar or sidebar.
+  document.querySelectorAll<HTMLElement>('[data-nav-mode]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      root.dataset.nav = btn.dataset.navMode!;
+      save('nav', btn.dataset.navMode!);
+    }),
+  );
+  document.querySelector('[data-side-collapse]')?.addEventListener('click', () => {
+    const next = root.dataset.side === 'collapsed' ? 'open' : 'collapsed';
+    root.dataset.side = next;
+    save('side', next);
+  });
 
-  document.querySelectorAll<HTMLElement>('[data-dropdown]').forEach((root) => {
-    const trigger = root.querySelector<HTMLElement>('[data-dropdown-trigger]')!;
-    const panel = root.querySelector<HTMLElement>('[data-dropdown-menu]')!;
+  // Mobile drawer.
+  const menu = document.querySelector<HTMLElement>('[data-menu]')!;
+  const backdrop = document.querySelector<HTMLElement>('[data-menu-backdrop]')!;
+  const openBtn = document.querySelector<HTMLElement>('[data-menu-open]')!;
+  const setMenu = (open: boolean) => {
+    menu.classList.toggle('translate-x-full', !open);
+    menu.toggleAttribute('inert', !open);
+    backdrop.classList.toggle('hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    openBtn.setAttribute('aria-expanded', String(open));
+    if (open) menu.querySelector<HTMLElement>('[data-menu-close]')?.focus();
+  };
+  openBtn.addEventListener('click', () => setMenu(true));
+  backdrop.addEventListener('click', () => setMenu(false));
+  menu.querySelector('[data-menu-close]')?.addEventListener('click', () => setMenu(false));
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
+
+  // Highlight the link matching the current URL, including its query (?category=…).
+  const here = location.pathname.replace(/^\/en(?=\/|$)/, '').replace(/\/$/, '') || '/';
+  const query = new URLSearchParams(location.search);
+  document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]').forEach((a) => {
+    const [p, q] = a.dataset.navLink!.split('?');
+    const want = new URLSearchParams(q ?? '');
+    const samePath = here === p;
+    const active = samePath && (q ? [...want].every(([k, v]) => query.get(k) === v) : ![...query.keys()].some((k) => ['category', 'our'].includes(k)));
+    a.classList.toggle('text-accent', active);
+    a.classList.toggle('font-semibold', active);
+    a.classList.toggle('text-muted', !active);
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-dropdown]').forEach((dd) => {
+    const trigger = dd.querySelector<HTMLElement>('[data-dropdown-trigger]')!;
+    const panel = dd.querySelector<HTMLElement>('[data-dropdown-menu]')!;
     let timer: number | undefined;
     const set = (open: boolean) => {
       panel.classList.toggle('hidden', !open);
@@ -136,14 +214,14 @@ const toolsActive = TOOLS.some((tool) => isActive(tool.href));
       trigger.setAttribute('aria-expanded', String(open));
     };
     trigger.addEventListener('click', () => set(panel.classList.contains('hidden')));
-    root.addEventListener('mouseenter', () => {
+    dd.addEventListener('mouseenter', () => {
       clearTimeout(timer);
       set(true);
     });
-    root.addEventListener('mouseleave', () => {
+    dd.addEventListener('mouseleave', () => {
       timer = window.setTimeout(() => set(false), 150);
     });
     document.addEventListener('keydown', (e) => e.key === 'Escape' && set(false));
-    document.addEventListener('click', (e) => !root.contains(e.target as Node) && set(false));
+    document.addEventListener('click', (e) => !dd.contains(e.target as Node) && set(false));
   });
 </script>

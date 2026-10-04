@@ -88,19 +88,19 @@ const stats = [
 
     <section>
       <SectionHead eyebrow={t('Жаңа қосылды')} title={t('Соңғы қаріп')} href={localePath(lang, '/fonts?sort=new')} linkLabel={t('Барлығы')} />
-      <FontBrowser client:visible fonts={latest} lang={lang} prefKey="home-new" initialSize={28} />
+      <FontBrowser client:visible fonts={latest} lang={lang} prefKey="home-new" />
     </section>
 
     <section>
       <SectionHead eyebrow={t('Рейтинг')} title={t('Танымал қаріп')} href={localePath(lang, '/top')} linkLabel={t('Барлығы')} />
-      <FontBrowser client:visible fonts={popular} lang={lang} ranked prefKey="home-top" initialSize={28} />
+      <FontBrowser client:visible fonts={popular} lang={lang} ranked prefKey="home-top" />
     </section>
 
     {
       ours.length > 0 && (
         <section>
           <SectionHead eyebrow={t('Эксклюзив')} title={t('Біздің қаріп')} href={localePath(lang, '/fonts?our=1')} linkLabel={t('Барлығы')} />
-          <FontBrowser client:visible fonts={ours} lang={lang} prefKey="home-our" initialSize={28} />
+          <FontBrowser client:visible fonts={ours} lang={lang} prefKey="home-our" />
         </section>
       )
     }

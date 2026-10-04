@@ -18,6 +18,27 @@ interface Props {
   pageSize?: number;
 }
 
+type Group = 'all' | 'upper' | 'lower' | 'digits' | 'kazakh' | 'symbols' | 'unencoded';
+const GROUPS: [Group, string][] = [
+  ['all', 'Барлығы'],
+  ['upper', 'Бас әріптер'],
+  ['lower', 'Кіші әріптер'],
+  ['kazakh', 'Қаз. арнайы'],
+  ['digits', 'Сандар'],
+  ['symbols', 'Таңбалар'],
+  ['unencoded', 'Кодсыз'],
+];
+const KAZAKH = new Set([...'ӘәҒғҚқҢңӨөҰұҮүҺһІі'].map((c) => c.codePointAt(0)!));
+function groupOf(g: GlyphInfo): Group {
+  if (g.unicode === undefined) return 'unencoded';
+  const ch = String.fromCodePoint(g.unicode);
+  if (/^\p{Lu}$/u.test(ch)) return 'upper';
+  if (/^\p{Ll}$/u.test(ch)) return 'lower';
+  if (/^\p{N}$/u.test(ch)) return 'digits';
+  return 'symbols';
+}
+const inGroup = (g: GlyphInfo, group: Group) => group === 'all' || (group === 'kazakh' ? g.unicode !== undefined && KAZAKH.has(g.unicode) : groupOf(g) === group);
+
 const hex = (n: number) => `U+${n.toString(16).toUpperCase().padStart(4, '0')}`;
 
 /** Renders every glyph of a font from its outlines, including unencoded ones. */
@@ -28,6 +49,7 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
   const [limit, setLimit] = useState(pageSize);
   const [selected, setSelected] = useState<GlyphInfo | null>(null);
   const [filter, setFilter] = useState('');
+  const [group, setGroup] = useState<Group>('all');
 
   useEffect(() => {
     let cancelled = false;
@@ -66,11 +88,12 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
   const visible = useMemo(() => {
     if (!glyphs) return [];
     const q = filter.trim().toLowerCase();
-    if (!q) return glyphs;
-    return glyphs.filter(
+    const pool = glyphs.filter((g) => inGroup(g, group));
+    if (!q) return pool;
+    return pool.filter(
       (g) => g.name.toLowerCase().includes(q) || (g.unicode !== undefined && (String.fromCodePoint(g.unicode) === filter.trim() || hex(g.unicode).toLowerCase().includes(q))),
     );
-  }, [glyphs, filter]);
+  }, [glyphs, filter, group]);
 
   if (error) return <p className="text-sm text-rose-500">{t('Глифтерді оқу мүмкін болмады')}</p>;
   if (!glyphs) return <p className="text-sm text-muted">{t('Жүктелуде...')}</p>;
@@ -82,6 +105,14 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
       <div>
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {GROUPS.filter(([id]) => id === 'all' || glyphs.some((g) => inGroup(g, id))).map(([id, label]) => (
+            <button key={id} type="button" className="chip h-8 text-xs" aria-pressed={group === id} onClick={() => (setGroup(id), setLimit(pageSize))}>
+              {t(label)}
+              <span className="text-muted">{id === 'all' ? glyphs.length : glyphs.filter((g) => inGroup(g, id)).length}</span>
+            </button>
+          ))}
+        </div>
         <div className="mb-3 flex items-center gap-3">
           <input className="input h-9 max-w-xs" placeholder={t('Глиф іздеу (атауы, таңба, U+...)')} value={filter} onChange={(e) => setFilter(e.target.value)} />
           <span className="text-sm text-muted">{t('{n} глиф', { n: visible.length })}</span>

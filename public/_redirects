@@ -17,6 +17,9 @@
 
 # font.base44.app-style URLs
 /home                         /                     301
+/font/:slug                   /fonts/:slug          301
+/unicode                      /tools/unicode        301
+/dictionary                   /glossary             301
 /fontdetail                   /fonts                302
 /creatordetail slug=:slug     /designers/:slug      301
 /creatordetail                /fonts                302

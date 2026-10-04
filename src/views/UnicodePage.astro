@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import Icon from '../components/ui/Icon';
+import { type Lang, localePath, useT } from '../i18n';
+import { TOOLS } from '../lib/site';
+import { UNICODE_SECTIONS } from '../data/unicode';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const description = 'Латын, кириллица, қазақ әріптері, тыныс белгілері, пробел түрлері және басқа да қажет таңбалар бір жерде. Көшіру үшін таңбаны басыңыз.';
+const code = (c: string) => `U+${c.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0')}`;
+---
+
+<Base lang={lang} title={t('Типографиялық юникодтар')} description={t(description)}>
+  <div class="mx-auto max-w-5xl">
+    <PageHeader eyebrow={t('Құралдар')} title={t('Типографиялық юникодтар')} description={t(description)} />
+    <div class="space-y-6" data-unicode>
+      {
+        UNICODE_SECTIONS.map((section) => (
+          <section class="card p-5 sm:p-6">
+            <h2 class="font-semibold">{t(section.title)}</h2>
+            {section.description && <p class="mt-1 text-xs text-muted">{t(section.description)}</p>}
+            {section.mode === 'list' ? (
+              <div class="mt-4 space-y-1.5">
+                {section.items.map((item) => (
+                  <button type="button" data-copy={item.c} class="flex w-full items-center gap-3 rounded-xl border border-line bg-bg px-3 py-2 text-left transition-colors hover:border-accent data-[copied]:border-emerald-500">
+                    <span class="w-8 shrink-0 text-center text-lg">{item.visual || item.c}</span>
+                    <span class="flex-1 text-sm">{t(item.n)}</span>
+                    <span class="hidden shrink-0 font-mono text-xs text-muted sm:inline">{item.d || code(item.c)}</span>
+                    <Icon name="copy" size={15} className="shrink-0 text-muted [[data-copied]_&]:hidden" />
+                    <Icon name="check" size={15} className="hidden shrink-0 text-emerald-500 [[data-copied]_&]:block" />
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div class="mt-4 grid grid-cols-5 gap-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12">
+                {section.items.map((item) => (
+                  <button type="button" data-copy={item.c} title={`${item.n} · ${code(item.c)}`} class="h-12 rounded-xl border border-line bg-bg text-lg transition-colors hover:border-accent data-[copied]:border-emerald-500 data-[copied]:text-emerald-500">
+                    {item.c}
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+        ))
+      }
+    </div>
+    <nav class="mt-16 flex flex-wrap gap-2 border-t border-line pt-8" aria-label={t('Басқа құралдар')}>
+      {
+        TOOLS.filter((x) => x.href !== '/tools/unicode').map((x) => (
+          <a href={localePath(lang, x.href)} class="chip">
+            <Icon name={x.icon} size={15} />
+            {t(x.label)}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+  <div class="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-fg px-4 py-2 text-sm font-semibold text-bg opacity-0 transition-opacity" data-unicode-toast>{t('Көшірілді')}</div>
+</Base>
+
+<script>
+  const toast = document.querySelector<HTMLElement>('[data-unicode-toast]')!;
+  let timer: number | undefined;
+  document.querySelector('[data-unicode]')?.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-copy]');
+    if (!btn) return;
+    try {
+      await navigator.clipboard.writeText(btn.dataset.copy!);
+    } catch {
+      return;
+    }
+    btn.dataset.copied = '';
+    toast.style.opacity = '1';
+    clearTimeout(timer);
+    timer = window.setTimeout(() => (toast.style.opacity = '0'), 1200);
+    setTimeout(() => delete btn.dataset.copied, 1200);
+  });
+</script>

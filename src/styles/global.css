@@ -130,9 +130,55 @@
   }
 }
 
+/*
+ * Desktop sidebar mode (html[data-nav='side']): the top bar is replaced by a
+ * fixed sidebar. --header-h lets sticky elements sit under whichever is shown.
+ */
+:root {
+  --header-h: 4rem;
+  --side-w: 14rem;
+}
+:root[data-side='collapsed'] {
+  --side-w: 3.5rem;
+}
+@media (width >= 64rem) {
+  :root[data-nav='side'] {
+    --header-h: 0rem;
+  }
+  :root[data-nav='side'] .site-header {
+    display: none;
+  }
+  :root[data-nav='side'] .site-sidebar {
+    display: flex;
+    width: var(--side-w);
+  }
+  :root[data-nav='side'] body {
+    padding-left: var(--side-w);
+  }
+  :root[data-side='collapsed'] .site-sidebar [data-nav-label] {
+    display: none;
+  }
+  :root[data-side='collapsed'] .site-sidebar :is(summary, li > a) {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  :root[data-side='collapsed'] .site-sidebar .side-footer,
+  :root[data-side='collapsed'] .site-sidebar .side-footer-actions {
+    flex-direction: column;
+    justify-content: center;
+  }
+  :root[data-side='collapsed'] .site-sidebar > div:first-child {
+    justify-content: center;
+  }
+  :root[data-side='collapsed'] .side-collapse-icon {
+    transform: rotate(180deg);
+  }
+}
+
 @media print {
   header,
   footer,
+  aside,
   .no-print {
     display: none !important;
   }

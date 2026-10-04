@@ -37,8 +37,9 @@ export default function FontActions({ slug, zip, zipName, purchaseUrl, lang }: P
         {t('Жүктеу')}
       </a>
       {purchaseUrl && (
-        <a href={purchaseUrl} className="btn-secondary" target={purchaseUrl.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
-          {t('Лицензия сатып алу')}
+        <a href={purchaseUrl} className="btn bg-emerald-600 text-white hover:bg-emerald-700" target={purchaseUrl.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
+          <Icon name="cart" size={17} />
+          {t('Сатып алу')}
         </a>
       )}
       <div ref={ref} className="relative">

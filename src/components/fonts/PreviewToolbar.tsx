@@ -47,7 +47,7 @@ export default function PreviewToolbar({ t, state, onChange, showView = true, mi
   const caseLabel = { none: 'Aa', upper: 'AA', lower: 'aa' }[state.textCase];
 
   return (
-    <div className="card flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
+    <div className="card flex flex-col gap-3 bg-surface/90 p-3 backdrop-blur-md sm:flex-row sm:items-center">
       <div ref={ref} className="relative flex-1">
         <input
           className="input pr-11"

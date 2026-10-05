@@ -1,27 +1,37 @@
 ---
 name: Hiykaya License
-description: "«Hiykaya» қарпінің Regular нұсқасын жеке мақсатта тегін қолдануға болады. Коммерциялық қолдану үшін лицензия сатып алу керек."
+description: «Hiykaya» қарпінің Regular нұсқасын жеке мақсатта тегін қолдануға болады. Коммерциялық қолдану үшін лицензия сатып алу керек.
 commercial: false
 modification: false
-distribution: false
+distribution: true
 attribution: false
 prices:
   - title: Тегін лицензия
-    price: "$0"
+    price: $0
     href: /fonts/hiykaya
     cta: Жүктеп алу
-    features: [Regular нұсқасы, Жеке мақсатта]
+    highlight: false
+    features:
+      - Regular нұсқасы
+      - Жеке мақсатта
   - title: Негізгі лицензия
-    price: "$50"
-    href: "mailto:abayemes@gmail.com?subject=Hiykaya%20license"
+    price: $50
+    href: mailto:abayemes@gmail.com?subject=Hiykaya%20license
     cta: Сатып алу
     highlight: true
-    features: ["Regular нұсқасы", "Коммерциялық мақсатта", "Лого, баспа, бейне"]
+    features:
+      - Regular нұсқасы
+      - Коммерциялық мақсатта
+      - Лого, баспа, бейне
   - title: Ауқымды лицензия
-    price: "$500"
-    href: "mailto:abayemes@gmail.com?subject=Hiykaya%20extended%20license"
+    price: $500
+    href: mailto:abayemes@gmail.com?subject=Hiykaya%20extended%20license
     cta: Жазу
-    features: [Regular нұсқасы, Шектеусіз, Жеке шарттар]
+    highlight: false
+    features:
+      - Regular нұсқасы
+      - Шектеусіз
+      - Жеке шарттар
 ---
 
 ## Жеке мақсатқа тегін

@@ -1,3 +1,9 @@
 {
-  "items": []
+  "items": [
+    {
+      "name": "Абай",
+      "amount": 100,
+      "message": "Һәріф"
+    }
+  ]
 }

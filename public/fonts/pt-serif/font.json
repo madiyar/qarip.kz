@@ -1,0 +1,31 @@
+{
+  "name": "PT Serif",
+  "files": [
+    "PTSerif-Bold.ttf",
+    "PTSerif-BoldItalic.ttf",
+    "PTSerif-Italic.ttf",
+    "PTSerif-Regular.ttf"
+  ],
+  "archive": "PT_Serif.zip",
+  "designer": "paratype",
+  "category": "serif",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "commercial",
+    "cyrillic",
+    "latin"
+  ],
+  "purposes": [
+    "print",
+    "body"
+  ],
+  "our": false,
+  "featured": false,
+  "quality": 10,
+  "description": "Кітап беттейтін",
+  "descriptionRu": "ПТ Сериф — это универсальная антиквенная гарнитура, разработанная специально для совместного применения с гротеском PT Sans.\n\nШрифт состоит из шести начертаний, согласованных с ПТ Санс по метрикам, пропорциям, насыщенности и рисунку. Нормальное и жирное начертания вместе с соответствующими курсивами образуют стандартный комплект для текстового набора. Кроме того, в гарнитуру входят два расширенных начертания — нормальное и курсивное — для набора текстов в мелких кеглях.\n\nРисунок шрифта отличается крупным очком строчных, умеренным контрастом штрихов, мощными клиновидными, чуть выпуклыми засечками и треугольными концевыми элементами. Это придаёт шрифту современный характер и улучшенную удобочитаемость, что, помимо традиционного использования для деловой документации и печатных изданий различного профиля, делает его применимым также для рекламы и акциденции.\n\nКаждое начертание, помимо стандартного комплекта кириллических и латинских знаков, включает знаки титульных языков Российской Федерации и большинства языков соседних республик, базирующихся на кириллице и латинице. Шрифт разработан и выпущен Паратайпом в 2010 году.\n\nДизайн Александры Корольковой при участии Ольги Умпелевой и общем руководстве Владимира Ефимова. Гарнитура создана при финансовой поддержке Федерального агентства по печати и массовым коммуникациям Российской Федерации.",
+  "descriptionEn": "PT Serif™ is the second pan-Cyrillic font family developed for the project “Public Types of the Russian Federation.” The first family of the project, PT Sans, was released in 2009.\n\nThe fonts are released with a libre license and can be freely redistributed: The main aim of the project is to give possibility to the people of Russia to read and write in their native languages.\n\nThe project is dedicated to the 300 year anniversary of the civil type invented by Peter the Great in 1708–1710. It was given financial support from the Russian Federal Agency for Press and Mass Communications.\n\nThe fonts include standard Western, Central European and Cyrillic code pages, plus the characters of every title language in the Russian Federation. This makes them a unique and very important tool for modern digital communications.\n\nPT Serif is a transitional serif typeface with humanistic terminals. It is designed for use together with PT Sans, and is harmonized across metrics, proportions, weights and design.\n\nThe family consists of six styles: regular and bold weights with corresponding italics form a standard font family for basic text setting; two caption styles in regular and italic are for use in small point sizes.\n\nDesigned by Alexandra Korolkova, Olga Umpeleva and Vladimir Yefimov and released by ParaType in 2010.",
+  "addedDate": "2026-10-05",
+  "downloads": 0
+}

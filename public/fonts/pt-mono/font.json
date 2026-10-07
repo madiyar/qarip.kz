@@ -1,0 +1,29 @@
+{
+  "name": "PT Mono",
+  "files": [
+    "pt-mono_bold.ttf",
+    "pt-mono_regular.ttf"
+  ],
+  "archive": "PT-Mono.zip",
+  "designer": "paratype",
+  "category": "monospace",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "commercial",
+    "latin",
+    "cyrillic"
+  ],
+  "purposes": [
+    "headings",
+    "body"
+  ],
+  "our": false,
+  "featured": false,
+  "quality": 10,
+  "description": "Пыты моно",
+  "descriptionRu": "ПТ Моно — моноширинный шрифт, входящий в шрифтовую систему ПТ Проект. Две гарнитуры PT Sans и PT Serif были выпущены ранее в 2009 и 2010 годах.\n\nПТ Моно предназначен в первую очередь для служебных надобностей — формуляров, таблиц, анкет, бланков и т.п. Моноширинность знаков шрифта существенно облегчает форматирование сложноструктурированных документов, позволяет рассчитать размеры полей для заполнения и облегчает выравнивание колонок таблиц. Одно из основных предназначений шрифта ПТ Моно — это веб-сайты «электронного правительства», на которых требуется заполнять различные формы запросов.\n\nШрифт разработан Александрой Корольковой при участии Изабеллы Чаевой. Выпущен компанией ПараТайп в 2011 году.",
+  "descriptionEn": "PT Mono was developed for specific uses in forms, tables, worksheets and other contexts. Equal character widths are very helpful in setting complex documents, as with such a font you may easily calculate size of entry fields, column widths in tables and so on. One of the most important areas of use is in governmental web sites where visitors have to fill different forms. Currently PT Mono consists of just one Regular style.\n\nPT Mono was designed by Alexandra Korolkova with participation of Isabella Chaeva and with the financial support of Google Web Fonts",
+  "addedDate": "2026-10-07",
+  "downloads": 0
+}

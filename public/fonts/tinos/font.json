@@ -1,0 +1,30 @@
+{
+  "name": "Tinos",
+  "files": [
+    "Tinos-Bold.ttf",
+    "Tinos-BoldItalic.ttf",
+    "Tinos-Regular.ttf",
+    "Tinos-Italic.ttf"
+  ],
+  "archive": "Tinos.zip",
+  "designer": "steve-matteson",
+  "category": "serif",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "commercial",
+    "cyrillic",
+    "latin"
+  ],
+  "purposes": [
+    "body",
+    "print"
+  ],
+  "our": false,
+  "featured": false,
+  "description": "Tinos was designed by Steve Matteson as an innovative, refreshing serif design that is metrically compatible with Times New Roman™. Tinos offers improved on-screen readability characteristics and the pan-European WGL character set and solves the needs of developers looking for width-compatible fonts to address document portability across platforms.",
+  "descriptionRu": "Tinos was designed by Steve Matteson as an innovative, refreshing serif design that is metrically compatible with Times New Roman™. Tinos offers improved on-screen readability characteristics and the pan-European WGL character set and solves the needs of developers looking for width-compatible fonts to address document portability across platforms.",
+  "descriptionEn": "Tinos was designed by Steve Matteson as an innovative, refreshing serif design that is metrically compatible with Times New Roman™. Tinos offers improved on-screen readability characteristics and the pan-European WGL character set and solves the needs of developers looking for width-compatible fonts to address document portability across platforms.",
+  "addedDate": "2026-10-07",
+  "downloads": 0
+}

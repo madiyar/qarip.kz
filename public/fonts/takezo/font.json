@@ -1,0 +1,33 @@
+{
+  "name": "Takezo",
+  "files": [
+    "TakezoBlack-wo8w8.otf",
+    "TakezoBold-xRdK0.otf",
+    "TakezoCondensed-BLVVx.otf",
+    "TakezoExtraBlack-lxX9X.otf",
+    "TakezoExtratilt-XGz8d.otf",
+    "TakezoItalic-6R5qM.otf",
+    "TakezoRegular-pga01.otf",
+    "TakezoTilt-ovdZ0.otf"
+  ],
+  "archive": "Takezo.zip",
+  "designer": "abay-emes",
+  "category": "handwritten",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "commercial",
+    "cyrillic",
+    "latin"
+  ],
+  "purposes": [
+    "print",
+    "body",
+    "headings"
+  ],
+  "our": true,
+  "featured": false,
+  "quality": 7,
+  "addedDate": "2026-10-10",
+  "downloads": 0
+}

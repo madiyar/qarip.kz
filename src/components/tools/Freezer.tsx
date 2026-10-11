@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Dropzone from './Dropzone';
 import Icon from '../ui/Icon';
+import Range from '../ui/Range';
+import Select from '../ui/Select';
 import { buildCmap, buildSfnt, downloadBytes, parseSfnt, renameFamily, sfntExtension, sfntToWoff, toWoff2 } from '../../lib/sfnt';
 import { featureName, loadFontFile, loadFontUrl, type LoadedFont } from '../../lib/userfont';
 import { baseName } from './util';
@@ -133,27 +135,22 @@ export default function Freezer({ lang, catalog }: { lang: Lang; catalog: Catalo
           ) : (
             <Dropzone t={t} compact onFiles={([f]) => load(loadFontFile(f))} title={t('Қаріп файлын тастаңыз')} />
           )}
-          <label className="block text-sm">
+          <div className="text-sm">
             <span className="mb-1 block text-muted">{t('Каталогтан')}</span>
-            <select
-              className="input h-10"
+            <Select
+              label={t('Каталогтан')}
               value=""
-              onChange={(e) => {
-                const [fi, si] = e.target.value.split(':').map(Number);
+              placeholder={t('Қаріп таңдаңыз...')}
+              className="input flex h-10 items-center gap-2"
+              block
+              onChange={(v) => {
+                const [fi, si] = v.split(':').map(Number);
                 const f = catalog[fi];
                 if (f) load(loadFontUrl(f.styles[si].file, f.styles[si].file.split('/').pop()));
               }}
-            >
-              <option value="">{t('Қаріп таңдаңыз...')}</option>
-              {catalog.map((f, fi) =>
-                f.styles.map((s, si) => (
-                  <option key={`${fi}:${si}`} value={`${fi}:${si}`}>
-                    {f.name} {f.styles.length > 1 ? `— ${s.name}` : ''}
-                  </option>
-                )),
-              )}
-            </select>
-          </label>
+              options={catalog.flatMap((f, fi) => f.styles.map((s, si) => ({ value: `${fi}:${si}`, label: f.styles.length > 1 ? `${f.name} — ${s.name}` : f.name })))}
+            />
+          </div>
           <p className="text-xs text-muted">{t('Файлдарды таратпас бұрын қаріп лицензиясы өзгертуге рұқсат беретінін тексеріңіз.')}</p>
           {error && <p className="text-sm text-rose-500">{error}</p>}
         </div>
@@ -171,7 +168,7 @@ export default function Freezer({ lang, catalog }: { lang: Lang; catalog: Catalo
                 <label key={f} className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-2">
                   <input
                     type="checkbox"
-                    className="accent-[var(--accent)]"
+                    className="checkbox"
                     checked={selected.includes(f)}
                     onChange={() => {
                       setSelected((s) => (s.includes(f) ? s.filter((x) => x !== f) : [...s, f]));
@@ -198,14 +195,21 @@ export default function Freezer({ lang, catalog }: { lang: Lang; catalog: Catalo
             <span className="mb-1 block text-muted">{t('Атауына жұрнақ')}</span>
             <input className="input h-10" value={suffix} onChange={(e) => setSuffix(e.target.value)} />
           </label>
-          <label className="block">
+          <div>
             <span className="mb-1 block text-muted">{t('Формат')}</span>
-            <select className="input h-10" value={format} onChange={(e) => setFormat(e.target.value as OutFormat)}>
-              <option value="same">TTF / OTF</option>
-              <option value="woff">WOFF</option>
-              <option value="woff2">WOFF2</option>
-            </select>
-          </label>
+            <Select<OutFormat>
+              label={t('Формат')}
+              value={format}
+              onChange={setFormat}
+              className="input flex h-10 items-center gap-2"
+              block
+              options={[
+                { value: 'same', label: 'TTF / OTF' },
+                { value: 'woff', label: 'WOFF' },
+                { value: 'woff2', label: 'WOFF2' },
+              ]}
+            />
+          </div>
           <button type="button" className="btn-primary w-full" disabled={!font || !selected.length || busy} onClick={freeze}>
             <Icon name="snowflake" size={16} />
             {t('Бекіту')}
@@ -235,7 +239,7 @@ export default function Freezer({ lang, catalog }: { lang: Lang; catalog: Catalo
           </div>
           <label className="ml-auto flex items-center gap-2 text-sm text-muted">
             {t('Өлшемі')}
-            <input type="range" min={16} max={160} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-32 accent-[var(--accent)]" />
+            <Range min={16} max={160} value={size} onChange={setSize} className="w-32" label={t('Өлшемі')} />
             <span className="w-12 tabular-nums">{size}px</span>
           </label>
         </div>

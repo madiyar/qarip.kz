@@ -4,7 +4,9 @@
     "RubikGlitch-Regular.ttf"
   ],
   "archive": "Rubik_Glitch.zip",
-  "designer": "luke-prowse",
+  "designers": [
+    "luke-prowse"
+  ],
   "category": "display",
   "license": "ofl",
   "tags": [
@@ -18,11 +20,9 @@
     "logo"
   ],
   "our": false,
-  "featured": false,
   "quality": 8,
   "description": "Hdhdhhd",
   "descriptionRu": "Hfjfhfj",
   "descriptionEn": "The Generative Fonts is an original, script-generated collection of fonts based on the Google Fonts Rubik by Hubert and Fischer, Meir Sadan and Cyreal.",
-  "addedDate": "2026-10-05",
-  "downloads": 0
+  "addedDate": "2026-10-05"
 }

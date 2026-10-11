@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon';
+import Range from '../ui/Range';
 import { PANGRAMS } from '../../lib/site';
 import type { T } from '../../i18n';
 
@@ -47,7 +48,8 @@ export default function PreviewToolbar({ t, state, onChange, showView = true, mi
   const caseLabel = { none: 'Aa', upper: 'AA', lower: 'aa' }[state.textCase];
 
   return (
-    <div className="card flex flex-col gap-3 bg-surface/90 p-3 backdrop-blur-md sm:flex-row sm:items-center">
+    // relative + z-20: the pangram menu must cover the font cards that follow (backdrop-blur makes this a stacking context).
+    <div className="card relative z-20 flex flex-col gap-3 bg-surface/90 p-3 backdrop-blur-md sm:flex-row sm:items-center">
       <div ref={ref} className="relative flex-1">
         <input
           className="input pr-11"
@@ -59,15 +61,16 @@ export default function PreviewToolbar({ t, state, onChange, showView = true, mi
         <button
           type="button"
           className="icon-btn absolute top-0.5 right-0.5"
-          aria-label={t('Дайын панграммалар')}
+          aria-label={t('Панграмма')}
+          aria-haspopup="menu"
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
         >
           <Icon name="chevronDown" size={16} />
         </button>
         {open && (
-          <div className="card absolute top-full right-0 z-30 mt-2 w-full max-w-md p-2 shadow-2xl" role="menu">
-            <p className="px-2 py-1.5 text-xs font-semibold text-muted">{t('Дайын панграммалар:')}</p>
+          <div className="card absolute top-full right-0 z-50 mt-2 w-full max-w-md p-2 shadow-2xl" role="menu" aria-label={t('Панграмма')}>
+            <p className="px-2 py-1.5 text-xs font-semibold text-muted">{t('Панграмма')}</p>
             {PANGRAMS.map((p) => (
               <button
                 key={p.label}
@@ -110,15 +113,7 @@ export default function PreviewToolbar({ t, state, onChange, showView = true, mi
           <button type="button" className="icon-btn" onClick={() => onChange({ size: Math.max(min, state.size - step) })} aria-label={t('Кішірейту')}>
             <Icon name="minus" size={16} />
           </button>
-          <input
-            type="range"
-            min={min}
-            max={max}
-            value={state.size}
-            onChange={(e) => onChange({ size: Number(e.target.value) })}
-            className="hidden w-24 accent-[var(--accent)] lg:block"
-            aria-label={t('Өлшемі')}
-          />
+          <Range min={min} max={max} value={state.size} onChange={(size) => onChange({ size })} className="mx-1 hidden w-24 lg:block" label={t('Өлшемі')} />
           <span className="w-14 text-center text-sm tabular-nums text-muted">{state.size}px</span>
           <button type="button" className="icon-btn" onClick={() => onChange({ size: Math.min(max, state.size + step) })} aria-label={t('Үлкейту')}>
             <Icon name="plus" size={16} />

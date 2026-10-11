@@ -6,5 +6,5 @@ commercial: true
 modification: true
 distribution: true
 attribution: false
-featured: true
+visible: true
 ---

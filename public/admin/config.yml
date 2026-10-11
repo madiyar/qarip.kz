@@ -37,13 +37,14 @@ editor:
 collections:
   # ── Fonts ───────────────────────────────────────────────────────────────────
   # One folder per font: public/fonts/<slug>/font.json + the uploaded files.
-  # Styles, weights, glyph counts, alphabets, WOFF2 previews and the ZIP are
-  # derived from the files when the site is built (src/lib/fontLoader.ts).
+  # Style names, weights, glyph counts, alphabets, WOFF2 previews and the list of
+  # files in the ZIP are derived from the files when the site is built
+  # (src/lib/fontLoader.ts). Download counts are real (netlify/functions/downloads.mts).
   # Deleting a font here removes its folder together with the files.
   - name: fonts
     label: Қаріптер
     label_singular: Қаріп
-    description: Қаріп қосу үшін атауын жазып, файлдарын жүктеңіз. Стильдер, салмақтар мен ZIP архив автоматты түрде жасалады.
+    description: Қаріп қосу үшін атауын жазып, файлдары мен ZIP архивін жүктеңіз. Стильдер мен салмақтар файлдан автоматты түрде оқылады.
     icon: font_download
     folder: /public/fonts
     path: '{{slug}}/font'
@@ -55,10 +56,9 @@ collections:
     slug: '{{name}}'
     summary: '{{name}}'
     thumbnail: false
-    sortable_fields: [name, addedDate, downloads]
+    sortable_fields: [name, addedDate]
     view_filters:
       - { label: Біздің қаріп, field: our, pattern: true }
-      - { label: Ұсынылған (топ), field: featured, pattern: true }
     fields:
       - name: name
         label: Қаріп атауы
@@ -71,22 +71,23 @@ collections:
         min: 1
         accept: .ttf,.otf,.woff,.woff2
         choose_url: false
-        hint: Барлық стильдің файлын (TTF немесе OTF) бірден сүйреп әкеліңіз. Стиль атауы, салмағы, глиф саны файлдан өзі оқылады.
+        hint: Барлық стильдің файлын (TTF, OTF, вариативті қаріптерді де) бірден сүйреп әкеліңіз. Стиль атауы, салмағы, глиф саны файлдан өзі оқылады.
       - name: archive
-        label: Дайын ZIP архив (міндетті емес)
+        label: ZIP архив
         widget: file
-        required: false
         accept: .zip
         choose_url: false
-        hint: Ішінде лицензия не readme бар өз архивіңіз болса жүктеңіз. Бос қалдырсаңыз, архив жоғарыдағы файлдардан өзі жиналады.
-      - name: designer
-        label: Дизайнер
+        hint: Сайттан жүктелетін архив (қаріп файлдары, лицензия, readme). Қаріп бетіндегі «Файлдар» тізімі осы архивтен алынады.
+      - name: designers
+        label: Дизайнерлер
         widget: relation
         collection: designers
         value_field: '{{slug}}'
         display_fields: [name]
         search_fields: [name]
-        hint: Тізімде жоқ болса, алдымен «Дизайнерлер» бөліміне қосыңыз.
+        multiple: true
+        min: 1
+        hint: Бір немесе бірнеше дизайнер. Тізімде жоқ болса, алдымен «Дизайнерлер» бөліміне қосыңыз.
       - name: category
         label: Категория
         widget: relation
@@ -128,15 +129,15 @@ collections:
           - { label: Экран, value: screen }
           - { label: Баспа, value: print }
       - { name: our, label: Біздің қаріп, widget: boolean, default: false, required: false }
-      - { name: featured, label: Ұсынылған (топ қаріп), widget: boolean, default: false, required: false }
       - name: quality
         label: Сапа (1–10)
         widget: number
-        value_type: int
+        value_type: float
         min: 1
         max: 10
+        step: 0.5
         required: false
-        hint: 1 — нашар, 10 — өте жақсы. Бос қалдыруға болады.
+        hint: 1 — нашар, 10 — өте жақсы, бөлшек те болады (мысалы 7.5). Бос қалдыруға болады.
       - { name: description, label: Сипаттамасы (қазақша), widget: text, required: false }
       - { name: descriptionRu, label: Сипаттамасы (орысша), widget: text, required: false }
       - { name: descriptionEn, label: Сипаттамасы (ағылшынша), widget: text, required: false }
@@ -149,7 +150,7 @@ collections:
         label: Негізгі стиль
         widget: string
         required: false
-        hint: 'Тізімде қай стиль көрсетілетіні, мысалы: Bold. Бос болса — Regular.'
+        hint: 'Тізімде қай стиль көрсетілетіні, мысалы: Bold немесе Narrow Bold. Бос болса — Regular.'
       - name: purchaseUrl
         label: Сатып алу сілтемесі
         widget: string
@@ -163,14 +164,6 @@ collections:
         default: '{{now}}'
       - { name: releaseDate, label: Шыққан күні, widget: datetime, type: date, format: YYYY-MM-DD, required: false }
       - { name: updatedDate, label: Жаңартылған күні, widget: datetime, type: date, format: YYYY-MM-DD, required: false }
-      - name: downloads
-        label: Жүктеу саны
-        widget: number
-        value_type: int
-        min: 0
-        default: 0
-        required: false
-        hint: «Танымал қаріп» рейтингі осы сан бойынша құрылады.
 
   # ── Designers ───────────────────────────────────────────────────────────────
   - name: designers
@@ -187,7 +180,12 @@ collections:
     public_folder: /images/designers
     fields:
       - { name: name, label: Аты-жөні, widget: string }
-      - { name: bio, label: Өзі туралы, widget: text, required: false }
+      - name: bio
+        label: Өзі туралы (қазақша)
+        widget: text
+        hint: Міндетті. Орысша не ағылшынша мәтін бос болса, сайтта осы мәтін көрсетіледі.
+      - { name: bioRu, label: Өзі туралы (орысша), widget: text, required: false }
+      - { name: bioEn, label: Өзі туралы (ағылшынша), widget: text, required: false }
       - { name: photo, label: Фото, widget: image, required: false, choose_url: false }
       - name: links
         label: Сілтемелер
@@ -257,6 +255,12 @@ collections:
       - { name: modification, label: Өзгертуге болады, widget: boolean, default: false }
       - { name: distribution, label: Таратуға болады, widget: boolean, default: false }
       - { name: attribution, label: Авторды көрсету міндетті, widget: boolean, default: false, required: false }
+      - name: visible
+        label: Сайтта көрсету
+        widget: boolean
+        default: false
+        required: false
+        hint: Қосулы болса, лицензия «Лицензиялар» бетінде көрсетіледі. Қаріп бетінде лицензия бәрібір көрсетіледі.
       - name: prices
         label: Бағалар
         label_singular: баға

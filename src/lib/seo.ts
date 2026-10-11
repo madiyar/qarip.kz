@@ -149,7 +149,7 @@ const SCRIPT_NAMES: Record<string, L> = {
 
 export interface FontSeoInput {
   name: string;
-  designer: string;
+  designers: string[];
   category: string;
   styles: number;
   glyphs: number;
@@ -172,9 +172,11 @@ export function fontSummary(lang: Lang, f: FontSeoInput): string {
   const scripts = f.scripts.map((s) => SCRIPT_NAMES[s]?.[lang] ?? s).join(', ');
   const hasKazakh = f.scripts.includes('kazakh');
   const cat = CATEGORY[f.category]?.name[lang] ?? f.category;
+  const many = f.designers.length > 1;
+  const by = f.designers.join(', ');
   if (lang === 'ru') {
     return [
-      `${f.name} — шрифт${hasKazakh ? ' с казахскими буквами' : ''} от дизайнера ${f.designer}.`,
+      `${f.name} — шрифт${hasKazakh ? ' с казахскими буквами' : ''} от ${many ? 'дизайнеров' : 'дизайнера'} ${by}.`,
       `Категория: ${cat.toLowerCase()}. Стилей: ${f.styles}${f.glyphs ? `, глифов: ${f.glyphs}` : ''}. Алфавиты: ${scripts}.`,
       `Лицензия: ${f.license} — ${f.commercial ? 'можно использовать в коммерческих проектах' : 'бесплатно для личного использования'}.`,
       `Скачать шрифт ${f.name} можно бесплатно одним архивом (${f.formats}).`,
@@ -182,14 +184,14 @@ export function fontSummary(lang: Lang, f: FontSeoInput): string {
   }
   if (lang === 'en') {
     return [
-      `${f.name} is a font${hasKazakh ? ' with Kazakh letters' : ''} by ${f.designer}.`,
+      `${f.name} is a font${hasKazakh ? ' with Kazakh letters' : ''} by ${by}.`,
       `Category: ${cat}. Styles: ${f.styles}${f.glyphs ? `, glyphs: ${f.glyphs}` : ''}. Alphabets: ${scripts}.`,
       `License: ${f.license} — ${f.commercial ? 'allowed in commercial projects' : 'free for personal use'}.`,
       `Download ${f.name} for free as a single archive (${f.formats}).`,
     ].join(' ');
   }
   return [
-    `${f.name} — ${f.designer} жасаған${hasKazakh ? ' қазақ әріптері бар' : ''} қаріп (шрифт).`,
+    `${f.name} — ${by} жасаған${hasKazakh ? ' қазақ әріптері бар' : ''} қаріп (шрифт).`,
     `Категориясы: ${cat}. Стиль саны: ${f.styles}${f.glyphs ? `, глиф саны: ${f.glyphs}` : ''}. Әліпбилер: ${scripts}.`,
     `Лицензиясы: ${f.license} — ${f.commercial ? 'коммерциялық жобада қолдануға болады' : 'жеке мақсатта тегін'}.`,
     `${f.name} шрифтін бір архивпен (${f.formats}) тегін жүктеп алыңыз.`,

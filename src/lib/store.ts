@@ -2,7 +2,8 @@ import { useSyncExternalStore } from 'react';
 
 /**
  * Personal data lives in this browser only (localStorage): favorites,
- * download history and user catalogs. Nothing is sent to a server.
+ * download history and user catalogs. None of it is sent to a server (the anonymous
+ * download counter in src/lib/downloads.ts only receives the font slug).
  */
 export interface Catalog {
   id: string;

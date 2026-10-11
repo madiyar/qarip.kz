@@ -3,6 +3,7 @@ import Dropzone from './Dropzone';
 import GlyphGrid from '../fonts/GlyphGrid';
 import PreviewToolbar, { caseStyle, type PreviewState } from '../fonts/PreviewToolbar';
 import Icon from '../ui/Icon';
+import Range from '../ui/Range';
 import { featureName, loadFontFile, type LoadedFont } from '../../lib/userfont';
 import { formatSize } from './util';
 import { FontMeta, inspectFontFile } from '../fonts/FontInfo';
@@ -138,27 +139,27 @@ export default function Tester({ lang }: { lang: Lang }) {
             <span className="flex justify-between text-muted">
               {t('Жол аралығы')} <span>{lineHeight.toFixed(2)}</span>
             </span>
-            <input type="range" min={0.8} max={2.4} step={0.05} value={lineHeight} onChange={(e) => setLineHeight(Number(e.target.value))} className="w-full accent-[var(--accent)]" />
+            <Range min={0.8} max={2.4} step={0.05} value={lineHeight} onChange={setLineHeight} className="w-full" label={t('Жол аралығы')} />
           </label>
           <label className="block">
             <span className="flex justify-between text-muted">
               {t('Әріп аралығы')} <span>{tracking}</span>
             </span>
-            <input type="range" min={-100} max={400} step={5} value={tracking} onChange={(e) => setTracking(Number(e.target.value))} className="w-full accent-[var(--accent)]" />
+            <Range min={-100} max={400} step={5} value={tracking} onChange={setTracking} className="w-full" label={t('Әріп аралығы')} />
           </label>
           {active.axes.map((a) => (
             <label key={a.tag} className="block">
               <span className="flex justify-between text-muted">
                 {a.name} ({a.tag}) <span>{axes[a.tag] ?? a.default}</span>
               </span>
-              <input
-                type="range"
+              <Range
                 min={a.min}
                 max={a.max}
                 step={(a.max - a.min) / 100}
                 value={axes[a.tag] ?? a.default}
-                onChange={(e) => setAxes((x) => ({ ...x, [a.tag]: Number(Number(e.target.value).toFixed(1)) }))}
-                className="w-full accent-[var(--accent)]"
+                onChange={(v) => setAxes((x) => ({ ...x, [a.tag]: Number(v.toFixed(1)) }))}
+                className="w-full"
+                label={`${a.name} (${a.tag})`}
               />
             </label>
           ))}

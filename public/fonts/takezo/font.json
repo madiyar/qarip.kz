@@ -11,7 +11,9 @@
     "TakezoTilt-ovdZ0.otf"
   ],
   "archive": "Takezo.zip",
-  "designer": "abay-emes",
+  "designers": [
+    "abay-emes"
+  ],
   "category": "handwritten",
   "license": "ofl",
   "tags": [
@@ -26,9 +28,7 @@
     "headings"
   ],
   "our": true,
-  "featured": false,
   "quality": 7,
   "primaryStyle": "Regular",
-  "addedDate": "2026-10-10",
-  "downloads": 0
+  "addedDate": "2026-10-10"
 }

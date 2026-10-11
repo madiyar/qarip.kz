@@ -36,23 +36,25 @@ npm run check    # type check
 ## Adding content
 
 Editors use the admin at `/admin` (Sveltia CMS, sign in with GitHub). To add a font there:
-enter its name, drop the TTF/OTF files, pick the designer, category and license, save.
-Each font is a folder — `public/fonts/<slug>/font.json` plus the uploaded files. Style names,
-weights, glyph counts, supported alphabets, WOFF2 previews and the ZIP archive are derived
-from the files when the site is built (`src/lib/fontLoader.ts`).
+enter its name, drop the TTF/OTF files and the ZIP archive, pick the designers, category and
+license, save. Each font is a folder — `public/fonts/<slug>/font.json` plus the uploaded files.
+Style names, weights, glyph counts, supported alphabets, WOFF2 previews and the list of files
+inside the ZIP are derived from the files when the site is built (`src/lib/fontLoader.ts`).
 
 The same from the command line:
 
 ```sh
-npm run font:add -- --name "Font Name" --designer abay-emes --category sans \
-  --license ofl --tags free,cyrillic --our [--archive designer.zip] path/to/*.otf
+npm run font:add -- --name "Font Name" --designer abay-emes[,other] --category sans \
+  --license ofl --tags free,cyrillic --our --archive designer.zip path/to/*.otf
 ```
 
 ## Structure
 
 | Path | What |
 | --- | --- |
-| `public/fonts/<slug>/` | One folder per font: `font.json` + font files (`web/` is generated) |
+| `public/fonts/<slug>/` | One folder per font: `font.json` + font files + ZIP |
+| `public/fonts-web/` | Generated at build time: WOFF2 previews (and a ZIP when none was uploaded) |
+| `netlify/functions/downloads.mts` | Download counter (Netlify Function + Netlify Blobs) |
 | `src/content/designers/*.json` | Designers |
 | `src/content/licenses/*.md` | Licenses (Markdown body + pricing is optional) |
 | `src/content/journal/*.md` | Journal articles |
@@ -66,3 +68,5 @@ Pages exist in Kazakh (`/…`) and English (`/en/…`); `src/views/*` hold the p
 and `src/pages/**` are thin locale wrappers.
 
 Favorites, download history and catalogs are stored in the visitor's browser (localStorage).
+Download counts are real: each download button sends the font slug to `/api/downloads/<slug>`;
+the build reads the totals from `/api/downloads` on the live site.

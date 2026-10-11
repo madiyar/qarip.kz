@@ -22,4 +22,6 @@ pnpm-debug.log*
 .DS_Store
 
 # generated at build time from the uploaded font files (src/lib/fontLoader.ts)
+public/fonts-web/
+# (older location of the same files)
 public/fonts/*/web/

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon';
 import FavoriteButton from './FavoriteButton';
 import { store, useStore } from '../../lib/store';
+import { trackDownload } from '../../lib/downloads';
 import { type Lang, useT } from '../../i18n';
 
 interface Props {
@@ -12,7 +13,7 @@ interface Props {
   lang: Lang;
 }
 
-/** Favorite, download (recorded in local history), add to catalog, buy. */
+/** Favorite, download (counted on the server and kept in local history), add to catalog, buy. */
 export default function FontActions({ slug, zip, zipName, purchaseUrl, lang }: Props) {
   const t = useT(lang);
   const { catalogs } = useStore();
@@ -32,7 +33,7 @@ export default function FontActions({ slug, zip, zipName, purchaseUrl, lang }: P
   return (
     <div className="flex flex-wrap items-center gap-2">
       <FavoriteButton slug={slug} lang={lang} large />
-      <a href={zip} download={zipName ?? true} className="btn-primary px-6" onClick={() => store.recordDownload(slug)}>
+      <a href={zip} download={zipName ?? true} className="btn-primary px-6" onClick={() => (store.recordDownload(slug), trackDownload(slug))}>
         <Icon name="download" size={17} />
         {t('Жүктеу')}
       </a>
@@ -49,11 +50,11 @@ export default function FontActions({ slug, zip, zipName, purchaseUrl, lang }: P
           {inCount > 0 && <span className="rounded-md bg-accent px-1.5 text-xs text-accent-fg">{inCount}</span>}
         </button>
         {open && (
-          <div className="card absolute top-full left-0 z-30 mt-2 w-72 p-2 shadow-2xl">
+          <div className="card absolute top-full left-0 z-30 mt-2 w-72 p-2 shadow-2xl lg:right-0 lg:left-auto">
             {catalogs.length === 0 && <p className="px-2 py-2 text-sm text-muted">{t('Әлі каталог жоқ.')}</p>}
             {catalogs.map((c) => (
               <label key={c.id} className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-surface-2">
-                <input type="checkbox" className="accent-[var(--accent)]" checked={c.fonts.includes(slug)} onChange={() => store.toggleInCatalog(c.id, slug)} />
+                <input type="checkbox" className="checkbox" checked={c.fonts.includes(slug)} onChange={() => store.toggleInCatalog(c.id, slug)} />
                 <span className="flex-1 truncate text-sm">{c.name}</span>
                 <span className="text-xs text-muted">{c.fonts.length}</span>
               </label>

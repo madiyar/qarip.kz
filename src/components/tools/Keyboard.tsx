@@ -98,7 +98,7 @@ export default function Keyboard({ lang }: { lang: Lang }) {
         />
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <label className="flex items-center gap-2 text-sm text-muted">
-            <input type="checkbox" className="accent-[var(--accent)]" checked={capture} onChange={(e) => setCapture(e.target.checked)} />
+            <input type="checkbox" className="checkbox" checked={capture} onChange={(e) => setCapture(e.target.checked)} />
             {t('Физикалық пернетақтадан қазақша теру')}
           </label>
           <div className="ml-auto flex gap-2">

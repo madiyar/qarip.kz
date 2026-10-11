@@ -5,6 +5,9 @@ import { caseStyle, type PreviewState } from './PreviewToolbar';
 import { type Lang, localePath, useT } from '../../i18n';
 import type { FontSummary } from '../../lib/types';
 import { DEFAULT_PREVIEW } from '../../lib/site';
+import { trackDownload } from '../../lib/downloads';
+import { useDownloads } from './useDownloads';
+import { store } from '../../lib/store';
 
 const family = (slug: string) => `'qf-${slug}', system-ui`;
 
@@ -18,6 +21,7 @@ interface Props {
 export function FontRow({ font, lang, preview, rank }: Props) {
   const t = useT(lang);
   const href = localePath(lang, `/fonts/${font.slug}`);
+  const downloads = useDownloads(font.slug, font.downloads);
   return (
     <article className="group border-b border-line py-6">
       <div className="mb-3 flex items-center gap-2 text-sm">
@@ -26,15 +30,22 @@ export function FontRow({ font, lang, preview, rank }: Props) {
           {font.name}
         </a>
         <span className="hidden text-muted sm:inline">·</span>
-        <a href={localePath(lang, `/designers/${font.designer.slug}`)} className="hidden truncate text-muted hover:text-fg sm:inline">
-          {font.designer.name}
-        </a>
+        <span className="hidden min-w-0 truncate text-muted sm:inline">
+          {font.designers.map((d, i) => (
+            <span key={d.slug}>
+              {i > 0 && ', '}
+              <a href={localePath(lang, `/designers/${d.slug}`)} className="hover:text-fg">
+                {d.name}
+              </a>
+            </span>
+          ))}
+        </span>
         <span className="text-muted">·</span>
         <span className="whitespace-nowrap text-muted">{t('{n} стиль', { n: font.stylesCount })}</span>
-        {font.downloads > 0 && (
-          <span className="hidden items-center gap-1 text-muted sm:inline-flex" title={t('Жүктеулер')}>
+        {downloads > 0 && (
+          <span className="hidden items-center gap-1 text-muted tabular-nums sm:inline-flex" title={t('Жүктеулер')}>
             <Icon name="download" size={13} />
-            {font.downloads}
+            {downloads}
           </span>
         )}
         {font.our && <span className="badge-accent">{t('Біздің қаріп')}</span>}
@@ -42,7 +53,14 @@ export function FontRow({ font, lang, preview, rank }: Props) {
           <QualityIndicator quality={font.quality} label="" />
         </span>
         <span className="ml-auto flex items-center">
-          <a href={font.zip} download className="icon-btn opacity-0 group-hover:opacity-100 focus:opacity-100" aria-label={t('Жүктеу')} title={t('Жүктеу')}>
+          <a
+            href={font.zip}
+            download
+            className="icon-btn opacity-0 group-hover:opacity-100 focus:opacity-100"
+            aria-label={t('Жүктеу')}
+            title={t('Жүктеу')}
+            onClick={() => (store.recordDownload(font.slug), trackDownload(font.slug))}
+          >
             <Icon name="download" size={17} />
           </a>
           <FavoriteButton slug={font.slug} lang={lang} />
@@ -70,7 +88,7 @@ export function FontTile({ font, lang, preview }: Props) {
             {font.name}
           </a>
           <p className="truncate text-sm text-muted">
-            {font.designer.name} · {t('{n} стиль', { n: font.stylesCount })}
+            {font.designers.map((d) => d.name).join(', ')} · {t('{n} стиль', { n: font.stylesCount })}
           </p>
         </div>
         <div className="relative z-10 -mt-2 -mr-2">

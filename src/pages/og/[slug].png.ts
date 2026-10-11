@@ -9,11 +9,11 @@ export const getStaticPaths = (async () => (await getCollection('fonts')).map((f
 /** Social preview for a font page: its name set in the font itself. */
 export const GET: APIRoute = async ({ props, site }) => {
   const font = props.font as CollectionEntry<'fonts'>;
-  const designer = await getEntry(font.data.designer);
+  const designers = await Promise.all(font.data.designers.map((d) => getEntry(d)));
   const png = await renderOg({
     title: font.data.name,
     titleFont: path.resolve('public', `.${decodeURIComponent(primaryStyle(font).file)}`),
-    subtitle: `Қазақша шрифт · Казахский шрифт · ${designer?.data.name ?? ''}`,
+    subtitle: `Қазақша шрифт · Казахский шрифт · ${designers.map((d) => d?.data.name ?? '').join(', ')}`,
     footer: site!.host,
   });
   return new Response(new Uint8Array(png), { headers: { 'Content-Type': 'image/png' } });

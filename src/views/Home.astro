@@ -3,11 +3,12 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/common/SectionHead.astro';
 import ArticleCard from '../components/common/ArticleCard.astro';
-import FontBrowser from '../components/fonts/FontBrowser';
+import DownloadCount from '../components/common/DownloadCount.astro';
+import HomeFonts from '../components/fonts/HomeFonts';
 import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
+import { byPopularity } from '../lib/downloads';
 import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
-import { TOOLS } from '../lib/site';
 import { CATEGORY, HOME, websiteLd } from '../lib/seo';
 
 interface Props {
@@ -18,21 +19,27 @@ const t = useT(lang);
 
 const fonts = await toSummaries(await getFonts());
 const categories = await getCategories();
-const designers = new Set(fonts.map((f) => f.designer.slug)).size;
+const designers = new Set(fonts.flatMap((f) => f.designers.map((d) => d.slug))).size;
 const downloads = fonts.reduce((n, f) => n + f.downloads, 0);
-const latest = fonts.slice(0, 5);
-const popular = [...fonts].sort((a, b) => b.downloads - a.downloads || Number(b.featured) - Number(a.featured)).slice(0, 5);
-const ours = fonts.filter((f) => f.our).slice(0, 5);
+// Six per tab: two rows of three cards.
+const PER_TAB = 6;
+const ours = fonts.filter((f) => f.our);
+const tabs = [
+  { id: 'new', label: 'Соңғы қаріп', href: '/fonts?sort=new', fonts: fonts.slice(0, PER_TAB) },
+  { id: 'popular', label: 'Танымал қаріп', href: '/top', fonts: [...fonts].sort(byPopularity).slice(0, PER_TAB) },
+  ...(ours.length ? [{ id: 'our', label: 'Біздің қаріп', href: '/fonts?our=1', fonts: ours.slice(0, PER_TAB) }] : []),
+];
+const shown = [...new Map(tabs.flatMap((x) => x.fonts).map((f) => [f.slug, f])).values()];
 const posts = (await getCollection('journal', (p) => !p.data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 const countIn = (id: string) => fonts.filter((f) => f.category.id === id).length;
 const stats = [
   { n: fonts.length, label: t('қаріп') },
   { n: designers, label: t('дизайнер') },
-  { n: downloads, label: t('жүктеу') },
+  { n: downloads, label: t('жүктеу'), live: true },
 ];
 ---
 
-<Base lang={lang} fullTitle={HOME.title[lang]} description={HOME.description[lang]} fontCss={primaryFaces(fonts)} wide>
+<Base lang={lang} fullTitle={HOME.title[lang]} description={HOME.description[lang]} fontCss={primaryFaces(shown)} wide>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(websiteLd(Astro.site!, lang))} />
   <section class="relative overflow-hidden border-b border-line">
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,var(--accent-soft),transparent)]"></div>
@@ -55,7 +62,7 @@ const stats = [
               {i > 0 && <span class="h-6 w-px bg-line" aria-hidden="true" />}
               <div class="flex items-baseline gap-1.5">
                 <dt class="sr-only">{s.label}</dt>
-                <dd class="text-2xl font-bold tabular-nums">{s.n}</dd>
+                <dd class="text-2xl font-bold tabular-nums">{s.live ? <DownloadCount slugs={fonts.map((f) => f.slug)} count={s.n} /> : s.n}</dd>
                 <span class="text-muted">{s.label}</span>
               </div>
             </>
@@ -89,39 +96,8 @@ const stats = [
     </section>
 
     <section>
-      <SectionHead eyebrow={t('Жаңа қосылды')} title={t('Соңғы қаріп')} href={localePath(lang, '/fonts?sort=new')} linkLabel={t('Барлығы')} />
-      <FontBrowser client:visible fonts={latest} lang={lang} prefKey="home-new" />
-    </section>
-
-    <section>
-      <SectionHead eyebrow={t('Рейтинг')} title={t('Танымал қаріп')} href={localePath(lang, '/top')} linkLabel={t('Барлығы')} />
-      <FontBrowser client:visible fonts={popular} lang={lang} ranked prefKey="home-top" />
-    </section>
-
-    {
-      ours.length > 0 && (
-        <section>
-          <SectionHead eyebrow={t('Эксклюзив')} title={t('Біздің қаріп')} href={localePath(lang, '/fonts?our=1')} linkLabel={t('Барлығы')} />
-          <FontBrowser client:visible fonts={ours} lang={lang} prefKey="home-our" />
-        </section>
-      )
-    }
-
-    <section>
-      <SectionHead eyebrow={t('Құралдар')} title={t('Дизайнерге арналған құралдар')} />
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {
-          TOOLS.map((tool) => (
-            <a href={localePath(lang, tool.href)} class="card group p-5 transition-colors hover:border-muted">
-              <span class="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                <Icon name={tool.icon} />
-              </span>
-              <span class="mt-4 block font-semibold">{t(tool.title)}</span>
-              <span class="mt-1 block text-sm text-muted">{t(tool.description)}</span>
-            </a>
-          ))
-        }
-      </div>
+      <SectionHead eyebrow={t('Қаріптер')} title={t('Жаңа және танымал қаріптер')} />
+      <HomeFonts client:visible lang={lang} tabs={tabs} />
     </section>
 
     {

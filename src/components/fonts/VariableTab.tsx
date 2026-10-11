@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CodeBlock } from '../ui/CopyButton';
+import Range from '../ui/Range';
 import { DEFAULT_PREVIEW } from '../../lib/site';
 import type { T } from '../../i18n';
 
@@ -54,7 +55,7 @@ export default function VariableTab({ name, family, url, t }: { name: string; fa
           <h3 className="font-semibold">{t('Вариативтік осьтер')}</h3>
           <label className="flex items-center gap-2 text-sm text-muted">
             {t('Өлшемі')}
-            <input type="range" min={12} max={160} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-28 accent-[var(--accent)]" />
+            <Range min={12} max={160} value={size} onChange={setSize} className="w-28" label={t('Өлшемі')} />
             <span className="w-12 tabular-nums">{size}px</span>
           </label>
         </div>
@@ -68,14 +69,14 @@ export default function VariableTab({ name, family, url, t }: { name: string; fa
               </span>
               <span className="flex items-center gap-3 text-xs text-muted">
                 {a.min}
-                <input
-                  type="range"
+                <Range
                   min={a.min}
                   max={a.max}
                   step={(a.max - a.min) / 200}
                   value={values[a.tag] ?? a.default}
-                  onChange={(e) => setValues((v) => ({ ...v, [a.tag]: Number(e.target.value) }))}
-                  className="flex-1 accent-[var(--accent)]"
+                  onChange={(n) => setValues((v) => ({ ...v, [a.tag]: n }))}
+                  className="flex-1"
+                  label={`${a.name} (${a.tag})`}
                 />
                 {a.max}
               </span>

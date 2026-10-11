@@ -4,7 +4,9 @@
     "Beyne-Regular.otf"
   ],
   "archive": "beyne.zip",
-  "designer": "abay-emes",
+  "designers": [
+    "abay-emes"
+  ],
   "category": "handwritten",
   "license": "personal",
   "tags": [
@@ -15,11 +17,9 @@
     "headings"
   ],
   "our": true,
-  "featured": false,
   "quality": 5,
   "description": "Beyne — жеке мақсатқа тегін көрнекі қаріп.",
   "descriptionRu": "Beyne — акцидентный шрифт с казахскими буквами, бесплатный для личного использования.",
   "purchaseUrl": "mailto:abayemes@gmail.com?subject=Beyne",
-  "addedDate": "2024-03-31",
-  "downloads": 0
+  "addedDate": "2024-03-31"
 }

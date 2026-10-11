@@ -1,0 +1,46 @@
+---
+/**
+ * Download count in static markup. The number baked in at build time is replaced
+ * with the live one from /api/downloads once the page loads (src/lib/downloads.ts).
+ *
+ * The same script counts clicks on static download links: `<a data-download="<slug>">`.
+ * (React islands call trackDownload themselves.)
+ */
+interface Props {
+  /** One font; omit and pass `slugs` for the total of several fonts. */
+  slug?: string;
+  slugs?: string[];
+  count: number;
+  /** Text with an `{n}` placeholder. */
+  label?: string;
+  class?: string;
+}
+const { slug, slugs = [], count, label = '{n}', class: className } = Astro.props;
+---
+
+<span class={className} data-download-count={slug ?? slugs.join(',')} data-template={label}>{label.replace('{n}', String(count))}</span>
+
+<script>
+  import { fetchDownloads, trackDownload } from '../../lib/downloads';
+  import { store } from '../../lib/store';
+
+  const counters = document.querySelectorAll<HTMLElement>('[data-download-count]');
+  if (counters.length) {
+    fetchDownloads().then((all) => {
+      if (!Object.keys(all).length) return;
+      for (const el of counters) {
+        const slugs = (el.dataset.downloadCount ?? '').split(',').filter(Boolean);
+        const n = slugs.reduce((sum, s) => sum + (all[s] ?? 0), 0);
+        el.textContent = (el.dataset.template ?? '{n}').replace('{n}', String(n));
+      }
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[data-download]');
+    const slug = link?.dataset.download;
+    if (!slug) return;
+    store.recordDownload(slug);
+    trackDownload(slug);
+  });
+</script>

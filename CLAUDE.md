@@ -18,20 +18,20 @@ QR Comic Beta, all by Abay Emes); more are added in the CMS at `/admin` (or with
 the admin UI must stay simple, and adding a font must never require technical fields.
 
 Not ported on purpose: base44 admin pages and auth (Sveltia CMS at `/admin` plays that role),
-server-side download counter (site is static), the email newsletter form (it was a dead
-stub in the source), `Dictionary`/`New`/`ApiDocs` pages.
+the email newsletter form (it was a dead stub in the source), `Dictionary`/`New`/`ApiDocs` pages.
+The download counter was later rebuilt as a Netlify Function (see Download counter below).
 
 ## Stack and commands
 
 Astro 7 (static output, Content Layer) · React 19 islands · Tailwind CSS 4 · TypeScript ·
-opentype.js 2 · fflate · woff2-encoder (WASM) · sharp. Node 22.
+opentype.js 2 · fflate · woff2-encoder (WASM) · sharp · one Netlify Function with Netlify Blobs. Node 22.
 
 ```sh
 npm run dev      # http://localhost:4321
 npm run build    # static site in dist/
 npm run check    # astro check — must stay at 0 errors
-npm run font:add -- --name "Font" --designer abay-emes --category sans --license ofl \
-  [--tags free,cyrillic] [--our] [--quality 8] [--description-ru "…"] [--archive a.zip] files…
+npm run font:add -- --name "Font" --designer abay-emes[,other] --category sans --license ofl \
+  [--tags free,cyrillic] [--our] [--quality 7.5] [--description-ru "…"] --archive a.zip files…
 ```
 
 There is no test suite. Verify with `npm run check`, `npm run build`, and the browser.
@@ -42,15 +42,18 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | --- | --- |
 | `astro.config.mjs` | `SITE_URL` — the single place for the domain (or `SITE_URL` env var) |
 | `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary |
-| `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `files` (uploaded TTF/OTF) + optional `archive` |
-| `src/lib/fontLoader.ts` | Content loader: derives styles, weights, glyphs, alphabets, WOFF2 previews and the ZIP from the files |
-| `src/content/{designers,licenses,journal}/` | Designers (JSON), licenses (MD frontmatter, optional pricing + body), articles (MD) |
+| `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `designers` (list) + `files` (uploaded TTF/OTF) + `archive` (ZIP, required in the CMS) |
+| `src/lib/fontLoader.ts` | Content loader: derives style names, weights, glyphs, alphabets, WOFF2 previews and the ZIP's file list from the files; fetches download counts |
+| `public/fonts-web/<slug>/` | Build output (gitignored): WOFF2 previews, and a ZIP only for fonts without an uploaded one |
+| `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
+| `src/content/{designers,licenses,journal}/` | Designers (JSON, bio in kk/ru/en), licenses (MD frontmatter, `visible` switch, optional pricing + body), articles (MD) |
 | `src/content/glossary.json`, `src/data/{categories,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }` |
 | `src/data/{tags,purposes}.json`, `faq.ts`, `unicode.ts` | Taxonomies, FAQ (per language), Unicode reference sections |
 | `src/views/*.astro` | Page logic, each takes `lang` |
 | `src/pages/**`, `src/pages/ru/**`, `src/pages/en/**` | Thin wrappers: `<View lang="kk|ru|en" />` |
 | `src/layouts/Base.astro` | `<head>` (title, canonical, hreflang, OG, verification), header, footer |
-| `src/components/fonts/` | `FontBrowser` (catalog engine), `FontDetail` (tabs), `GlyphGrid`, `usePreview`… |
+| `src/components/fonts/` | `FontBrowser` (catalog engine), `HomeFonts` (home tabs), `FontDetail` (tabs), `GlyphGrid`, `usePreview`… |
+| `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range` (slider), `CopyButton` |
 | `src/components/tools/` | Tester, Converter, Pairing, Proofing, Freezer, Kerning, Keyboard |
 | `src/lib/site.ts` | Contacts, nav, tools list, pangrams, donation card, keyboard zip |
 | `src/lib/seo.ts` | Search-facing titles/descriptions per language + JSON-LD builders |
@@ -81,8 +84,12 @@ Categories are static pages (`/fonts/category/<id>/`), not query filters.
 **Styling.** Tailwind 4. Design tokens are CSS variables in `src/styles/global.css`
 (`bg-bg`, `bg-surface`, `text-muted`, `border-line`, `bg-accent`…); dark is default, light via
 `html[data-theme]`. Reusable classes (`btn-primary`, `card`, `chip`, `input`, `icon-btn`,
-`segmented`) are defined with `@utility` — `@layer components` classes cannot be `@apply`'d
-in Tailwind 4. `--header-h` lets sticky elements sit under the header or the sidebar mode.
+`segmented`, `range`, `checkbox`, `swatch`) are defined with `@utility` — `@layer components`
+classes cannot be `@apply`'d in Tailwind 4. `--header-h` lets sticky elements sit under the
+header or the sidebar mode.
+
+**Form controls.** No native `<select>` or bare range/checkbox inputs: use `ui/Select.tsx`
+(keyboard-accessible listbox), `ui/Range.tsx`, and the `checkbox` / `swatch` classes.
 
 **React in Astro.** Icons are `src/components/ui/Icon.tsx`; inside `.astro` files pass
 `className`, not `class`. Interactive parts are islands (`client:load`, `client:visible`,
@@ -92,8 +99,18 @@ preview text and size) is browser-only via `src/lib/store.ts`.
 **Fonts.** Preview families are `qf-<slug>` (primary style) and `qf-<slug>-<style>`; the
 `@font-face` rules are injected per page through `Base`'s `fontCss` prop. Style metadata is
 read from the font binaries by `src/lib/fontLoader.ts` at build time — never stored by hand
-and never guessed from file names. `public/fonts/*/web/` (WOFF2 previews, generated ZIPs) is
-build output and is gitignored; a font with no usable files is skipped with a warning.
+and never guessed from file names. A style's name is what its full name (nameID 4) adds to
+the font's name ("PT Sans Narrow Bold" − "PT Sans" → "Narrow Bold"); the sub-family alone
+would turn Narrow/Caption/Condensed files into duplicate "Regular"s. The primary style is the
+editor's `primaryStyle`, else the most regular one (upright, static, 400, normal width).
+`public/fonts-web/` (WOFF2 previews, generated ZIPs; URLs carry `?v=<hash>`) is build output
+and is gitignored; a font with no usable files is skipped with a warning.
+
+**Download counter.** `netlify/functions/downloads.mts` keeps `{ slug: count }` in one Netlify
+Blobs entry (ETag-guarded writes). Download links call `trackDownload()` (React) or carry
+`data-download="<slug>"` (Astro, handled by `common/DownloadCount.astro`). The build fetches
+`SITE_URL/api/downloads` for sorting (popular tab, `/top`); pages swap in live numbers.
+Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` skips the fetch.
 
 ## Gotchas
 
@@ -115,6 +132,12 @@ build output and is gitignored; a font with no usable files is skipped with a wa
 - `media.base44.com` (base44 file storage) is unreachable from this network, so base44
   font files and the keyboard-layout zip could not be downloaded.
 - Never add a Netlify redirect from a host to itself (it loops).
+- **Never put a long `Cache-Control` on `/fonts/*`** in `netlify.toml`: the catalog (`/fonts/`)
+  and font pages (`/fonts/<slug>/`) share that path with the font files, and browsers then
+  showed a week-old catalog after new fonts were added. Long caching is only for `/fonts-web/*`.
+- Sveltia commits big saves in several commits (~16 MB each). A huge ZIP (Literata's is 22 MB)
+  can make a save fail half-way and leave stray files (`public/fonts/literata/Literata.zip` is
+  an unreferenced duplicate of `Literata-1.zip`).
 
 ## Domain
 
@@ -124,6 +147,11 @@ custom domain is connected: change `SITE_URL`, `site_url` in `public/admin/confi
 uncomment the first rule in `public/_redirects`. Contact email is `SITE.email`.
 
 ## Admin (Sveltia CMS)
+
+Fonts have several `designers` (relation, `multiple`), a required ZIP `archive`, `quality`
+as a float with step 0.5; there is no "featured" flag and no hand-edited download count.
+Designers have `bio` (Kazakh, required, fallback) + `bioRu` / `bioEn`. Licenses have a
+`visible` switch: only visible ones are listed on `/licenses` and get their own page.
 
 `/admin` runs Sveltia CMS with the GitHub backend: editors sign in with a GitHub account that
 has write access to `madiyar/qarip.kz`. Saving commits straight to `main` (no editorial
@@ -138,8 +166,12 @@ the entry. Netlify Identity and Git Gateway are no longer used.
 
 ## Open items
 
-- Catalog has 4 fonts and four empty categories (sans, serif, slab, monospace pages are
-  `noindex` while empty); adding fonts is the main lever for both usefulness and SEO.
+- Catalog has 21 fonts; the slab category is still empty (its page is `noindex` while empty).
+  Adding fonts is the main lever for both usefulness and SEO.
+- Real download counts start from zero (the old CMS numbers were hand-typed).
+- The owner reported an error when uploading variable fonts in the CMS; it did not reproduce
+  in a local Sveltia (variable TTF/OTF, names with `,` and `[]` upload fine, and the build reads
+  them). Waiting for the exact error text.
 - Search Console / Yandex Webmaster not connected yet — codes go into the
   `GOOGLE_SITE_VERIFICATION` / `YANDEX_VERIFICATION` env vars, then submit `/sitemap-index.xml`.
 - `SITE.keyboardZip` is empty (download button hidden) — no installer archive available.

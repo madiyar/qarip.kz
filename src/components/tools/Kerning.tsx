@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Icon from '../ui/Icon';
 import CopyButton from '../ui/CopyButton';
+import Range from '../ui/Range';
 import { loadFontFile, type LoadedFont } from '../../lib/userfont';
 import { type Lang, useT } from '../../i18n';
 
@@ -137,7 +138,7 @@ export default function Kerning({ lang }: { lang: Lang }) {
           <div className="mt-4 border-t border-line pt-4">
             <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-muted">
               <span className="eyebrow">{t('Алдын ала көру')}</span>
-              <input type="range" min={16} max={120} value={previewSize} onChange={(e) => setPreviewSize(Number(e.target.value))} className="w-28 accent-[var(--accent)]" />
+              <Range min={16} max={120} value={previewSize} onChange={setPreviewSize} className="w-28" label={t('Өлшемі')} />
               <span className="tabular-nums">{previewSize}px</span>
               <label className="chip ml-auto h-8 cursor-pointer text-xs">
                 <Icon name="upload" size={13} />

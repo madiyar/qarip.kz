@@ -76,7 +76,6 @@ export const SIDE_NAV: { label: string; href?: string; icon: string; children?: 
 export const PANGRAMS = [
   { label: 'Қазақша панграмма 1', text: 'Бұл гүлді қызға һәм ұлға бер, ал көрші Францияны Пырансы де, ой туғанда хатыңды жаз.' },
   { label: 'Қазақша панграмма 2', text: 'Киіз үйге барып ұғам: ою-өрнек үй іші һәр қазақтың жанын хас баурап алады-ау.' },
-  { label: 'Латын панграмма', text: 'Bul güldi qyzğa häm ūlğa ber, al körşı Fransiany Pyransy de, oi tuğanda hatyñdy jaz.' },
   { label: 'English pangram', text: 'The quick brown fox jumps over the lazy dog.' },
 ];
 

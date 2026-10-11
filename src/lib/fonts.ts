@@ -1,5 +1,7 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import type { CategoryInfo, FontSummary } from './types';
+import type { Lang } from '../i18n';
+import { categoryLabel } from './seo';
 
 export type FontEntry = CollectionEntry<'fonts'>;
 export type Style = FontEntry['data']['styles'][number];
@@ -13,9 +15,12 @@ export async function getFonts(): Promise<FontEntry[]> {
 
 const CATEGORY_ORDER = ['sans', 'serif', 'display', 'slab', 'handwritten', 'monospace'];
 
-export async function getCategories(): Promise<CategoryInfo[]> {
+/** Categories in a fixed order; `label` is the short name in `lang`. */
+export async function getCategories(lang: Lang = 'kk'): Promise<CategoryInfo[]> {
   const rank = (id: string) => CATEGORY_ORDER.indexOf(id) + 1 || 99;
-  return (await getCollection('categories')).map((c) => ({ id: c.id, ...c.data })).sort((a, b) => rank(a.id) - rank(b.id));
+  return (await getCollection('categories'))
+    .map((c) => ({ id: c.id, ...c.data, label: categoryLabel(lang, c.id, c.data.name) }))
+    .sort((a, b) => rank(a.id) - rank(b.id));
 }
 
 export function primaryStyle(font: FontEntry): Style {
@@ -27,8 +32,8 @@ export function isFree(font: FontEntry | FontSummary): boolean {
   return tags.includes('free');
 }
 
-/** Compact, serialisable shape passed to client islands. */
-export async function toSummaries(fonts: FontEntry[]): Promise<FontSummary[]> {
+/** Compact, serialisable shape passed to client islands. Category names are in `lang`. */
+export async function toSummaries(fonts: FontEntry[], lang: Lang = 'kk'): Promise<FontSummary[]> {
   const [designers, categories, licenses] = await Promise.all([
     getCollection('designers'),
     getCollection('categories'),
@@ -46,7 +51,7 @@ export async function toSummaries(fonts: FontEntry[]): Promise<FontSummary[]> {
       slug: f.id,
       name: f.data.name,
       designers: f.data.designers.map((x) => ({ slug: x.id, name: d[x.id]?.data.name ?? x.id })),
-      category: { id: f.data.category.id, name: cat?.data.name ?? f.data.category.id, color: cat?.data.color ?? '#71717a' },
+      category: { id: f.data.category.id, name: categoryLabel(lang, f.data.category.id, cat?.data.name ?? f.data.category.id), color: cat?.data.color ?? '#71717a' },
       tags: f.data.tags.map((t) => t.id),
       purposes: f.data.purposes.map((t) => t.id),
       quality: f.data.quality,
@@ -56,6 +61,7 @@ export async function toSummaries(fonts: FontEntry[]): Promise<FontSummary[]> {
       downloads: f.data.downloads,
       addedDate: f.data.addedDate.toISOString().slice(0, 10),
       stylesCount: f.data.styles.length,
+      variable: f.data.styles.some((s) => s.variable),
       previewText: f.data.previewText,
       zip: f.data.zip,
       scripts: f.data.scripts,

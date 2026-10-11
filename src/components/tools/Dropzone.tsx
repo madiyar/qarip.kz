@@ -19,12 +19,14 @@ export default function Dropzone({ t, onFiles, multiple = false, compact = false
     const files = [...(list ?? [])].filter((f) => /\.(ttf|otf|woff2?)$/i.test(f.name));
     if (files.length) onFiles(multiple ? files : files.slice(0, 1));
   };
+  const zone = over ? 'border-accent bg-accent-soft' : 'border-line-2 bg-elev hover:border-fg-3';
   return (
     <div
       role="button"
       tabIndex={0}
+      aria-label={title ?? t('Қаріп файлын осында тастаңыз')}
       onClick={() => input.current?.click()}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && input.current?.click()}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), input.current?.click())}
       onDragOver={(e) => {
         e.preventDefault();
         setOver(true);
@@ -35,14 +37,31 @@ export default function Dropzone({ t, onFiles, multiple = false, compact = false
         setOver(false);
         take(e.dataTransfer.files);
       }}
-      className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center transition-colors ${
-        over ? 'border-accent bg-accent-soft' : 'border-line bg-surface hover:border-muted'
-      } ${compact ? 'gap-1 px-4 py-6' : 'gap-2 px-6 py-16'}`}
+      className={`flex cursor-pointer border-[1.5px] border-dashed text-center transition-colors ${zone} ${
+        compact ? 'min-h-[92px] flex-wrap items-center justify-center gap-3 rounded-[18px] p-4 text-[15px] text-fg-2' : 'min-h-[340px] flex-col items-center justify-center gap-3.5 rounded-3xl p-8'
+      }`}
     >
-      <Icon name="upload" size={compact ? 22 : 36} className="text-muted" />
-      <p className="font-semibold">{title ?? t('Қаріп файлын осында тастаңыз!')}</p>
-      <p className="text-sm text-muted">{t('немесе файл таңдаңыз')}</p>
-      <p className="text-xs text-muted">TTF, OTF, WOFF, WOFF2 · {t('Файлдар серверге жүктелмейді')}</p>
+      {compact ? (
+        <>
+          <Icon name="upload" size={20} strokeWidth={2} />
+          {title ? (
+            <b className="font-medium text-fg">{title}</b>
+          ) : (
+            <span>
+              {t('Файлдарды тастаңыз немесе')} <b className="font-semibold text-accent-ink">{t('таңдаңыз')}</b>
+            </span>
+          )}
+        </>
+      ) : (
+        <>
+          <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-accent-soft text-accent-ink">
+            <Icon name="upload" size={24} strokeWidth={2} />
+          </span>
+          <b className="text-lg font-semibold">{title ?? t('Қаріп файлын осында тастаңыз')}</b>
+          <span className="text-sm text-fg-3">TTF, OTF, WOFF, WOFF2{multiple ? ` · ${t('бірнеше файл болады')}` : ''}</span>
+          <span className="btn-primary btn-sm h-[42px]!">{t('Файл таңдау')}</span>
+        </>
+      )}
       <input ref={input} type="file" accept={ACCEPT} multiple={multiple} className="hidden" onChange={(e) => take(e.target.files)} />
     </div>
   );

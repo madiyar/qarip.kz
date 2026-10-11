@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
-import Dropzone from './Dropzone';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon';
-import Range from '../ui/Range';
 import Select from '../ui/Select';
 import { loadFontFile, type LoadedFont } from '../../lib/userfont';
 import { CHARSETS, SITE } from '../../lib/site';
@@ -37,6 +35,7 @@ export default function Proofing({ fonts, lang }: { fonts: FontSummary[]; lang: 
   const [custom, setCustom] = useState<LoadedFont | null>(null);
   const [mode, setMode] = useState<Mode>('waterfall');
   const [size, setSize] = useState(16);
+  const file = useRef<HTMLInputElement>(null);
   const [fg, setFg] = useState('#0a0a0a');
   const [bg, setBg] = useState('#ffffff');
   const [text, setText] = useState('');
@@ -52,62 +51,70 @@ export default function Proofing({ fonts, lang }: { fonts: FontSummary[]; lang: 
   const line = text || LINE;
 
   return (
-    <div className="space-y-4">
-      <div className="no-print card flex flex-wrap items-center gap-3 p-3">
+    <div className="flex flex-col gap-4">
+      <div className="no-print flex flex-wrap items-center gap-2.5">
         <Select
           label={t('Қаріп')}
           value={custom ? '__custom' : slug}
-          className="chip h-10 font-semibold"
+          className="inline-flex h-10 items-center gap-2.5 rounded-xl bg-fill pr-3 pl-3.5 transition-colors hover:bg-fill-2"
           onChange={(v) => {
             if (v !== '__custom') {
               setCustom(null);
               setSlug(v);
             }
           }}
-          options={[...fonts.map((f) => ({ value: f.slug, label: f.name })), ...(custom ? [{ value: '__custom', label: custom.name }] : [])]}
+          options={[
+            ...fonts.map((f) => ({ value: f.slug, text: f.name, label: <span className="text-[17px]" style={{ fontFamily: `'qf-${f.slug}', system-ui` }}>{f.name}</span> })),
+            ...(custom ? [{ value: '__custom', text: custom.name, label: <span className="text-[17px]" style={{ fontFamily: `'${custom.family}', system-ui` }}>{custom.name}</span> }] : []),
+          ]}
         />
-        <label className="flex items-center gap-2 text-sm text-muted">
-          {t('Өлшемі')}
-          <Range min={10} max={32} value={size} onChange={setSize} className="w-24" label={t('Өлшемі')} />
-          <span className="w-10 tabular-nums">{size}px</span>
-        </label>
-        <label className="flex items-center gap-2 text-sm text-muted">
-          {t('Мәтін')}
-          <input type="color" value={fg} onChange={(e) => setFg(e.target.value)} className="swatch" />
-        </label>
-        <button type="button" className="icon-btn size-8" onClick={() => (setFg(bg), setBg(fg))} aria-label={t('Түстерді ауыстыру')}>
-          <Icon name="swap" size={15} />
+        <div role="group" aria-label={t('Мәтін өлшемі')} className="segmented">
+          <button type="button" aria-label={t('Кішірейту')} className="w-[34px] !px-0 text-[17px] !text-fg" onClick={() => setSize((n) => Math.max(10, n - 2))}>
+            −
+          </button>
+          <span className="inline-flex min-w-[52px] items-center justify-center text-[13px] font-medium tabular-nums">{size} px</span>
+          <button type="button" aria-label={t('Үлкейту')} className="w-[34px] !px-0 text-[17px] !text-fg" onClick={() => setSize((n) => Math.min(32, n + 2))}>
+            +
+          </button>
+        </div>
+        <div className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-fill px-2">
+          <input type="color" value={fg} onChange={(e) => setFg(e.target.value)} className="swatch size-7" aria-label={t('Мәтін түсі')} title={t('Мәтін түсі')} />
+          <button type="button" className="icon-btn size-7 rounded-lg" onClick={() => (setFg(bg), setBg(fg))} aria-label={t('Түстерді ауыстыру')} title={t('Түстерді ауыстыру')}>
+            <Icon name="swap" size={15} />
+          </button>
+          <input type="color" value={bg} onChange={(e) => setBg(e.target.value)} className="swatch size-7" aria-label={t('Фон түсі')} title={t('Фон түсі')} />
+        </div>
+        <button type="button" className="btn-secondary btn-rect btn-sm h-10!" onClick={() => file.current?.click()}>
+          <Icon name="upload" size={15} />
+          {t('Өз файлым')}
         </button>
-        <label className="flex items-center gap-2 text-sm text-muted">
-          {t('Фон')}
-          <input type="color" value={bg} onChange={(e) => setBg(e.target.value)} className="swatch" />
-        </label>
+        <input ref={file} type="file" accept=".ttf,.otf,.woff,.woff2" className="hidden" onChange={async (e) => e.target.files?.[0] && setCustom(await loadFontFile(e.target.files[0]))} />
+        <span className="flex-1" />
         {current && !custom && (
-          <a className="link text-sm" href={localePath(lang, `/fonts/${current.slug}`)}>
-            → {t('Қаріп беті')}
+          <a className="text-sm text-fg-2 transition-colors hover:text-accent-ink" href={localePath(lang, `/fonts/${current.slug}`)}>
+            {t('Қаріп беті')} →
           </a>
         )}
-        <button type="button" className="btn-secondary ml-auto h-10" onClick={() => window.print()}>
+        <button type="button" className="btn-primary btn-rect btn-sm h-10!" onClick={() => window.print()}>
           <Icon name="printer" size={16} />
           {t('Басып шығару')}
         </button>
       </div>
 
-      <div className="no-print grid gap-3 md:grid-cols-[1fr_320px]">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="segmented flex-wrap">
-            {MODES.map(([id, label]) => (
-              <button key={id} type="button" aria-pressed={mode === id} onClick={() => setMode(id)}>
-                {t(label)}
-              </button>
-            ))}
-          </div>
-          <input className="input h-10 min-w-48 flex-1" placeholder={t('Өз мәтініңіз...')} value={text} onChange={(e) => setText(e.target.value)} />
-        </div>
-        <Dropzone t={t} compact onFiles={async ([f]) => setCustom(await loadFontFile(f))} title={t('Немесе өз файлыңызды тастаңыз')} />
+      <div className="no-print tabs" role="tablist" aria-label={t('Тексеру түрі')}>
+        {MODES.map(([id, label]) => (
+          <button key={id} type="button" role="tab" aria-selected={mode === id} className="tab" onClick={() => setMode(id)}>
+            {t(label)}
+          </button>
+        ))}
       </div>
+      <label className="no-print field">
+        <Icon name="pen" size={16} />
+        <span className="sr-only">{t('Өз мәтініңіз...')}</span>
+        <input placeholder={t('Өз мәтініңіз...')} value={text} onChange={(e) => setText(e.target.value)} />
+      </label>
 
-      <div className="rounded-2xl border border-line p-6 sm:p-10 print:border-0 print:p-0" style={{ background: bg, color: fg }}>
+      <div className="overflow-hidden rounded-[20px] p-[clamp(20px,4vw,48px)] shadow-1 print:rounded-none print:p-0 print:shadow-none" style={{ background: bg, color: fg }}>
         <p className="mb-8 flex justify-between border-b pb-3 font-mono text-xs opacity-60" style={{ borderColor: `${fg}33` }}>
           <span>{name}</span>
           <span>{t(MODES.find((m) => m[0] === mode)![1])} · {SITE.host}</span>

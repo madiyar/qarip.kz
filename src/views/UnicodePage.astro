@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/common/PageHeader.astro';
+import ToolHeader from '../components/tools/ToolHeader.astro';
+import OtherTools from '../components/tools/OtherTools.astro';
 import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
-import { TOOLS } from '../lib/site';
 import { UNICODE_SECTIONS } from '../data/unicode';
 
 interface Props {
@@ -11,35 +11,69 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const description = 'Латын, кириллица, қазақ әріптері, тыныс белгілері, пробел түрлері және басқа да қажет таңбалар бір жерде. Көшіру үшін таңбаны басыңыз.';
-const code = (c: string) => `U+${c.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0')}`;
+const description = 'Қазақ әріптері, тыныс белгілері, бос орын түрлері және басқа қажет таңбалар. Басыңыз — көшіріледі.';
+const code = (c: string) => [...c].map((x) => `U+${x.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0')}`).join(' ');
+// Named characters first (dashes, quotes, spaces…), plain alphabets after.
+const sections = UNICODE_SECTIONS.map((s, i) => ({ ...s, id: `u${i}` })).sort((a, b) => (a.mode === b.mode ? 0 : a.mode === 'list' ? -1 : 1));
 ---
 
-<Base lang={lang} title={t('Типографиялық юникодтар')} description={t(description)}>
-  <div class="mx-auto max-w-5xl">
-    <PageHeader eyebrow={t('Құралдар')} title={t('Типографиялық юникодтар')} description={t(description)} />
-    <div class="space-y-6" data-unicode>
+<Base lang={lang} title={t('Типографиялық юникодтар')} description={t(description)} wide>
+  <div class="wrap pt-7">
+    <ToolHeader lang={lang} title={t('Типографиялық юникодтар')} description={t(description)} />
+
+    <div class="mb-7 flex flex-wrap items-center gap-3" data-unicode-controls>
+      <label class="field panel h-[42px] flex-[0_1_320px] bg-elev">
+        <Icon name="search" size={16} />
+        <span class="sr-only">{t('Іздеу')}</span>
+        <input type="search" placeholder={t('Мысалы: тире, теңге')} data-unicode-search />
+      </label>
+      <div role="tablist" aria-label={t('Топ')} class="no-scrollbar -mx-4 flex gap-1 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+        <button type="button" role="tab" aria-selected="true" class="pill" data-unicode-tab="">{t('Барлығы')}</button>
+        {
+          sections.map((s) => (
+            <button type="button" role="tab" aria-selected="false" class="pill" data-unicode-tab={s.id}>
+              {t(s.title)}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div data-unicode>
       {
-        UNICODE_SECTIONS.map((section) => (
-          <section class="card p-5 sm:p-6">
-            <h2 class="font-semibold">{t(section.title)}</h2>
-            {section.description && <p class="mt-1 text-xs text-muted">{t(section.description)}</p>}
+        sections.map((section) => (
+          <section class="mb-9" data-section={section.id}>
+            <h2 class="label-caps mb-1 !text-sm">{t(section.title)}</h2>
+            {section.description && <p class="meta mb-3">{t(section.description)}</p>}
             {section.mode === 'list' ? (
-              <div class="mt-4 space-y-1.5">
+              <div class="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(168px,1fr))]">
                 {section.items.map((item) => (
-                  <button type="button" data-copy={item.c} class="flex w-full items-center gap-3 rounded-xl border border-line bg-bg px-3 py-2 text-left transition-colors hover:border-accent data-[copied]:border-emerald-500">
-                    <span class="w-8 shrink-0 text-center text-lg">{item.visual || item.c}</span>
-                    <span class="flex-1 text-sm">{t(item.n)}</span>
-                    <span class="hidden shrink-0 font-mono text-xs text-muted sm:inline">{item.d || code(item.c)}</span>
-                    <Icon name="copy" size={15} className="shrink-0 text-muted [[data-copied]_&]:hidden" />
-                    <Icon name="check" size={15} className="hidden shrink-0 text-emerald-500 [[data-copied]_&]:block" />
+                  <button
+                    type="button"
+                    data-copy={item.c}
+                    data-search={`${t(item.n)} ${item.n} ${item.c} ${item.d ?? code(item.c)}`.toLowerCase()}
+                    aria-label={`${t(item.n)}, ${t('көшіру')}`}
+                    class="panel group flex flex-col items-start gap-2.5 p-3.5 text-left transition-shadow hover:shadow-2 data-[copied]:shadow-[inset_0_0_0_1.5px_var(--ok)]"
+                  >
+                    <span class="flex h-16 w-full items-center justify-center rounded-[10px] bg-fill font-serif text-[38px]">{item.visual || item.c}</span>
+                    <span class="text-sm font-medium">{t(item.n)}</span>
+                    <span class="flex w-full justify-between font-mono text-xs text-fg-3">
+                      <span>{item.d || code(item.c)}</span>
+                      <span class="hidden font-sans font-semibold text-ok group-data-[copied]:inline">{t('Көшірілді')}</span>
+                    </span>
                   </button>
                 ))}
               </div>
             ) : (
-              <div class="mt-4 grid grid-cols-5 gap-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12">
+              <div class="mt-3 grid grid-cols-[repeat(auto-fill,minmax(48px,1fr))] gap-1.5">
                 {section.items.map((item) => (
-                  <button type="button" data-copy={item.c} title={`${item.n} · ${code(item.c)}`} class="h-12 rounded-xl border border-line bg-bg text-lg transition-colors hover:border-accent data-[copied]:border-emerald-500 data-[copied]:text-emerald-500">
+                  <button
+                    type="button"
+                    data-copy={item.c}
+                    data-search={`${item.c} ${code(item.c)}`.toLowerCase()}
+                    title={`${item.c} · ${code(item.c)}`}
+                    class="panel h-12 font-serif text-xl transition-shadow hover:shadow-2 data-[copied]:text-ok data-[copied]:shadow-[inset_0_0_0_1.5px_var(--ok)]"
+                  >
                     {item.c}
                   </button>
                 ))}
@@ -48,25 +82,60 @@ const code = (c: string) => `U+${c.codePointAt(0)!.toString(16).toUpperCase().pa
           </section>
         ))
       }
+      <p class="sub hidden py-10 text-center" data-unicode-empty>{t('Ештеңе табылмады')}</p>
     </div>
-    <nav class="mt-16 flex flex-wrap gap-2 border-t border-line pt-8" aria-label={t('Басқа құралдар')}>
-      {
-        TOOLS.filter((x) => x.href !== '/tools/unicode').map((x) => (
-          <a href={localePath(lang, x.href)} class="chip">
-            <Icon name={x.icon} size={15} />
-            {t(x.label)}
-          </a>
-        ))
-      }
-    </nav>
+
+    <section class="note px-[22px] py-5">
+      <b class="font-semibold">{t('Қашан қай сызықша?')}</b>
+      <p class="mt-1.5 text-[15px] text-fg-2">
+        {t('Сөйлем ішінде — ұзын сызықша (—), аралықта — қысқа (2020–2024), сөз ішінде — дефис (қай-қайда).')}
+        {t('Толығырақ')}: <a class="link" href={localePath(lang, '/journal/dash-types')}>«{t('Сызықша түрлері')}»</a>.
+      </p>
+    </section>
+
+    <OtherTools lang={lang} current="/tools/unicode" />
   </div>
-  <div class="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-fg px-4 py-2 text-sm font-semibold text-bg opacity-0 transition-opacity" data-unicode-toast>{t('Көшірілді')}</div>
+  <div role="status" class="pointer-events-none fixed bottom-[calc(var(--tabbar-h)+1.5rem)] left-1/2 z-50 -translate-x-1/2 rounded-xl bg-fg px-4 py-2 text-sm font-semibold text-bg opacity-0 transition-opacity" data-unicode-toast>
+    {t('Көшірілді')}
+  </div>
 </Base>
 
 <script>
+  const root = document.querySelector<HTMLElement>('[data-unicode]')!;
   const toast = document.querySelector<HTMLElement>('[data-unicode-toast]')!;
+  const search = document.querySelector<HTMLInputElement>('[data-unicode-search]')!;
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-unicode-tab]')];
+  const sections = [...root.querySelectorAll<HTMLElement>('[data-section]')];
+  const empty = root.querySelector<HTMLElement>('[data-unicode-empty]')!;
+  let tab = '';
   let timer: number | undefined;
-  document.querySelector('[data-unicode]')?.addEventListener('click', async (e) => {
+
+  const apply = () => {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const s of sections) {
+      let visible = 0;
+      for (const item of s.querySelectorAll<HTMLElement>('[data-search]')) {
+        const ok = !q || item.dataset.search!.includes(q);
+        item.hidden = !ok;
+        if (ok) visible++;
+      }
+      s.hidden = (tab !== '' && s.dataset.section !== tab) || visible === 0;
+      if (!s.hidden) shown++;
+    }
+    empty.hidden = shown > 0;
+    empty.classList.toggle('hidden', shown > 0);
+  };
+  search.addEventListener('input', apply);
+  for (const b of tabs) {
+    b.addEventListener('click', () => {
+      tab = b.dataset.unicodeTab ?? '';
+      for (const x of tabs) x.setAttribute('aria-selected', String(x === b));
+      apply();
+    });
+  }
+
+  root.addEventListener('click', async (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-copy]');
     if (!btn) return;
     try {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import Icon from '../ui/Icon';
 import CopyButton from '../ui/CopyButton';
+import Switch from '../ui/Switch';
 import { type Lang, useT } from '../../i18n';
 
 /** [shifted, normal] per physical key (KeyboardEvent.code), Kazakh layout. */
@@ -18,7 +18,8 @@ const ROWS: (string | [string, string])[][] = [
   [['ShiftLeft', 'Shift'], 'IntlBackslash', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', ['ShiftRight', 'Shift']],
   [['Space', 'Space']],
 ];
-const WIDE: Record<string, string> = { Backspace: 'flex-[1.8]', Tab: 'flex-[1.5]', CapsLock: 'flex-[1.8]', Enter: 'flex-[2]', ShiftLeft: 'flex-[1.3]', ShiftRight: 'flex-[2.4]', Space: 'flex-[8] max-w-lg' };
+const WIDE: Record<string, string> = { Backspace: 'flex-[1.6]', Tab: 'flex-[1.5]', CapsLock: 'flex-[1.8]', Enter: 'flex-[1.8]', ShiftLeft: 'flex-[1.3]', ShiftRight: 'flex-[2.3]', Space: 'flex-[8] max-w-lg' };
+const KEY_LABEL: Record<string, string> = { Space: 'Бос орын' };
 const SPECIAL = ['ә', 'ғ', 'қ', 'ң', 'ө', 'ұ', 'ү', 'һ', 'і'];
 
 export default function Keyboard({ lang }: { lang: Lang }) {
@@ -85,69 +86,89 @@ export default function Keyboard({ lang }: { lang: Lang }) {
     return () => window.removeEventListener('keydown', onKey);
   });
 
+  const key = 'relative flex min-w-0 items-center justify-center rounded-[9px] shadow-[var(--key-sh)] transition-[transform,background] active:translate-y-px active:shadow-none';
+
   return (
-    <div className="space-y-4">
-      <div className="card p-4">
+    <div className="flex flex-col gap-3">
+      <div className="relative">
         <textarea
           ref={area}
-          className="input h-32 resize-y py-3 text-lg"
+          rows={3}
+          className="block w-full resize-y rounded-[18px] bg-elev px-[18px] pt-4 pb-[52px] text-[22px] leading-[1.4] text-fg shadow-1 outline-none focus-visible:outline-2 focus-visible:outline-accent"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t('Осында теріңіз...')}
           aria-label={t('Мәтін')}
         />
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <label className="flex items-center gap-2 text-sm text-muted">
-            <input type="checkbox" className="checkbox" checked={capture} onChange={(e) => setCapture(e.target.checked)} />
-            {t('Физикалық пернетақтадан қазақша теру')}
-          </label>
-          <div className="ml-auto flex gap-2">
-            <CopyButton text={text} label={t('Көшіру')} done={t('Көшірілді')} />
-            <button type="button" className="btn-ghost h-9 px-3" onClick={() => setText('')}>
-              {t('Тазалау')}
-            </button>
-          </div>
+        <div className="absolute right-2.5 bottom-3 flex gap-1.5">
+          <button type="button" className="h-[34px] rounded-[9px] bg-fill px-3 text-[13px] font-medium transition-colors hover:bg-fill-2" onClick={() => setText('')}>
+            {t('Тазалау')}
+          </button>
+          <CopyButton text={text} label={t('Көшіру')} done={t('Көшірілді')} className="inline-flex h-[34px] items-center gap-1.5 rounded-[9px] bg-accent px-3.5 text-[13px] font-semibold text-on-accent hover:bg-accent-hover" />
         </div>
       </div>
 
-      <div className="card overflow-x-auto p-3 select-none sm:p-4">
-        <div className="min-w-[640px] space-y-1.5">
-          {ROWS.map((row, i) => (
-            <div key={i} className="flex justify-center gap-1.5">
-              {row.map((k) => {
-                const code = Array.isArray(k) ? k[0] : k;
-                const label = Array.isArray(k) ? k[1] : null;
-                const active = pressed === code || (code.startsWith('Shift') && shift) || (code === 'CapsLock' && caps);
-                const special = KEYS[code] && SPECIAL.includes(KEYS[code][1]);
-                return (
-                  <button
-                    key={code}
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => press(code)}
-                    className={`relative flex h-12 min-w-0 flex-1 items-center justify-center rounded-lg border text-base transition-colors ${WIDE[code] ?? ''} ${
-                      active ? 'border-accent bg-accent text-accent-fg' : special ? 'border-accent/40 bg-accent-soft hover:bg-surface-2' : 'border-line bg-bg hover:bg-surface-2'
-                    }`}
-                  >
-                    {label ? (
-                      <span className="text-xs text-muted">{label}</span>
-                    ) : (
-                      <>
-                        <span className="absolute top-0.5 left-1.5 text-[10px] text-muted">{KEYS[code][0] !== KEYS[code][1].toUpperCase() ? KEYS[code][0] : ''}</span>
-                        <span className="font-medium">{charFor(code, shift, caps)}</span>
-                      </>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+      {/* Desktop: the full layout. */}
+      <div role="group" aria-label={t('Виртуалды пернетақта')} className="hidden flex-col gap-1.5 overflow-x-auto rounded-[20px] bg-[var(--board)] p-3 select-none sm:flex">
+        {ROWS.map((row, i) => (
+          <div key={i} className="flex min-w-[700px] justify-center gap-1.5">
+            {row.map((k) => {
+              const code = Array.isArray(k) ? k[0] : k;
+              const label = Array.isArray(k) ? k[1] : null;
+              const on = pressed === code || (code.startsWith('Shift') && shift) || (code === 'CapsLock' && caps);
+              const kazakh = KEYS[code] && SPECIAL.includes(KEYS[code][1]);
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => press(code)}
+                  aria-label={label ?? charFor(code, shift, caps)}
+                  className={`${key} h-[52px] flex-1 ${WIDE[code] ?? ''} ${on ? 'bg-accent text-on-accent' : label ? 'bg-fill-2 text-fg-2' : 'bg-[var(--key)] text-fg'}`}
+                >
+                  {label ? (
+                    <span className="text-[13px] font-medium">{t(KEY_LABEL[code] ?? label)}</span>
+                  ) : (
+                    <>
+                      <span className="absolute top-1 left-1.5 text-[10px] text-fg-3">{KEYS[code][0] !== KEYS[code][1].toUpperCase() ? KEYS[code][0] : ''}</span>
+                      <span className={`text-[19px] ${kazakh ? 'font-semibold' : ''}`}>{charFor(code, shift, caps)}</span>
+                      {kazakh && <span className="absolute bottom-1.5 left-1/2 -ml-0.5 size-1 rounded-full bg-accent" />}
+                    </>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
-      <p className="flex items-center gap-2 text-sm text-muted">
-        <Icon name="info" size={14} />
-        {t('Shift және Caps Lock үстіңгі регистр үшін. Ерекшеленген пернелер — қазақ әріптері.')}
-      </p>
+
+      {/* Phones: only the letters a phone keyboard lacks. */}
+      <div role="group" aria-label={t('Қазақ әріптері')} className="flex flex-col gap-2.5 rounded-[18px] bg-[var(--board)] p-2.5 select-none sm:hidden">
+        <div className="grid grid-cols-5 gap-1.5">
+          {SPECIAL.map((ch) => {
+            const label = shift || caps ? ch.toUpperCase() : ch;
+            return (
+              <button key={ch} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => (insert(label), shift && setShift(false))} className={`${key} h-[54px] bg-[var(--key)] text-[19px] font-semibold text-fg`}>
+                {label}
+              </button>
+            );
+          })}
+          <button type="button" aria-pressed={shift} aria-label="Shift" onClick={() => setShift((x) => !x)} className={`${key} h-[54px] text-[15px] ${shift ? 'bg-accent text-on-accent' : 'bg-fill-2 text-fg-2'}`}>
+            ⇧
+          </button>
+        </div>
+        <span className="px-1 text-xs text-fg-3">{t('Телефон пернетақтасында жоқ әріптер — басыңыз, мәтінге қосылады')}</span>
+      </div>
+
+      <div className="hidden flex-wrap items-center justify-between gap-x-6 gap-y-2 sm:flex">
+        <p className="meta">{t('Нүктемен белгіленген пернелер — қазақ әріптері. Стандартты раскладкада олар сандар қатарында орналасқан.')}</p>
+        <span className="flex items-center gap-2.5">
+          <span id="kb-capture" className="text-[13px] text-fg-2">
+            {t('Физикалық пернетақтадан қазақша теру')}
+          </span>
+          <Switch checked={capture} onChange={setCapture} labelledBy="kb-capture" />
+        </span>
+      </div>
     </div>
   );
 }

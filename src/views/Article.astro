@@ -1,73 +1,144 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import ArticleCard from '../components/common/ArticleCard.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
 import Icon from '../components/ui/Icon';
 import { type Lang, formatDate, localePath, useT } from '../i18n';
+import { type Post, getPosts, readingMinutes } from '../lib/journal';
 
 interface Props {
   lang: Lang;
-  post: CollectionEntry<'journal'>;
+  post: Post;
 }
 const { lang, post } = Astro.props;
 const t = useT(lang);
+const d = post.data;
 const { Content, headings } = await render(post);
-const more = (await getCollection('journal', (p) => !p.data.draft && p.id !== post.id)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+const more = (await getPosts()).filter((p) => p.id !== post.id).slice(0, 4);
+// An author who is one of the site's designers links to their page.
+const designer = d.author ? (await getCollection('designers')).find((x) => x.data.name.toLowerCase() === d.author!.trim().toLowerCase()) : undefined;
+const authorHref = designer ? localePath(lang, `/designers/${designer.id}`) : d.authorLink;
+const initials = (d.author ?? '')
+  .split(/\s+/)
+  .map((w) => w[0])
+  .join('')
+  .slice(0, 2)
+  .toUpperCase();
+const toc = headings.filter((h) => h.depth === 2);
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
-  headline: post.data.title,
-  datePublished: post.data.pubDate.toISOString(),
-  ...(post.data.cover && { image: new URL(post.data.cover, Astro.site).toString() }),
-  ...(post.data.author && { author: { '@type': 'Person', name: post.data.author } }),
+  headline: d.title,
+  description: d.excerpt,
+  datePublished: d.pubDate.toISOString(),
+  inLanguage: 'kk',
+  mainEntityOfPage: new URL(localePath(lang, `/journal/${post.id}`), Astro.site).toString(),
+  publisher: { '@id': new URL('/#organization', Astro.site).toString() },
+  ...(d.cover && { image: new URL(d.cover, Astro.site).toString() }),
+  ...(d.author && { author: { '@type': 'Person', name: d.author, ...(authorHref && { url: new URL(authorHref, Astro.site).toString() }) } }),
 };
-const toc = headings.filter((h) => h.depth <= 2);
 ---
 
-<Base lang={lang} title={post.data.title} description={post.data.excerpt} image={post.data.cover}>
+<Base lang={lang} title={d.title} description={d.excerpt} image={d.cover}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
-  <article class="mx-auto max-w-3xl">
-    <a href={localePath(lang, '/journal')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
-      <Icon name="arrowLeft" size={16} />
-      Journal
-    </a>
-    <h1 class="page-title">{post.data.title}</h1>
-    <p class="mt-4 text-sm text-muted">
-      {post.data.author && (post.data.authorLink ? <a class="text-fg hover:text-accent" href={post.data.authorLink}>{post.data.author}</a> : <span class="text-fg">{post.data.author}</span>)}
-      {post.data.author && ' · '}
-      <time datetime={post.data.pubDate.toISOString()}>{formatDate(lang, post.data.pubDate)}</time>
-    </p>
-    {post.data.cover && <img src={post.data.cover} alt="" class="mt-8 w-full rounded-2xl border border-line" />}
+  <Breadcrumbs class="mb-6 sm:mb-9" label={t('Жол')} items={[{ label: 'Journal', href: localePath(lang, '/journal') }, { label: d.title }]} />
+
+  <div class="flex flex-wrap items-start justify-center gap-12">
     {
       toc.length > 2 && (
-        <nav class="card mt-8 p-5" aria-label={t('Мазмұны')}>
-          <p class="mb-2 text-sm font-semibold">{t('Мазмұны')}</p>
-          <ul class="space-y-1 text-sm">
-            {toc.map((h) => (
-              <li>
-                <a href={`#${h.slug}`} class="text-muted hover:text-fg">
-                  {h.text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <aside aria-label={t('Мазмұны')} class="sticky top-[calc(var(--header-h)+2rem)] hidden flex-[0_1_200px] flex-col gap-0.5 text-sm lg:flex">
+          <span class="label-caps mb-2">{t('Мазмұны')}</span>
+          {toc.map((h) => (
+            <a href={`#${h.slug}`} class="border-l-2 border-transparent px-2.5 py-1.5 text-fg-3 transition-colors hover:text-fg aria-[current=true]:border-fg aria-[current=true]:font-medium aria-[current=true]:text-fg" data-toc={h.slug}>
+              {h.text}
+            </a>
+          ))}
+        </aside>
       )
     }
-    <div class="prose prose-lg mt-10 max-w-none dark:prose-invert prose-headings:tracking-tight prose-a:text-accent prose-img:rounded-xl">
-      <Content />
-    </div>
-  </article>
+
+    <article class="max-w-[680px] min-w-0 flex-[1_1_560px]">
+      <header class="mb-7 flex flex-col gap-3.5">
+        <h1 class="text-[clamp(32px,4.6vw,52px)] leading-[1.06] font-[650] tracking-[-0.035em] break-words">{d.title}</h1>
+        {d.excerpt && <p class="font-serif text-[19px] leading-normal text-fg-2 sm:text-[21px]">{d.excerpt}</p>}
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2.5 text-sm text-fg-3">
+          {
+            d.author &&
+              (authorHref ? (
+                <a href={authorHref} class="inline-flex items-center gap-2 font-medium text-fg transition-colors hover:text-accent-ink">
+                  <span aria-hidden="true" class="inline-flex size-7 items-center justify-center rounded-full bg-accent-soft text-[11px] font-[650] text-accent-ink">
+                    {initials}
+                  </span>
+                  {d.author}
+                </a>
+              ) : (
+                <span class="inline-flex items-center gap-2 font-medium text-fg">
+                  <span aria-hidden="true" class="inline-flex size-7 items-center justify-center rounded-full bg-accent-soft text-[11px] font-[650] text-accent-ink">
+                    {initials}
+                  </span>
+                  {d.author}
+                </span>
+              ))
+          }
+          <time datetime={d.pubDate.toISOString()}>{formatDate(lang, d.pubDate)}</time>
+          <span>{t('{n} мин оқу', { n: readingMinutes(post) })}</span>
+          <button type="button" class="ml-auto inline-flex h-8 items-center gap-1.5 rounded-full bg-fill px-3 text-[13px] font-medium text-fg transition-colors hover:bg-fill-2" data-share data-done={t('Сілтеме көшірілді')}>
+            <Icon name="share" size={14} />
+            <span>{t('Бөлісу')}</span>
+          </button>
+        </div>
+      </header>
+      {d.cover && <img src={d.cover} alt="" class="mb-8 w-full rounded-[18px]" />}
+      <div class="prose prose-q">
+        <Content />
+      </div>
+    </article>
+  </div>
+
   {
     more.length > 0 && (
-      <section class="mt-24">
-        <h2 class="mb-6 text-2xl font-bold">{t('Басқа мақалалар')}</h2>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section class="section mx-auto max-w-[980px]">
+        <h2 class="title-md mb-2">{t('Тағы оқыңыз')}</h2>
+        <div class="grid gap-x-8 sm:grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
           {more.map((p) => (
-            <ArticleCard post={p} lang={lang} />
+            <a href={localePath(lang, `/journal/${p.id}`)} class="hover-name flex flex-col gap-1 border-b border-line py-4">
+              <span class="meta">{[p.data.author, formatDate(lang, p.data.pubDate)].filter(Boolean).join(' · ')}</span>
+              <b class="font-name text-base whitespace-normal">{p.data.title}</b>
+            </a>
           ))}
         </div>
       </section>
     )
   }
 </Base>
+
+<script>
+  // Share: the system sheet where there is one, else copy the link.
+  document.querySelector<HTMLButtonElement>('[data-share]')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    const data = { title: document.title, url: location.href };
+    if (navigator.share) {
+      navigator.share(data).catch(() => {});
+      return;
+    }
+    await navigator.clipboard?.writeText(location.href);
+    const label = btn.querySelector('span')!;
+    const was = label.textContent;
+    label.textContent = btn.dataset.done ?? '';
+    setTimeout(() => (label.textContent = was), 1500);
+  });
+
+  // Table of contents: mark the section being read.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+  if (links.length) {
+    const targets = links.map((a) => document.getElementById(a.dataset.toc!)).filter((x): x is HTMLElement => Boolean(x));
+    const mark = () => {
+      const y = window.scrollY + 140;
+      let current = targets[0];
+      for (const h of targets) if (h.offsetTop <= y) current = h;
+      for (const a of links) a.setAttribute('aria-current', String(a.dataset.toc === current?.id));
+    };
+    mark();
+    window.addEventListener('scroll', mark, { passive: true });
+  }
+</script>

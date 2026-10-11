@@ -115,8 +115,9 @@ export default function Select<V extends string | number>({ value, options, onCh
         }}
       >
         <span className="truncate">{current ? current.label : placeholder}</span>
-        <Icon name="chevronDown" size={14} className={`shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
+        <Icon name="chevronDown" size={14} className={`shrink-0 text-fg-3 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
+      {open && <div className="pop-scrim fixed inset-0 z-[68]" onClick={() => setOpen(false)} aria-hidden="true" />}
       {open && (
         <ul
           ref={list}
@@ -126,8 +127,11 @@ export default function Select<V extends string | number>({ value, options, onCh
           aria-label={label}
           aria-activedescendant={`${id}-${active}`}
           onKeyDown={onListKey}
-          className={`card absolute top-full z-50 mt-1.5 max-h-80 min-w-full w-max max-w-[min(22rem,calc(100vw-2rem))] overflow-auto p-1 shadow-2xl outline-none ${alignRight || flip ? 'right-0' : 'left-0'}`}
+          className={`pop absolute top-full z-[70] mt-2 max-h-80 w-max max-w-[min(22rem,calc(100vw-2rem))] min-w-full overflow-auto outline-none ${alignRight || flip ? 'right-0' : 'left-0'}`}
         >
+          <li role="presentation" className="px-2.5 pt-1 pb-1.5 text-[17px] font-[650] sm:hidden">
+            {label}
+          </li>
           {options.map((o, i) => (
             <li
               key={String(o.value)}
@@ -135,16 +139,16 @@ export default function Select<V extends string | number>({ value, options, onCh
               data-index={i}
               role="option"
               aria-selected={o.value === value}
-              className={`flex cursor-pointer items-start gap-2 rounded-lg px-3 py-2 text-sm ${i === active ? 'bg-surface-2' : ''}`}
+              className={`pop-item cursor-pointer ${o.hint ? 'min-h-[52px]' : ''} ${i === active ? 'bg-fill' : ''}`}
               onMouseEnter={() => setActive(i)}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => choose(i)}
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate">{o.label}</span>
-                {o.hint && <span className="block truncate text-xs text-muted">{o.hint}</span>}
+                {o.hint && <span className="block truncate text-xs font-normal text-fg-3">{o.hint}</span>}
               </span>
-              <Icon name="check" size={14} className={`mt-0.5 shrink-0 text-accent ${o.value === value ? '' : 'invisible'}`} />
+              <Icon name="check" size={16} strokeWidth={2.6} className={`shrink-0 text-accent-ink ${o.value === value ? '' : 'invisible'}`} />
             </li>
           ))}
         </ul>

@@ -1,9 +1,11 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import DownloadCount from '../components/common/DownloadCount.astro';
 import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
-import { SITE } from '../lib/site';
-import { getFonts } from '../lib/fonts';
+import { SITE, TOOLS } from '../lib/site';
+import { byDesigner, getFonts } from '../lib/fonts';
 
 interface Props {
   lang: Lang;
@@ -11,73 +13,90 @@ interface Props {
 const { lang } = Astro.props;
 const t = useT(lang);
 const fonts = await getFonts();
-const features = [
-  { icon: 'type', title: 'Қазақ әріптері', text: 'Әр қаріп ӘҒҚҢӨҰҮҺІ әріптеріне тексерілген' },
-  { icon: 'gift', title: 'Тегін қолжетімділік', text: 'Қаріптердің көбі жеке және коммерциялық қолдануға тегін' },
-  { icon: 'globe', title: 'Қазақша интерфейс', text: 'Қазақ тілінде толық локализацияланған платформа' },
-  { icon: 'wrench', title: 'Құралдар', text: 'Тестер, конвертер, үйлесім, баспа тексту және басқа құралдар' },
-] as const;
+const designers = (await getCollection('designers')).filter((d) => byDesigner(fonts, d.id).length > 0);
+const founder = designers.find((d) => d.id === 'abay-emes');
+const downloads = fonts.reduce((n, f) => n + f.data.downloads, 0);
+const why = [
+  ['Қазақ әріптері', 'Әр қаріп Ә, Ғ, Қ, Ң, Ө, Ұ, Ү, Һ, І әріптеріне тексерілген.'],
+  ['Тегін', 'Қаріптердің көбі жеке және коммерциялық жобаларға тегін, лицензиясы әр бетте жазылған.'],
+  ['Үш тілде', 'Сайт қазақша, орысша және ағылшынша — қазақша негізгі тіл.'],
+  ['Құралдар', 'Тестер, конвертер, үйлесім, баспа тексті — бәрі браузерде, файл ешқайда жіберілмейді.'],
+];
 ---
 
-<Base lang={lang} title={t('Біз туралы')} description={t('Қазақ қолдана алатын тегін қаріптің бәрін бір жерге жинадық')}>
-  <section class="mx-auto max-w-3xl py-8 text-center">
-    <p class="eyebrow mb-4">{t('Біз туралы')}</p>
-    <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl">Qarip —<br /><span class="text-accent">{t('қазақ қаріп қоры')}</span></h1>
-    <p class="mt-6 text-lg text-muted">{t('Қазақ қолдана алатын тегін қаріптің бәрін бір жерге жинадық')}</p>
-  </section>
+<Base lang={lang} title={t('Біз туралы')} description={t('Қазақ әріптерін толық қолдайтын тегін қаріптің бәрін бір жерге жинаймыз.')}>
+  <div class="mx-auto max-w-[1100px]">
+    <section class="max-w-[720px]">
+      <p class="eyebrow mb-3">{t('Біз туралы')}</p>
+      <h1 class="text-[clamp(34px,4.6vw,52px)] leading-[1.05] font-[650] tracking-[-0.04em]">{t('Qarip — тегін қазақ қаріп қоры')}</h1>
+      <p class="mt-4 max-w-[540px] text-lg leading-normal text-fg-2">{t('Қазақ әріптерін толық қолдайтын тегін қаріптің бәрін бір жерге жинаймыз. Жарнама жоқ, тіркелу жоқ — жоба тек сіздің қолдауыңызбен өмір сүреді.')}</p>
+    </section>
 
-  <section class="mt-16">
-    <p class="eyebrow mb-2">{t('Мүмкіндіктер')}</p>
-    <h2 class="mb-6 text-3xl font-bold tracking-tight">{t('Неге Qarip?')}</h2>
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        features.map((f) => (
-          <div class="card p-6">
-            <span class="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
-              <Icon name={f.icon} />
-            </span>
-            <h3 class="mt-4 font-semibold">{t(f.title)}</h3>
-            <p class="mt-1 text-sm text-muted">{t(f.text)}</p>
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="card mt-16 grid gap-8 p-8 md:grid-cols-[1fr_auto] md:items-center">
-    <div>
-      <p class="eyebrow mb-2">{t('Миссия')}</p>
-      <h2 class="text-3xl font-bold tracking-tight">{t('Біздің миссиямыз')}</h2>
-      <p class="mt-4 max-w-2xl text-muted">
-        {t('Типографиканы барлығына қолжетімді ету және қазақ тілін қолдайтын қаріптердің таңдауын кеңейту. Әрбір жоба — өз стилі мен жеке сипатына лайық қаріпті табуға құқылы.')}
-      </p>
-    </div>
-    <div class="text-center md:text-right">
-      <p class="text-6xl font-extrabold text-accent tabular-nums">{fonts.length}</p>
-      <p class="text-sm text-muted">{t('қаріп қорда')}</p>
-    </div>
-  </section>
-
-  <section class="mt-16 grid gap-4 md:grid-cols-2">
-    <div class="card p-8">
-      <p class="eyebrow mb-2">{t('Байланыс')}</p>
-      <h2 class="text-2xl font-bold">{t('Байланыс көзі')}</h2>
-      <p class="mt-2 text-muted">{t('Сұрағыңыз бар ма? Жаңа қаріп қосқыңыз келе ме?')}</p>
-      <ul class="mt-6 space-y-3">
-        <li class="flex items-center gap-3"><Icon name="mail" className="text-muted" /><a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-        <li class="flex items-center gap-3"><Icon name="send" className="text-muted" /><a class="link" href={SITE.telegram} target="_blank" rel="noopener noreferrer">Telegram</a></li>
-        <li class="flex items-center gap-3"><Icon name="instagram" className="text-muted" /><a class="link" href={SITE.instagram} target="_blank" rel="noopener noreferrer">Instagram</a></li>
-        <li class="flex items-center gap-3"><Icon name="mapPin" className="text-muted" /><span>{t(SITE.city)}</span></li>
-      </ul>
-    </div>
-    <div class="card flex flex-col p-8">
-      <p class="eyebrow mb-2">{t('Жазылу')}</p>
-      <h2 class="text-2xl font-bold">{t('Жаңалықтан құр қалма')}</h2>
-      <p class="mt-2 text-muted">{t('Жаңадан қызық мақала, қаріп шықса Telegram арнамызда жариялаймыз.')}</p>
-      <div class="mt-auto flex flex-wrap gap-3 pt-6">
-        <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class="btn-primary"><Icon name="send" size={16} />{t('Жазылу')}</a>
-        <a href={localePath(lang, '/support')} class="btn-secondary">{t('Жобаны қолдау')}</a>
+    <section class="mt-12 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div class="card px-[22px] py-5">
+        <div class="text-[34px] leading-none font-[650] tracking-[-0.03em] tabular-nums">{fonts.length}</div>
+        <div class="mt-1.5 text-sm text-fg-3">{t('қаріп қорда')}</div>
       </div>
-    </div>
-  </section>
+      <div class="card px-[22px] py-5">
+        <div class="text-[34px] leading-none font-[650] tracking-[-0.03em] tabular-nums">{designers.length}</div>
+        <div class="mt-1.5 text-sm text-fg-3">{t('дизайнер')}</div>
+      </div>
+      <div class="card px-[22px] py-5">
+        <div class="text-[34px] leading-none font-[650] tracking-[-0.03em] tabular-nums">{TOOLS.length}</div>
+        <div class="mt-1.5 text-sm text-fg-3">{t('тегін құрал')}</div>
+      </div>
+      <div class="card px-[22px] py-5">
+        <div class="text-[34px] leading-none font-[650] tracking-[-0.03em] tabular-nums"><DownloadCount slugs={fonts.map((f) => f.id)} count={downloads} /></div>
+        <div class="mt-1.5 text-sm text-fg-3">{t('жүктеу')}</div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-[72px]">
+      <p class="eyebrow mb-3">{t('Біздің миссиямыз')}</p>
+      <blockquote class="max-w-[760px] text-[clamp(22px,2.6vw,30px)] leading-[1.35] font-semibold tracking-[-0.02em]">
+        {t('Типографиканы барлығына қолжетімді ету және қазақ тілін қолдайтын қаріптердің таңдауын кеңейту.')}
+      </blockquote>
+      <div class="mt-7 grid gap-x-8 gap-y-2 sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
+        {
+          why.map(([title, text]) => (
+            <div class="border-b border-line py-4">
+              <b class="mb-1 block text-base font-semibold">{t(title)}</b>
+              <span class="text-[15px] leading-normal text-fg-2">{t(text)}</span>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="card mt-16 flex flex-wrap items-center justify-between gap-x-8 gap-y-5 !rounded-3xl px-[clamp(22px,4vw,32px)] py-6 sm:mt-[72px]">
+      {
+        founder && (
+          <a href={localePath(lang, `/designers/${founder.id}`)} class="hover-name flex flex-[1_1_300px] items-center gap-4">
+            <span aria-hidden="true" class="inline-flex size-14 shrink-0 items-center justify-center rounded-full bg-accent-soft text-lg font-[650] text-accent-ink">AE</span>
+            <span>
+              <b class="font-name text-[17px]">{founder.data.name}</b>
+              <span class="text-sm text-fg-3">{t('Негізін қалаушы, қаріп дизайнері')}</span>
+            </span>
+          </a>
+        )
+      }
+      <div class="flex flex-[1_1_340px] flex-wrap items-center justify-end gap-2">
+        <a href={localePath(lang, '/services')} class="btn-secondary">{t('Қаріпке тапсырыс')}</a>
+        <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class="btn-ghost"><Icon name="send" size={16} />Telegram</a>
+        <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" class="btn-ghost"><Icon name="instagram" size={16} />Instagram</a>
+        <a href={`mailto:${SITE.email}`} class="btn-ghost"><Icon name="mail" size={16} />{t('Пошта')}</a>
+      </div>
+    </section>
+
+    <section class="note mt-6 flex flex-wrap items-center justify-between gap-4 px-6 py-[22px]">
+      <div>
+        <b class="font-semibold">{t('Жобаны қолдау')}</b>
+        <p class="sub">{t('Сайт тегін және жарнамасыз. Қолдауыңыз жаңа қаріптерге қазақ әріптерін қосуға көмектеседі.')}</p>
+      </div>
+      <a href={localePath(lang, '/support')} class="btn-primary btn-sm h-[42px]!">
+        <Icon name="tenge" size={16} />
+        {t('Қолдау көрсету')}
+      </a>
+    </section>
+  </div>
 </Base>

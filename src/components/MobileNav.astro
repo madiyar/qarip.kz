@@ -1,0 +1,114 @@
+---
+/**
+ * Phones and tablets (< 1024px): bottom tab bar + the "More" sheet.
+ * Kept outside <header>: its backdrop-filter would trap these fixed elements.
+ */
+import { type Lang, barePath, localePath, useT } from '../i18n';
+import LangSwitch from './LangSwitch.astro';
+import Icon from './ui/Icon';
+import { MORE_NAV, SITE, TOOLS } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const path = barePath(Astro.url.pathname);
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+const current = {
+  home: path === '/',
+  fonts: ['/fonts', '/top', '/designers'].some(isActive),
+  tools: isActive('/tools') || TOOLS.some((x) => isActive(x.href)),
+  fav: isActive('/profile'),
+};
+const moreActive = !Object.values(current).some(Boolean);
+const tab = 'flex min-h-[52px] flex-1 flex-col items-center justify-center gap-[3px] text-[10.5px] font-medium tracking-[0.01em] transition-transform active:scale-95';
+const color = (on: boolean) => (on ? 'text-accent-ink' : 'text-fg-3');
+---
+
+<nav
+  class="no-print fixed inset-x-0 bottom-0 z-[90] flex border-t border-[var(--glass-line)] bg-[var(--glass)] px-1.5 pt-[3px] pb-[calc(3px+env(safe-area-inset-bottom))] backdrop-blur-xl backdrop-saturate-[1.8] lg:hidden"
+  aria-label={t('Негізгі бөлімдер')}
+>
+  <a href={localePath(lang, '/')} class:list={[tab, color(current.home)]} aria-current={current.home ? 'page' : undefined}>
+    <Icon name="home" size={22} strokeWidth={1.8} />{t('Басты')}
+  </a>
+  <a href={localePath(lang, '/fonts')} class:list={[tab, color(current.fonts)]} aria-current={current.fonts ? 'page' : undefined}>
+    <span aria-hidden="true" class="flex h-[22px] items-center text-[17px] leading-none font-[650] tracking-[-0.03em]">Аа</span>{t('Қаріптер')}
+  </a>
+  <a href={localePath(lang, '/tools')} class:list={[tab, color(current.tools)]} aria-current={current.tools ? 'page' : undefined}>
+    <Icon name="apps" size={22} strokeWidth={1.8} />{t('Құралдар')}
+  </a>
+  <a href={localePath(lang, '/profile')} class:list={[tab, color(current.fav)]} aria-current={current.fav ? 'page' : undefined}>
+    <span class="relative inline-flex">
+      <Icon name="heart" size={22} strokeWidth={1.8} />
+      <span class="counter absolute -top-[3px] -right-[9px] hidden" data-fav-count></span>
+    </span>
+    {t('Таңдаулы')}
+  </a>
+  <button type="button" class:list={[tab, color(moreActive)]} aria-haspopup="dialog" aria-expanded="false" aria-controls="more-sheet" data-more-open>
+    <Icon name="more" size={22} strokeWidth={2.4} />{t('Тағы')}
+  </button>
+</nav>
+
+<div class="pop-scrim fixed inset-0 z-[119] hidden bg-black/50 lg:hidden" data-more-scrim></div>
+<div
+  id="more-sheet"
+  role="dialog"
+  aria-modal="true"
+  aria-label={t('Тағы')}
+  class="fixed inset-x-0 bottom-0 z-[120] hidden max-h-[86vh] overflow-y-auto rounded-t-[22px] bg-elev px-4 pt-1.5 pb-[calc(18px+env(safe-area-inset-bottom))] shadow-[0_-20px_50px_rgb(0_0_0/0.45)] lg:hidden"
+  data-more
+  inert
+>
+  <div class="flex justify-center pt-1 pb-0.5"><span class="h-[5px] w-9 rounded-full bg-line-2"></span></div>
+  <div class="mb-1.5 flex items-center justify-between">
+    <b class="text-lg font-[650] tracking-[-0.02em]">{t('Тағы')}</b>
+    <button type="button" class="icon-btn -mr-2.5 size-11" aria-label={t('Жабу')} data-more-close><Icon name="x" size={20} /></button>
+  </div>
+  <nav class="overflow-hidden rounded-[14px] bg-fill" aria-label={t('Қосымша беттер')}>
+    {
+      MORE_NAV.map((item) => (
+        <a href={localePath(lang, item.href)} class="flex min-h-[52px] items-center gap-3 border-b border-line px-3.5 font-medium last:border-0" aria-current={isActive(item.href) ? 'page' : undefined}>
+          <span class:list={['flex-1', isActive(item.href) && 'text-accent-ink']}>{t(item.label)}</span>
+          <Icon name="chevronRight" size={15} className="text-fg-3" />
+        </a>
+      ))
+    }
+  </nav>
+  <a href={localePath(lang, '/support')} class="btn-primary btn-rect mt-2.5 h-[50px] w-full rounded-[14px]">
+    <Icon name="tenge" size={16} />
+    {t('Жобаны қолдау')}
+  </a>
+  <div class="mt-3 flex gap-2">
+    <LangSwitch lang={lang} wide class="flex-1" />
+    <button type="button" class="icon-btn size-[46px] bg-fill text-fg" data-theme-toggle aria-label={t('Тақырыпты ауыстыру')}>
+      <Icon name="sun" size={17} className="hidden dark:block" />
+      <Icon name="moon" size={17} className="block dark:hidden" />
+    </button>
+  </div>
+  <div class="flex justify-center gap-5 pt-4 text-[13px] text-fg-3">
+    <a href={SITE.telegram} target="_blank" rel="noopener noreferrer">Telegram</a>
+    <a href={SITE.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
+    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+  </div>
+</div>
+
+<script>
+  const sheet = document.querySelector<HTMLElement>('[data-more]')!;
+  const scrim = document.querySelector<HTMLElement>('[data-more-scrim]')!;
+  const openBtn = document.querySelector<HTMLElement>('[data-more-open]')!;
+  const set = (open: boolean) => {
+    sheet.classList.toggle('hidden', !open);
+    scrim.classList.toggle('hidden', !open);
+    sheet.toggleAttribute('inert', !open);
+    openBtn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) sheet.querySelector<HTMLElement>('[data-more-close]')?.focus();
+    else openBtn.focus();
+  };
+  openBtn.addEventListener('click', () => set(sheet.classList.contains('hidden')));
+  scrim.addEventListener('click', () => set(false));
+  sheet.querySelector('[data-more-close]')?.addEventListener('click', () => set(false));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && !sheet.classList.contains('hidden') && set(false));
+</script>

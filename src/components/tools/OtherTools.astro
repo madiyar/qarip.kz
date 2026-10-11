@@ -1,0 +1,26 @@
+---
+/** "Other tools" links at the bottom of every tool page. */
+import { type Lang, localePath, useT } from '../../i18n';
+import { TOOLS } from '../../lib/site';
+
+interface Props {
+  lang: Lang;
+  /** href of the current tool. */
+  current: string;
+}
+const { lang, current } = Astro.props;
+const t = useT(lang);
+---
+
+<nav class="no-print section" aria-labelledby="other-tools">
+  <h2 id="other-tools" class="title-md mb-3.5">{t('Басқа құралдар')}</h2>
+  <div class="flex flex-wrap gap-2">
+    {
+      TOOLS.filter((x) => x.href !== current).map((x) => (
+        <a href={localePath(lang, x.href)} class="inline-flex h-[38px] items-center rounded-full bg-elev px-3.5 text-sm shadow-1 transition-colors hover:bg-fill-2">
+          {t(x.label)}
+        </a>
+      ))
+    }
+  </div>
+</nav>

@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import ToolHeader from '../components/tools/ToolHeader.astro';
+import OtherTools from '../components/tools/OtherTools.astro';
 import Keyboard from '../components/tools/Keyboard';
 import Icon from '../components/ui/Icon';
 import { type Lang, useT } from '../i18n';
@@ -10,61 +12,96 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const letters = ['ә', 'ғ', 'қ', 'ң', 'ө', 'ұ', 'ү', 'һ', 'і'];
-const windows = ['Архивті жүктеп, ішінен шығыңыз.', 'Шыққан қалтада «setup» файлын табыңыз.', '«setup» файлын ашып, орнату аяқталғанша күтіңіз.', 'Компьютерді қайта қосыңыз да, пернетақтаны тексеріңіз.'];
-const mac = ['Finder ашып, «Go → Go to Folder…» таңдаңыз.', '«/Library/Keyboard Layouts» адресін енгізіңіз.', 'Жүктелген файлдарды осы қалтаға көшіріп, компьютерді қайта қосыңыз.', 'Пернетақта параметрлерінде «+» басып, «Other» ішінен қазақша раскладканы қосыңыз.'];
+// With an installer archive the desktop steps install it; without one they enable the layout built into the OS.
+const STEPS: [string, string, string[]][] = [
+  [
+    'win',
+    'Windows',
+    SITE.keyboardZip
+      ? ['Архивті жүктеп, ішінен шығарыңыз.', 'Шыққан қалтадан «setup» файлын ашып, орнату аяқталғанша күтіңіз.', 'Компьютерді қайта қосыңыз.', 'Тілді Alt + Shift немесе Win + Space арқылы ауыстырыңыз.']
+      : ['Параметрлер → Уақыт және тіл → Тіл және аймақ бөлімін ашыңыз.', '«Тіл қосу» басып, «Қазақ» тілін таңдаңыз.', 'Тіл параметрлерінде «Қазақ» пернетақтасы қосылғанын тексеріңіз.', 'Тілді Alt + Shift немесе Win + Space арқылы ауыстырыңыз.'],
+  ],
+  [
+    'mac',
+    'macOS',
+    SITE.keyboardZip
+      ? ['Finder → Go → Go to Folder… ашыңыз.', '«/Library/Keyboard Layouts» мекенжайын енгізіп, файлдарды осы қалтаға көшіріңіз.', 'Компьютерді қайта қосыңыз.', 'Пернетақта баптауларында «+» → Other ішінен қазақша раскладканы қосыңыз. Ауысу: Ctrl + Space.']
+      : ['System Settings → Keyboard → Input Sources → Edit ашыңыз.', '«+» басып, «Kazakh» раскладкасын таңдаңыз.', 'Раскладкалар арасында Ctrl + Space немесе 🌐 пернесімен ауысыңыз.'],
+  ],
+  ['android', 'Android', ['Gboard баптаулары → Тілдер → Пернетақта қосу.', '«Қазақ тілі» таңдап, раскладканы белгілеңіз.', 'Бос орын пернесін ұзақ басып ауысыңыз.']],
+  ['ios', 'iPhone', ['Баптаулар → Негізгі → Пернетақта → Пернетақталар.', '«Жаңа пернетақта қосу» → «Қазақша».', 'Глобус пернесі арқылы ауысыңыз.']],
+];
 ---
 
-<Base lang={lang} title={t('Қазақ пернетақтасы')} description={t('Қазақ кирилл әліпбиінің барлық әріптерін қамтитын пернетақта раскладкасы.')}>
-  <section class="grid gap-8 lg:grid-cols-2 lg:items-center">
-    <div>
-      <span class="chip mb-5 h-8 text-xs"><Icon name="keyboard" size={14} />{t('Қазақ кирилл пернетақтасы')}</span>
-      <h1 class="text-5xl font-extrabold tracking-tight sm:text-6xl">{t('Пернетақта')}</h1>
-      <p class="mt-5 text-lg text-muted">
-        {t('Қазақ кирилл әліпбиінің барлық әріптерін қамтитын пернетақта раскладкасы. Стандартты қазақша пернетақта негізінде жасалған, барлық ұлттық әріптерді ыңғайлы теруге мүмкіндік береді.')}
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        {SITE.keyboardZip && <a href={SITE.keyboardZip} download class="btn-primary"><Icon name="download" size={16} />{t('Жүктеу')}</a>}
-        <a href="#virtual" class="btn-secondary">{t('Раскладканы көру')}</a>
-      </div>
-    </div>
-    <div class="card p-6">
-      <p class="text-sm text-muted">{t('Қазақ әліпбиі — кирилл негізіндегі 42 әріп. Раскладка стандартты пернетақтаның үстінен қосымша әріптерді қамтиды:')}</p>
-      <div class="mt-4 flex flex-wrap gap-2">
-        {letters.map((l) => <span class="flex size-12 items-center justify-center rounded-xl border border-line bg-bg text-xl font-semibold">{l}</span>)}
-      </div>
-      <p class="mt-4 text-xs text-muted">{t('Барлық әріптер Unicode стандартына сай.')}</p>
-    </div>
-  </section>
-
-  <section id="virtual" class="mt-20 scroll-mt-24">
-    <div class="mb-6 text-center">
-      <h2 class="text-3xl font-bold tracking-tight">{t('Виртуалды пернетақта')}</h2>
-      <p class="mt-2 text-muted">{t('Түймені басып не өз пернетақтаңызда теріңіз — мәтін қазақша шығады.')}</p>
-    </div>
+<Base lang={lang} title={t('Қазақ пернетақтасы')} description={t('Раскладка орнатылмаған болса — осында теріп, көшіріп алыңыз. Төменде әр жүйеге орнату жолы бар.')} wide>
+  <div class="wrap-md pt-7">
+    <ToolHeader lang={lang} title={t('Қазақ пернетақтасы')} description={t('Раскладка орнатылмаған болса — осында теріп, көшіріп алыңыз. Төменде әр жүйеге орнату жолы бар.')} />
     <Keyboard client:only="react" lang={lang} />
-  </section>
 
-  <section class="mt-20">
-    <h2 class="mb-2 text-2xl font-bold">{t('Пернетақтаны орнату')}</h2>
-    {
-      !SITE.keyboardZip && (
-        <p class="mb-6 text-muted">
-          {t('Windows 10/11 және macOS жүйелерінде қазақ раскладкасы кірістірілген — оны тіл параметрлерінен қосыңыз. Орнату файлы жақында қосылады.')}
-        </p>
-      )
-    }
-    <div class="grid gap-4 md:grid-cols-2">
-      <div class="card p-6">
-        <h3 class="font-semibold">Windows</h3>
-        <ol class="mt-4 list-decimal space-y-2 pl-5 text-sm text-muted">{windows.map((s) => <li>{t(s)}</li>)}</ol>
-        <p class="mt-4 text-xs text-muted">{t('Тілді ауыстыру: Alt+Shift немесе Win+Space.')}</p>
+    <section class="mt-12">
+      {
+        SITE.keyboardZip && (
+          <div class="card mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3.5 px-[22px] py-5">
+            <div class="flex-[1_1_320px]">
+              <b class="block text-[17px] font-semibold">{t('Қазақ кирилл пернетақтасы')}</b>
+              <span class="text-sm text-fg-3">{t('Стандартты раскладка негізінде, 42 әріптің бәрі бар · Windows және macOS · .zip')}</span>
+            </div>
+            <a href={SITE.keyboardZip} download class="btn-primary btn-rect">
+              <Icon name="download" size={16} />
+              {t('Файлды жүктеу')}
+            </a>
+          </div>
+        )
+      }
+      <h2 class="title-md mb-1.5">{t('Қалай орнатамын?')}</h2>
+      {!SITE.keyboardZip && <p class="sub mb-4">{t('Қазақ раскладкасы Windows, macOS, Android және iOS жүйелерінде бар — оны баптаулардан қосу жеткілікті.')}</p>}
+      <div role="tablist" aria-label={t('Жүйе')} class="segmented mb-3.5" data-os-tabs>
+        {
+          STEPS.map(([id, label], i) => (
+            <button type="button" role="tab" id={`os-tab-${id}`} aria-controls={`os-${id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-os={id}>
+              {label}
+            </button>
+          ))
+        }
       </div>
-      <div class="card p-6">
-        <h3 class="font-semibold">macOS</h3>
-        <ol class="mt-4 list-decimal space-y-2 pl-5 text-sm text-muted">{mac.map((s) => <li>{t(s)}</li>)}</ol>
-        <p class="mt-4 text-xs text-muted">{t('Раскладкалар арасында ауысу: Ctrl+Space.')}</p>
-      </div>
-    </div>
-  </section>
+      {
+        STEPS.map(([id, , steps], i) => (
+          <ol id={`os-${id}`} role="tabpanel" aria-labelledby={`os-tab-${id}`} hidden={i !== 0} class="panel list-decimal py-2 pr-[22px] pl-11 marker:text-fg-3">
+            {steps.map((s) => (
+              <li class="border-b border-line py-2.5 text-fg-2 last:border-0">{t(s)}</li>
+            ))}
+          </ol>
+        ))
+      }
+    </section>
+
+    <OtherTools lang={lang} current="/keyboard" />
+  </div>
 </Base>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-os-tabs] [data-os]')];
+  const select = (tab: HTMLButtonElement) => {
+    for (const x of tabs) {
+      const on = x === tab;
+      x.setAttribute('aria-selected', String(on));
+      x.tabIndex = on ? 0 : -1;
+      document.getElementById(`os-${x.dataset.os}`)!.hidden = !on;
+    }
+  };
+  // Open the visitor's own system first.
+  const ua = navigator.userAgent;
+  const guess = /iPhone|iPad/.test(ua) ? 'ios' : /Android/.test(ua) ? 'android' : /Mac/.test(ua) ? 'mac' : 'win';
+  const first = tabs.find((x) => x.dataset.os === guess);
+  if (first) select(first);
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (!d) return;
+      const next = tabs[(i + d + tabs.length) % tabs.length];
+      select(next);
+      next.focus();
+    });
+  });
+</script>

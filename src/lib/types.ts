@@ -14,6 +14,8 @@ export interface FontSummary {
   downloads: number;
   addedDate: string;
   stylesCount: number;
+  /** Has a variable font file. */
+  variable: boolean;
   previewText?: string;
   zip: string;
   scripts: string[];
@@ -34,6 +36,8 @@ export interface StyleInfo {
 export interface CategoryInfo {
   id: string;
   name: string;
+  /** Short name in the page's language (Кесілген, Без засечек, Sans serif…). */
+  label: string;
   description: string;
   color: string;
 }

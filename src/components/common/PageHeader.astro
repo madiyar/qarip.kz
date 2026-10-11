@@ -1,16 +1,27 @@
 ---
+/**
+ * Page title block.
+ * size="md" (catalog, lists, tools): 32px title + grey sub line.
+ * size="lg" (content pages): 40px title + larger lead in the secondary text colour.
+ */
 interface Props {
   eyebrow?: string;
   title: string;
   description?: string;
-  center?: boolean;
+  /** Number shown next to the title (catalog). */
+  count?: number;
+  size?: 'md' | 'lg';
+  class?: string;
 }
-const { eyebrow, title, description, center = false } = Astro.props;
+const { eyebrow, title, description, count, size = 'md', class: className } = Astro.props;
 ---
 
-<header class:list={['mb-10', center && 'mx-auto max-w-2xl text-center']}>
+<header class:list={[size === 'lg' ? 'mb-7' : 'mb-6', className]}>
   {eyebrow && <p class="eyebrow mb-3">{eyebrow}</p>}
-  <h1 class="page-title">{title}</h1>
-  {description && <p class:list={['mt-4 text-lg text-muted', !center && 'max-w-2xl']}>{description}</p>}
+  <div class="flex items-baseline gap-2.5">
+    <h1 class:list={size === 'lg' ? 'text-[32px] leading-[1.1] font-[650] tracking-[-0.035em] break-words sm:text-[40px]' : 'title-lg'}>{title}</h1>
+    {count !== undefined && <span class="text-[15px] text-fg-3 tabular-nums">{count}</span>}
+  </div>
+  {description && <p class:list={size === 'lg' ? 'lead mt-2 max-w-[680px]' : 'sub mt-1.5 max-w-[680px]'}>{description}</p>}
   <slot />
 </header>

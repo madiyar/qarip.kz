@@ -96,8 +96,8 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
     );
   }, [glyphs, filter, group]);
 
-  if (error) return <p className="text-sm text-rose-500">{t('Глифтерді оқу мүмкін болмады')}</p>;
-  if (!glyphs) return <p className="text-sm text-muted">{t('Жүктелуде...')}</p>;
+  if (error) return <p className="text-sm text-heart">{t('Глифтерді оқу мүмкін болмады')}</p>;
+  if (!glyphs) return <p className="text-sm text-fg-3">{t('Жүктелуде...')}</p>;
 
   const { upm, ascender, descender } = meta;
   const height = ascender - descender;
@@ -108,24 +108,24 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
       <div>
         <div className="mb-3 flex flex-wrap gap-1.5">
           {GROUPS.filter(([id]) => id === 'all' || glyphs.some((g) => inGroup(g, id))).map(([id, label]) => (
-            <button key={id} type="button" className="chip h-8 text-xs" aria-pressed={group === id} onClick={() => (setGroup(id), setLimit(pageSize))}>
+            <button key={id} type="button" className="chip h-8" aria-pressed={group === id} onClick={() => (setGroup(id), setLimit(pageSize))}>
               {t(label)}
-              <span className="text-muted">{id === 'all' ? glyphs.length : glyphs.filter((g) => inGroup(g, id)).length}</span>
+              <span className="opacity-60 tabular-nums">{id === 'all' ? glyphs.length : glyphs.filter((g) => inGroup(g, id)).length}</span>
             </button>
           ))}
         </div>
         <div className="mb-3 flex items-center gap-3">
-          <input className="input h-9 max-w-xs" placeholder={t('Глиф іздеу (атауы, таңба, U+...)')} value={filter} onChange={(e) => setFilter(e.target.value)} />
-          <span className="text-sm text-muted">{t('{n} глиф', { n: visible.length })}</span>
+          <input className="input h-9 max-w-xs rounded-full" placeholder={t('Глиф іздеу (атауы, таңба, U+...)')} aria-label={t('Глиф іздеу (атауы, таңба, U+...)')} value={filter} onChange={(e) => setFilter(e.target.value)} />
+          <span className="meta tabular-nums">{t('{n} глиф', { n: visible.length })}</span>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(64px,1fr))] overflow-hidden rounded-xl border-t border-l border-line">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-1">
           {visible.slice(0, limit).map((g) => (
             <button
               key={g.index}
               type="button"
               onClick={() => setSelected(g)}
               aria-label={`${g.name}${g.unicode !== undefined ? ` ${hex(g.unicode)}` : ''}`}
-              className={`flex aspect-square items-center justify-center border-r border-b border-line p-2 transition-colors hover:bg-surface-2 ${selected?.index === g.index ? 'bg-accent-soft' : ''}`}
+              className={`flex aspect-square items-center justify-center rounded-[10px] p-2 transition-colors ${selected?.index === g.index ? 'bg-accent-soft text-accent-ink' : 'bg-elev hover:bg-fill-2'}`}
             >
               <svg viewBox={box(g, 0.05)} className="h-full w-full" aria-hidden="true">
                 <path d={g.path} fill="currentColor" />
@@ -140,26 +140,26 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
         )}
       </div>
       {selected && (
-        <aside className="card sticky top-24 h-fit p-4">
+        <aside className="card sticky top-[calc(var(--header-h)+1rem)] h-fit p-5">
           <svg viewBox={box(selected, 0.15)} className="aspect-square w-full" aria-hidden="true">
             <line x1={-selected.advance} x2={selected.advance * 2} y1={0} y2={0} stroke="var(--line)" strokeWidth={upm / 200} />
             <line x1={-selected.advance} x2={selected.advance * 2} y1={-ascender} y2={-ascender} stroke="var(--line)" strokeWidth={upm / 200} strokeDasharray={`${upm / 50}`} />
             <line x1={-selected.advance} x2={selected.advance * 2} y1={-descender} y2={-descender} stroke="var(--line)" strokeWidth={upm / 200} strokeDasharray={`${upm / 50}`} />
-            <rect x={0} y={-ascender} width={selected.advance} height={height} fill="none" stroke="var(--accent)" strokeOpacity={0.4} strokeWidth={upm / 250} />
+            <rect x={0} y={-ascender} width={selected.advance} height={height} fill="none" stroke="var(--accent)" strokeOpacity={0.5} strokeWidth={upm / 250} />
             <path d={selected.path} fill="currentColor" />
           </svg>
-          <dl className="mt-4 grid grid-cols-2 gap-y-2 text-sm">
-            <dt className="text-muted">{t('Атауы')}</dt>
+          <dl className="mt-4 grid grid-cols-2 gap-y-2 border-t border-line pt-4 text-sm">
+            <dt className="text-fg-3">{t('Атауы')}</dt>
             <dd className="truncate text-right font-mono">{selected.name}</dd>
-            <dt className="text-muted">Unicode</dt>
+            <dt className="text-fg-3">Unicode</dt>
             <dd className="text-right font-mono">{selected.unicode !== undefined ? hex(selected.unicode) : '—'}</dd>
-            <dt className="text-muted">{t('Ені')}</dt>
+            <dt className="text-fg-3">{t('Ені')}</dt>
             <dd className="text-right font-mono">{selected.advance}</dd>
-            <dt className="text-muted">{t('Индекс')}</dt>
+            <dt className="text-fg-3">{t('Индекс')}</dt>
             <dd className="text-right font-mono">{selected.index}</dd>
           </dl>
           {selected.unicode !== undefined && (
-            <button type="button" className="btn-secondary mt-4 w-full" onClick={() => navigator.clipboard?.writeText(String.fromCodePoint(selected.unicode!))}>
+            <button type="button" className="btn-secondary btn-rect mt-4 w-full" onClick={() => navigator.clipboard?.writeText(String.fromCodePoint(selected.unicode!))}>
               {t('Таңбаны көшіру')}
             </button>
           )}

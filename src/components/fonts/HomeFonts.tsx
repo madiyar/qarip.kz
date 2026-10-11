@@ -1,6 +1,5 @@
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
-import Icon from '../ui/Icon';
-import { FontTile } from './FontRow';
+import { FontCard } from './FontRow';
 import type { PreviewState } from './PreviewToolbar';
 import { type Lang, localePath, useT } from '../../i18n';
 import type { FontSummary } from '../../lib/types';
@@ -8,28 +7,31 @@ import type { FontSummary } from '../../lib/types';
 interface Tab {
   id: string;
   label: string;
-  /** "All" link for this list. */
+  /** Where "see all" leads for this tab, and its label. */
   href: string;
+  more: string;
   fonts: FontSummary[];
 }
 
 interface Props {
   lang: Lang;
   tabs: Tab[];
+  /** Total number of fonts ("See all {n} fonts"). */
+  total: number;
 }
 
-/** Home page: latest / popular / our fonts as tabs over one grid. No filters or preview controls here — those live in the catalog. */
-export default function HomeFonts({ lang, tabs }: Props) {
+/** Home page: popular / new / Qarip fonts as tabs over one grid. Filters and preview controls live in the catalog. */
+export default function HomeFonts({ lang, tabs, total }: Props) {
   const t = useT(lang);
   const [current, setCurrent] = useState(0);
-  const [size, setSize] = useState(28);
+  const [size, setSize] = useState(36);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const tab = tabs[current];
   const preview: PreviewState = { text: '', size, textCase: 'none', view: 'grid' };
 
-  // Smaller previews on phones, where the cards stack in one column.
+  // Smaller samples on phones, where the cards stack in one column.
   useEffect(() => {
-    if (window.innerWidth < 640) setSize(22);
+    if (window.innerWidth < 640) setSize(26);
   }, []);
 
   const onKey = (e: KeyboardEvent) => {
@@ -43,39 +45,35 @@ export default function HomeFonts({ lang, tabs }: Props) {
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="no-scrollbar -mx-4 max-w-[calc(100%+2rem)] overflow-x-auto px-4">
-          <div className="segmented" role="tablist" aria-label={t('Қаріптер')} onKeyDown={onKey}>
-            {tabs.map((x, i) => (
-              <button
-                key={x.id}
-                ref={(el) => {
-                  buttons.current[i] = el;
-                }}
-                type="button"
-                role="tab"
-                id={`home-tab-${x.id}`}
-                aria-controls="home-fonts"
-                aria-selected={i === current}
-                aria-pressed={i === current}
-                tabIndex={i === current ? 0 : -1}
-                className="px-4 font-semibold whitespace-nowrap sm:text-base"
-                onClick={() => setCurrent(i)}
-              >
-                {t(x.label)}
-              </button>
-            ))}
-          </div>
-        </div>
-        <a href={localePath(lang, tab.href)} className="group flex items-center gap-1 text-sm font-semibold whitespace-nowrap text-muted hover:text-fg">
-          {t('Барлығы')}
-          <Icon name="arrowRight" size={16} className="transition-transform group-hover:translate-x-0.5" />
-        </a>
-      </div>
-      <div id="home-fonts" role="tabpanel" aria-labelledby={`home-tab-${tab.id}`} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {tab.fonts.map((font) => (
-          <FontTile key={font.slug} font={font} lang={lang} preview={preview} />
+      <div className="tabs mb-5" role="tablist" aria-label={t('Қаріптер')} onKeyDown={onKey}>
+        {tabs.map((x, i) => (
+          <button
+            key={x.id}
+            ref={(el) => {
+              buttons.current[i] = el;
+            }}
+            type="button"
+            role="tab"
+            id={`home-tab-${x.id}`}
+            aria-controls="home-fonts"
+            aria-selected={i === current}
+            tabIndex={i === current ? 0 : -1}
+            className="tab"
+            onClick={() => setCurrent(i)}
+          >
+            {t(x.label)}
+          </button>
         ))}
+      </div>
+      <div id="home-fonts" role="tabpanel" aria-labelledby={`home-tab-${tab.id}`} className="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
+        {tab.fonts.map((font) => (
+          <FontCard key={font.slug} font={font} lang={lang} preview={preview} />
+        ))}
+      </div>
+      <div className="mt-7 flex justify-center">
+        <a href={localePath(lang, tab.href)} className="btn-secondary font-medium">
+          {t(tab.more, { n: total })}
+        </a>
       </div>
     </div>
   );

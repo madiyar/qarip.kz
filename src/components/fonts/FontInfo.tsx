@@ -69,13 +69,13 @@ export async function inspectFontFile(source: string | ArrayBuffer): Promise<Ric
 export function FontMeta({ meta, t }: { meta: [string, string][]; t: T }) {
   if (!meta.length) return null;
   return (
-    <section className="card p-5">
-      <h3 className="font-semibold">{t('Метадеректер')}</h3>
-      <p className="mb-3 text-xs text-muted">{t('Қаріп файлынан оқылған мәліметтер')}</p>
-      <dl className="divide-y divide-line text-sm">
+    <section>
+      <h2 className="text-[15px] font-semibold text-fg-2">{t('Метадеректер')}</h2>
+      <p className="meta mb-1.5">{t('Қаріп файлынан оқылған мәліметтер')}</p>
+      <dl className="rows text-sm">
         {meta.map(([label, value]) => (
-          <div key={label} className="flex items-start justify-between gap-4 py-2.5">
-            <dt className="shrink-0 text-muted">{t(label)}</dt>
+          <div key={label} className="flex items-start justify-between gap-4 py-[11px]">
+            <dt className="shrink-0 text-fg-3">{t(label)}</dt>
             <dd className="max-h-32 overflow-y-auto text-right text-xs break-words whitespace-pre-line">
               {/^https?:\/\//.test(value) ? (
                 <a className="link" href={value} target="_blank" rel="noopener noreferrer">
@@ -104,7 +104,7 @@ export default function FontInfo({ url, t }: { url: string; t: T }) {
       off = true;
     };
   }, [url]);
-  if (!rich) return <p className="text-sm text-muted">{t('Жүктелуде...')}</p>;
+  if (!rich) return <p className="meta">{t('Жүктелуде...')}</p>;
   const rows: [string, string][] = [
     ['Кернинг жұптары', rich.kerningPairs ? rich.kerningPairs.toLocaleString() : t('Жоқ')],
     ['Тіл жүйелері', String(rich.langs || '—')],
@@ -112,27 +112,27 @@ export default function FontInfo({ url, t }: { url: string; t: T }) {
     ['Вариативті осьтер', rich.axes.length ? rich.axes.join(', ') : t('Жоқ')],
   ];
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <div className="space-y-6">
-        <section className="card p-5">
-          <h3 className="mb-4 font-semibold">{t('Техникалық мәліметтер')}</h3>
-          <dl className="divide-y divide-line text-sm">
+    <div className="grid gap-x-14 gap-y-8 md:grid-cols-2">
+      <div className="flex flex-col gap-7">
+        <section>
+          <h2 className="mb-1.5 text-[15px] font-semibold text-fg-2">{t('Техникалық мәліметтер')}</h2>
+          <dl className="rows text-sm">
             {rows.map(([label, value]) => (
-              <div key={label} className="flex justify-between gap-4 py-2.5">
-                <dt className="text-muted">{t(label)}</dt>
-                <dd className="text-right font-mono font-medium">{value}</dd>
+              <div key={label} className="flex justify-between gap-4 py-[11px]">
+                <dt className="text-fg-3">{t(label)}</dt>
+                <dd className="text-right font-mono">{value}</dd>
               </div>
             ))}
           </dl>
         </section>
         {rich.features.length > 0 && (
-          <section className="card p-5">
-            <h3 className="mb-4 font-semibold">
-              {t('OpenType мүмкіндіктері')} <span className="text-muted">({rich.features.length})</span>
-            </h3>
+          <section>
+            <h2 className="mb-2.5 text-[15px] font-semibold text-fg-2">
+              {t('OpenType мүмкіндіктері')} · {rich.features.length}
+            </h2>
             <div className="flex flex-wrap gap-1.5">
               {rich.features.map((f) => (
-                <span key={f} className="badge bg-surface-2 font-mono" title={featureName(f)}>
+                <span key={f} className="tag font-mono font-medium" title={featureName(f)}>
                   {f}
                 </span>
               ))}

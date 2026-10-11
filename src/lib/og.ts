@@ -23,9 +23,9 @@ function load(file: string) {
   return cache.get(file)!;
 }
 
-/** Interface font: Inter, split by fontsource into script subsets. */
+/** Interface font: Onest (the site's UI font), split by fontsource into script subsets. */
 const ui = (weight: number) =>
-  Promise.all(['latin', 'cyrillic', 'cyrillic-ext'].map((subset) => load(path.resolve(`node_modules/@fontsource/inter/files/inter-${subset}-${weight}-normal.woff`))));
+  Promise.all(['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'].map((subset) => load(path.resolve(`node_modules/@fontsource/onest/files/onest-${subset}-${weight}-normal.woff`))));
 
 /** Lays out one line, picking for every character the first font that has it. */
 function line(fonts: any[], text: string, size: number): { d: string; width: number } {
@@ -50,14 +50,14 @@ function fit(fonts: any[], text: string, max: number, width: number) {
 
 interface OgOptions {
   title: string;
-  /** Font file used for the title (the catalog font itself); Inter when omitted. */
+  /** Font file used for the title (the catalog font itself); Onest when omitted. */
   titleFont?: string;
   subtitle: string;
   footer: string;
 }
 
 export async function renderOg({ title, titleFont, subtitle, footer }: OgOptions): Promise<Buffer> {
-  const [bold, medium] = await Promise.all([ui(800), ui(500)]);
+  const [bold, medium] = await Promise.all([ui(700), ui(500)]);
   const display = titleFont ? [await load(titleFont), ...bold] : bold;
   const pad = 80;
   const t = fit(display, title, 150, W - pad * 2);
@@ -68,15 +68,15 @@ export async function renderOg({ title, titleFont, subtitle, footer }: OgOptions
   <defs>
     <radialGradient id="g" cx="50%" cy="0%" r="90%">
       <stop offset="0" stop-color="#1b2a66"/>
-      <stop offset="0.6" stop-color="#0a0a0a"/>
+      <stop offset="0.6" stop-color="#0a0a0b"/>
     </radialGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="url(#g)"/>
   <rect x="0" y="${H - 8}" width="${W}" height="8" fill="#3b63f0"/>
   <path transform="translate(${pad} ${pad + 34})" d="${brand.d}" fill="#ffffff"/>
   <path transform="translate(${pad} ${H / 2 + t.size * 0.3})" d="${t.d}" fill="#ffffff"/>
-  <path transform="translate(${pad} ${H / 2 + t.size * 0.3 + 70})" d="${s.d}" fill="#a1a1aa"/>
-  <path transform="translate(${W - pad - f.width} ${pad + 30})" d="${f.d}" fill="#71717a"/>
+  <path transform="translate(${pad} ${H / 2 + t.size * 0.3 + 70})" d="${s.d}" fill="#c7c7cc"/>
+  <path transform="translate(${W - pad - f.width} ${pad + 30})" d="${f.d}" fill="#98989d"/>
 </svg>`;
   return sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toBuffer();
 }

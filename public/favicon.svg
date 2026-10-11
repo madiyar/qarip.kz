@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="826.5" height="826.5" viewBox="0 0 826.5 826.5">
-  <rect fill="#fff" width="826.5" height="826.5" rx="286" ry="286"/>
-  <g>
-    <path id="Қ" fill-rule="evenodd" d="M778.836,630.021H698.393L586.961,481.664,764.989,266.053H635.754L494.65,448.7H461.682V266.053H343V727.607H461.682V531.776H494.65L633.117,727.607h42.2v85.717h103.52v-183.3Z" transform="translate(-127.25 -121.25)"/>
-    <path fill-rule="evenodd" fill="#007eff" d="M343.805,755.765H632.888v56.157H343.805V755.765Z" transform="translate(-127.25 -121.25)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="16" fill="#3b63f0"/>
+  <g transform="translate(9 9) scale(0.108) translate(-120 -125)" fill="#fff">
+    <path d="M504.9 332.6A185 185 0 1 0 374.3 502A140 140 0 1 1 504.9 332.6Z"/>
+    <path d="M430 321Q441 412 531 423Q441 434 430 525Q419 434 329 423Q419 412 430 321Z"/>
   </g>
 </svg>

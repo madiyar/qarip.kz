@@ -2,13 +2,10 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/common/SectionHead.astro';
-import ArticleCard from '../components/common/ArticleCard.astro';
-import DownloadCount from '../components/common/DownloadCount.astro';
 import HomeFonts from '../components/fonts/HomeFonts';
-import Icon from '../components/ui/Icon';
-import { type Lang, localePath, useT } from '../i18n';
+import { type Lang, formatDate, localePath, useT } from '../i18n';
 import { byPopularity } from '../lib/downloads';
-import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
+import { familyName, getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
 import { CATEGORY, HOME, websiteLd } from '../lib/seo';
 
 interface Props {
@@ -17,119 +14,96 @@ interface Props {
 const { lang } = Astro.props;
 const t = useT(lang);
 
-const fonts = await toSummaries(await getFonts());
-const categories = await getCategories();
-const designers = new Set(fonts.flatMap((f) => f.designers.map((d) => d.slug))).size;
-const downloads = fonts.reduce((n, f) => n + f.downloads, 0);
+const fonts = await toSummaries(await getFonts(), lang);
+const categories = await getCategories(lang);
+const popular = [...fonts].sort(byPopularity);
 // Six per tab: two rows of three cards.
 const PER_TAB = 6;
 const ours = fonts.filter((f) => f.our);
 const tabs = [
-  { id: 'new', label: 'Соңғы қаріп', href: '/fonts?sort=new', fonts: fonts.slice(0, PER_TAB) },
-  { id: 'popular', label: 'Танымал қаріп', href: '/top', fonts: [...fonts].sort(byPopularity).slice(0, PER_TAB) },
-  ...(ours.length ? [{ id: 'our', label: 'Біздің қаріп', href: '/fonts?our=1', fonts: ours.slice(0, PER_TAB) }] : []),
+  { id: 'popular', label: 'Танымал', href: '/top', more: 'Толық рейтинг', fonts: popular.slice(0, PER_TAB) },
+  { id: 'new', label: 'Жаңа қосылды', href: '/fonts', more: 'Барлық {n} қаріпті көру', fonts: fonts.slice(0, PER_TAB) },
+  ...(ours.length ? [{ id: 'our', label: 'Qarip қаріптері', href: '/fonts?our=1', more: 'Барлық Qarip қаріптері', fonts: ours.slice(0, PER_TAB) }] : []),
 ];
-const shown = [...new Map(tabs.flatMap((x) => x.fonts).map((f) => [f.slug, f])).values()];
+// Each category is shown in its most popular font.
+const categoryCards = categories.map((c) => {
+  const inCat = popular.filter((f) => f.category.id === c.id);
+  return { ...c, count: inCat.length, sample: inCat[0] };
+});
+const shown = [...new Map([...tabs.flatMap((x) => x.fonts), ...categoryCards.flatMap((c) => (c.sample ? [c.sample] : []))].map((f) => [f.slug, f])).values()];
 const posts = (await getCollection('journal', (p) => !p.data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
-const countIn = (id: string) => fonts.filter((f) => f.category.id === id).length;
-const stats = [
-  { n: fonts.length, label: t('қаріп') },
-  { n: designers, label: t('дизайнер') },
-  { n: downloads, label: t('жүктеу'), live: true },
-];
 ---
 
 <Base lang={lang} fullTitle={HOME.title[lang]} description={HOME.description[lang]} fontCss={primaryFaces(shown)} wide>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(websiteLd(Astro.site!, lang))} />
-  <section class="relative overflow-hidden border-b border-line">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,var(--accent-soft),transparent)]"></div>
-    <div class="container-page relative flex flex-col items-center py-20 text-center sm:py-28">
-      <h1 class="text-5xl leading-[1.05] font-extrabold tracking-tight sm:text-7xl">
-        {t('Қазақ')}<br /><span class="text-accent">{t('қаріп қоры')}</span>
-      </h1>
-      <p class="mt-6 max-w-xl text-lg text-muted">{t('Ең ауқымды қазақ қаріп жинақтары. Тегін жүктеп алыңыз.')}</p>
-      <div class="mt-8 flex flex-wrap justify-center gap-3">
-        <a href={localePath(lang, '/fonts')} class="btn-primary h-12 px-6">
-          {t('Қаріптерді қарау')}
-          <Icon name="arrowRight" size={16} />
-        </a>
-        <a href={localePath(lang, '/about')} class="btn-secondary h-12 px-6">{t('Біз туралы')}</a>
-      </div>
-      <dl class="mt-12 flex items-center gap-6 text-sm sm:gap-10">
-        {
-          stats.map((s, i) => (
-            <>
-              {i > 0 && <span class="h-6 w-px bg-line" aria-hidden="true" />}
-              <div class="flex items-baseline gap-1.5">
-                <dt class="sr-only">{s.label}</dt>
-                <dd class="text-2xl font-bold tabular-nums">{s.live ? <DownloadCount slugs={fonts.map((f) => f.slug)} count={s.n} /> : s.n}</dd>
-                <span class="text-muted">{s.label}</span>
-              </div>
-            </>
-          ))
-        }
-      </dl>
+
+  <section class="wrap pt-7 pb-8 sm:pt-[72px]">
+    <h1 class="title-xl">{t('Қазақ қаріп қоры')}</h1>
+    <p class="mt-3.5 max-w-[620px] text-base leading-normal text-fg-3 sm:text-[17px]">
+      {t('Қазақ әріптерін толық қолдайтын тегін қаріптер, дизайнерге құралдар және типография туралы мақалалар — бәрі бір жерде.')}
+    </p>
+  </section>
+
+  <section class="wrap pt-2" aria-label={t('Қаріптер')}>
+    <HomeFonts client:visible lang={lang} tabs={tabs} total={fonts.length} />
+  </section>
+
+  {
+    posts.length > 0 && (
+      <section class="wrap section">
+        <SectionHead title="Journal" href={localePath(lang, '/journal')} linkLabel={t('Барлық мақала')} />
+        <div class="grid gap-x-8 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+          {posts.map((post) => (
+            <a href={localePath(lang, `/journal/${post.id}`)} class="hover-name flex flex-col gap-1.5 border-b border-line py-5">
+              <span class="meta">{[post.data.author, formatDate(lang, post.data.pubDate)].filter(Boolean).join(' · ')}</span>
+              <b class="font-name text-[17px] leading-snug whitespace-normal">{post.data.title}</b>
+              {post.data.excerpt && <span class="line-clamp-2 text-sm text-fg-3">{post.data.excerpt}</span>}
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="wrap section">
+    <SectionHead title={t('Стиль таңдаңыз')} />
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+      {
+        categoryCards.map((c) => (
+          <a href={localePath(lang, `/fonts/category/${c.id}`)} class="card-link hover-name flex flex-col gap-3.5 rounded-[18px] px-[18px] pt-[18px] pb-4">
+            <span aria-hidden="true" class="text-[40px] leading-none" style={c.sample ? `font-family:'${familyName(c.sample.slug)}', system-ui` : undefined}>
+              Аа
+            </span>
+            <span>
+              <b class="font-name">{c.label}</b>
+              <span class="meta">
+                {c.name} · {c.count}
+              </span>
+            </span>
+          </a>
+        ))
+      }
     </div>
   </section>
 
-  <div class="container-page space-y-24 py-16">
-    <section>
-      <SectionHead eyebrow={t('Категориялар')} title={t('Стиль таңдаңыз')} />
-      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+  <section class="wrap section">
+    <div class="max-w-[680px] text-sm leading-[1.65] text-fg-3">
+      <h2 class="mb-2 text-[15px] font-semibold text-fg-2">{HOME.aboutTitle[lang]}</h2>
+      {HOME.about[lang].map((p) => <p class="mb-2.5">{p}</p>)}
+      <p>
+        {t('Категориялар')}:{' '}
         {
-          categories.map((c) => (
-            <a href={localePath(lang, `/fonts/category/${c.id}`)} class="card group flex flex-col justify-between gap-8 p-4 transition-colors hover:border-muted">
-              <span class="badge w-fit" style={`background:${c.color}22;color:${c.color}`}>{c.name}</span>
-              <span class="flex items-end justify-between gap-2">
-                <span>
-                  <span class="block text-sm font-semibold">{t(c.description)}</span>
-                  <span class="text-xs text-muted">{t('{n} қаріп', { n: countIn(c.id) })}</span>
-                </span>
-                <span class="flex size-7 items-center justify-center rounded-lg bg-surface-2 text-muted transition-colors group-hover:bg-accent group-hover:text-accent-fg">
-                  <Icon name="arrowRight" size={14} />
-                </span>
-              </span>
-            </a>
+          categories.map((c, i) => (
+            <>
+              {i > 0 && ', '}
+              <a class="link-quiet" href={localePath(lang, `/fonts/category/${c.id}`)}>
+                {CATEGORY[c.id]?.name[lang] ?? c.label}
+              </a>
+            </>
           ))
         }
-      </div>
-    </section>
-
-    <section>
-      <SectionHead eyebrow={t('Қаріптер')} title={t('Жаңа және танымал қаріптер')} />
-      <HomeFonts client:visible lang={lang} tabs={tabs} />
-    </section>
-
-    {
-      posts.length > 0 && (
-        <section>
-          <SectionHead eyebrow={t('Мақалалар')} title="Journal" href={localePath(lang, '/journal')} linkLabel={t('Барлығы')} />
-          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <ArticleCard post={post} lang={lang} />
-            ))}
-          </div>
-        </section>
-      )
-    }
-
-    <section class="mx-auto max-w-3xl">
-      <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{HOME.aboutTitle[lang]}</h2>
-      <div class="mt-4 space-y-4 text-muted">
-        {HOME.about[lang].map((p) => <p>{p}</p>)}
-      </div>
-      <p class="mt-6 flex flex-wrap gap-2">
-        {categories.map((c) => (
-          <a href={localePath(lang, `/fonts/category/${c.id}`)} class="chip">{CATEGORY[c.id]?.name[lang] ?? c.name}</a>
-        ))}
+        .
       </p>
-    </section>
-
-    <section class="relative overflow-hidden rounded-3xl bg-accent px-6 py-14 text-center text-accent-fg sm:px-12">
-      <div class="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-white/10 blur-2xl"></div>
-      <h2 class="relative text-3xl font-bold tracking-tight sm:text-4xl">{t('Жобаны қолдап кетіңіз')}</h2>
-      <p class="relative mx-auto mt-3 max-w-lg text-white/80">{t('Қазақ тілі үшін қолжетімді қаріптер санын арттыруға көмектесіңіз.')}</p>
-      <a href={localePath(lang, '/support')} class="btn relative mt-8 h-12 bg-white px-6 text-black hover:bg-white/90">{t('Қосылу')}</a>
-    </section>
-  </div>
+    </div>
+  </section>
 </Base>

@@ -2,8 +2,9 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
 import Accordion from '../components/common/Accordion.astro';
+import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
-import { FAQ } from '../data/faq';
+import { FAQ, FAQ_CATEGORIES } from '../data/faq';
 import { SITE } from '../lib/site';
 
 interface Props {
@@ -18,15 +19,50 @@ const jsonLd = {
 };
 // Internal links inside answers must follow the current locale.
 const localize = (html: string) => html.replace(/href="(\/[^"]*)"/g, (_, p) => `href="${localePath(lang, p)}"`);
+const cats = FAQ_CATEGORIES.filter(([id]) => FAQ.some((f) => f.cat === id));
 ---
 
-<Base lang={lang} title={t('Жиі қойылатын сұрақтар')}>
+<Base lang={lang} title={t('Жиі қойылатын сұрақтар')} description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
-  <div class="mx-auto max-w-3xl">
-    <PageHeader eyebrow="FAQ" title={t('Жиі қойылатын сұрақтар')} />
-    <Accordion items={FAQ.map((f) => ({ title: f[lang].q, html: localize(f[lang].a) }))} />
-    <p class="mt-8 text-center text-sm text-muted">
-      {t('Жауап таппадыңыз ба?')} <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>
-    </p>
+  <div class="mx-auto max-w-[860px]">
+    <PageHeader size="lg" title={t('Жиі қойылатын сұрақтар')} description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')} />
+    <div role="tablist" aria-label={t('Тақырып')} class="no-scrollbar -mx-4 mb-[18px] flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0" data-faq-cats>
+      <button type="button" role="tab" aria-selected="true" class="pill px-4" data-cat="">{t('Барлығы')}</button>
+      {
+        cats.map(([id, label]) => (
+          <button type="button" role="tab" aria-selected="false" class="pill px-4" data-cat={id}>
+            {t(label)}
+          </button>
+        ))
+      }
+    </div>
+    <div data-faq-list>
+      <Accordion items={FAQ.map((f) => ({ title: f[lang].q, html: localize(f[lang].a), group: f.cat }))} />
+    </div>
+
+    <div class="note mt-7 flex flex-wrap items-center justify-between gap-3.5 px-6 py-[22px]">
+      <div>
+        <b class="font-semibold">{t('Жауап таппадыңыз ба?')}</b>
+        <p class="sub">
+          {t('Telegram-ға немесе поштаға жазыңыз:')} <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        </p>
+      </div>
+      <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class="btn-primary btn-sm h-[42px]!">
+        <Icon name="send" size={16} />
+        {t('Telegram-ға жазу')}
+      </a>
+    </div>
   </div>
 </Base>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-faq-cats] [data-cat]')];
+  const items = [...document.querySelectorAll<HTMLElement>('[data-faq-list] details')];
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => {
+      const cat = tab.dataset.cat;
+      tabs.forEach((x) => x.setAttribute('aria-selected', String(x === tab)));
+      for (const el of items) el.hidden = Boolean(cat) && el.dataset.group !== cat;
+    });
+  }
+</script>

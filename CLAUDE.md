@@ -144,6 +144,10 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
 - **Never put a long `Cache-Control` on `/fonts/*`** in `netlify.toml`: the catalog (`/fonts/`)
   and font pages (`/fonts/<slug>/`) share that path with the font files, and browsers then
   showed a week-old catalog after new fonts were added. Long caching is only for `/fonts-web/*`.
+- Pages cached by the old one-week header (until Oct 2026) ask for `/_astro/` files of an earlier
+  deploy and render unstyled. `public/_redirects` rewrites missing `/_astro/*` files to
+  `public/stale.js`, which refetches the page past the cache and reloads once (guarded by
+  sessionStorage). Existing files are not affected (Netlify rules don't shadow real files).
 - Sveltia commits big saves in several commits (~16 MB each). A huge ZIP (Literata's is 22 MB)
   can make a save fail half-way and leave stray files (`public/fonts/literata/Literata.zip` is
   an unreferenced duplicate of `Literata-1.zip`).

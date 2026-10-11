@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { T } from '../../i18n';
 import { pathData } from '../../lib/glyphPath';
+import Skeleton from '../ui/Skeleton';
 
 interface GlyphInfo {
   index: number;
@@ -97,7 +98,25 @@ export default function GlyphGrid({ url, buffer, t, pageSize = 240 }: Props) {
   }, [glyphs, filter, group]);
 
   if (error) return <p className="text-sm text-heart">{t('Глифтерді оқу мүмкін болмады')}</p>;
-  if (!glyphs) return <p className="text-sm text-fg-3">{t('Жүктелуде...')}</p>;
+  if (!glyphs)
+    return (
+      <div className="grid gap-4 lg:grid-cols-[1fr_300px]" aria-busy="true">
+        <div>
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {[72, 104, 96, 88, 72].map((w, i) => (
+              <Skeleton key={i} className="h-8 rounded-full" style={{ width: w }} />
+            ))}
+          </div>
+          <Skeleton className="mb-3 h-9 max-w-xs rounded-full" />
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-1">
+            {Array.from({ length: 48 }, (_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-[10px]" />
+            ))}
+          </div>
+        </div>
+        <Skeleton className="hidden aspect-[300/420] rounded-[20px] lg:block" />
+      </div>
+    );
 
   const { upm, ascender, descender } = meta;
   const height = ascender - descender;

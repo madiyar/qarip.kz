@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
 import Profile from '../components/profile/Profile';
+import Skeleton from '../components/ui/Skeleton';
 import { type Lang, useT } from '../i18n';
 import { getFonts, primaryFaces, toSummaries } from '../lib/fonts';
 
@@ -16,5 +17,23 @@ const fonts = await toSummaries(await getFonts(), lang);
 <Base lang={lang} title={t('Менің қаріптерім')} fontCss={primaryFaces(fonts)}>
   <meta name="robots" content="noindex" slot="head" />
   <PageHeader title={t('Менің қаріптерім')} description={t('Таңдаулылар, жүктеу тарихы және жеке жинақтар. Тіркелу керек емес.')} class="!mb-6" />
-  <Profile client:only="react" fonts={fonts} lang={lang} />
+  <Profile client:only="react" fonts={fonts} lang={lang}>
+    <!-- Favorites live in this browser only: the page shows the shape of the list until they load. -->
+    <div slot="fallback" aria-busy="true">
+      <div class="tabs mb-2">
+        {[t('Таңдаулылар'), t('Жүктеу тарихы'), t('Жинақтар')].map((label, i) => <span class:list={['tab', i === 0 && '!border-fg !text-fg']}>{label}</span>)}
+      </div>
+      <div class="pt-3">
+        <Skeleton className="h-[52px] rounded-[14px]" />
+        {
+          [0, 1, 2].map(() => (
+            <div class="flex flex-col gap-3 border-b border-line pt-[22px] pb-6">
+              <Skeleton className="h-4 w-56 rounded-md" />
+              <Skeleton className="h-[30px] w-4/5 rounded-lg" />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Profile>
 </Base>

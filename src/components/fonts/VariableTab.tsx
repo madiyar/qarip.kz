@@ -3,6 +3,7 @@ import { CodeBlock } from '../ui/CopyButton';
 import Range from '../ui/Range';
 import { DEFAULT_PREVIEW } from '../../lib/site';
 import type { T } from '../../i18n';
+import Skeleton from '../ui/Skeleton';
 
 interface Axis {
   tag: string;
@@ -44,7 +45,13 @@ export default function VariableTab({ name, family, url, t }: { name: string; fa
     };
   }, [url]);
 
-  if (!axes) return <p className="meta">{t('Жүктелуде...')}</p>;
+  if (!axes)
+    return (
+      <div className="flex flex-col gap-4" aria-busy="true">
+        <Skeleton className="h-[220px] rounded-[18px]" />
+        <Skeleton className="h-[180px] rounded-[18px]" />
+      </div>
+    );
   if (!axes.length) return <p className="py-12 text-center sub">{t('Бұл қаріпте вариативтік осьтер табылмады')}</p>;
   const settings = axes.map((a) => `'${a.tag}' ${values[a.tag] ?? a.default}`).join(', ');
 

@@ -135,9 +135,11 @@ export default function Profile({ fonts, lang }: Props) {
           ) : (
             <div className="pt-3">
               <PreviewToolbar t={t} state={preview} onChange={setPreview} showView={false} />
-              {favFonts.map((f) => (
-                <FontRow key={f.slug} font={f} lang={lang} preview={preview} download />
-              ))}
+              <div data-pv="profile">
+                {favFonts.map((f) => (
+                  <FontRow key={f.slug} font={f} lang={lang} preview={preview} download />
+                ))}
+              </div>
             </div>
           ))}
 

@@ -20,7 +20,6 @@ interface Filters {
   our: boolean;
   variable: boolean;
   purposes: string[];
-  scripts: string[];
   /** Legacy ?tag= links (font page tags). */
   tag: string;
 }
@@ -40,24 +39,17 @@ interface Props {
   filters?: boolean;
   /** Keep filters in the URL query string. */
   syncUrl?: boolean;
-  /** Preview controls (text, case, size, view). Without them the list uses `view` and `initialSize`. */
+  /** Preview controls (text, case, size, view). Without them the list uses `view`. */
   toolbar?: boolean;
   /** Show the list/grid switch in the toolbar. */
   viewSwitch?: boolean;
   view?: View;
-  initialSize?: number;
   prefKey?: string;
 }
 
-const DEFAULT: Filters = { q: '', sort: 'new', license: 'all', our: false, variable: false, purposes: [], scripts: [], tag: '' };
+const DEFAULT: Filters = { q: '', sort: 'new', license: 'all', our: false, variable: false, purposes: [], tag: '' };
 // Query values used by older versions of the site.
 const SORT_ALIASES: Record<string, Sort> = { popularity: 'popular', newest: 'new', alphabetical: 'alpha', popular: 'popular', new: 'new', alpha: 'alpha' };
-const SCRIPTS = [
-  ['kazakh', 'Қазақ кирилл'],
-  ['kazakh-latin', 'Қазақ латын'],
-  ['cyrillic', 'Кирилл'],
-  ['latin', 'Латын'],
-] as const;
 const list = (v: string | null) => (v ? v.split(',').filter(Boolean) : []);
 
 function readUrl(): Partial<Filters> {
@@ -71,12 +63,11 @@ function readUrl(): Partial<Filters> {
   if (p.get('our') === '1' || p.get('our') === 'true' || p.get('our_font') === 'true') out.our = true;
   if (p.get('variable') === '1') out.variable = true;
   if (p.get('purpose')) out.purposes = list(p.get('purpose'));
-  if (p.get('script')) out.scripts = list(p.get('script'));
   const tag = p.get('tag');
   if (tag === 'free') out.license = 'free';
   else if (tag === 'variable') out.variable = true;
-  else if (tag === 'cyrillic' || tag === 'latin') out.scripts = [tag];
-  else if (tag) out.tag = tag;
+  // Every font has Cyrillic and Latin: old ?tag=cyrillic|latin links show the whole catalog.
+  else if (tag && tag !== 'cyrillic' && tag !== 'latin') out.tag = tag;
   return out;
 }
 
@@ -88,7 +79,6 @@ function writeUrl(f: Filters) {
   if (f.our) p.set('our', '1');
   if (f.variable) p.set('variable', '1');
   if (f.purposes.length) p.set('purpose', f.purposes.join(','));
-  if (f.scripts.length) p.set('script', f.scripts.join(','));
   if (f.tag) p.set('tag', f.tag);
   const qs = p.toString();
   history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
@@ -104,7 +94,6 @@ export default function FontBrowser({
   toolbar = true,
   viewSwitch = true,
   view = 'list',
-  initialSize,
   prefKey = 'catalog',
 }: Props) {
   const t = useT(lang);
@@ -112,9 +101,11 @@ export default function FontBrowser({
   const [page, setPage] = useState(1);
   const [panel, setPanel] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-  const size = initialSize ?? 34;
-  const [saved, setPreview] = usePreview(prefKey, { text: '', size, textCase: 'none', view });
-  const preview: PreviewState = toolbar ? { ...saved, view: viewSwitch ? saved.view : view } : { text: '', size, textCase: 'none', view };
+  const [saved, setPreview] = usePreview(prefKey, { text: '', size: 24, textCase: 'none', view });
+  const preview: PreviewState = toolbar ? { ...saved, view: viewSwitch ? saved.view : view } : { text: '', size: 24, textCase: 'none', view };
+
+  // A new set of fonts (another category) starts from the first page.
+  useEffect(() => setPage(1), [fonts]);
 
   useEffect(() => {
     if (syncUrl) setF((s) => ({ ...s, ...readUrl() }));
@@ -139,7 +130,7 @@ export default function FontBrowser({
       setPage(1);
       return merged;
     });
-  const toggleIn = (key: 'purposes' | 'scripts', id: string) => update({ [key]: f[key].includes(id) ? f[key].filter((x) => x !== id) : [...f[key], id] });
+  const toggleIn = (key: 'purposes', id: string) => update({ [key]: f[key].includes(id) ? f[key].filter((x) => x !== id) : [...f[key], id] });
 
   const match = (x: FontSummary, filters: Filters) => {
     const q = filters.q.trim().toLowerCase();
@@ -149,7 +140,6 @@ export default function FontBrowser({
       (!filters.our || x.our) &&
       (!filters.variable || x.variable) &&
       filters.purposes.every((p) => x.purposes.includes(p)) &&
-      filters.scripts.every((s) => x.scripts.includes(s)) &&
       (!filters.tag || x.tags.includes(filters.tag))
     );
   };
@@ -169,7 +159,6 @@ export default function FontBrowser({
   const chips: { label: string; clear: () => void }[] = [];
   if (f.license !== 'all') chips.push({ label: t(f.license === 'free' ? '100% тегін' : 'Жеке жобаға'), clear: () => update({ license: 'all' }) });
   f.purposes.forEach((id) => chips.push({ label: t(purposes.find((p) => p.id === id)?.name ?? id), clear: () => toggleIn('purposes', id) }));
-  f.scripts.forEach((id) => chips.push({ label: t(SCRIPTS.find(([s]) => s === id)?.[1] ?? id), clear: () => toggleIn('scripts', id) }));
   if (f.our) chips.push({ label: t('Qarip қаріптері'), clear: () => update({ our: false }) });
   if (f.variable) chips.push({ label: t('Вариативті'), clear: () => update({ variable: false }) });
   if (f.tag) chips.push({ label: f.tag, clear: () => update({ tag: '' }) });
@@ -260,17 +249,6 @@ export default function FontBrowser({
                         </div>
                       </fieldset>
                     )}
-                    <fieldset>
-                      <legend className="mb-2 text-[13px] font-semibold text-fg-3">{t('Әліпби')}</legend>
-                      <div className="flex flex-wrap gap-1.5">
-                        {SCRIPTS.map(([id, label]) => (
-                          <button key={id} type="button" className="chip" aria-pressed={f.scripts.includes(id)} onClick={() => toggleIn('scripts', id)}>
-                            {f.scripts.includes(id) && <Icon name="check" size={12} strokeWidth={3} />}
-                            {t(label)}
-                          </button>
-                        ))}
-                      </div>
-                    </fieldset>
                     <div>
                       <div className="flex min-h-11 items-center justify-between gap-3">
                         <span id="flt-our" className="inline-flex items-center gap-2">
@@ -332,13 +310,13 @@ export default function FontBrowser({
           </button>
         </div>
       ) : preview.view === 'grid' ? (
-        <div className="mt-3 grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
+        <div className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]" data-pv={prefKey}>
           {visible.map((font) => (
             <FontCard key={font.slug} font={font} lang={lang} preview={preview} />
           ))}
         </div>
       ) : (
-        <div>
+        <div data-pv={prefKey}>
           {visible.map((font) => (
             <FontRow key={font.slug} font={font} lang={lang} preview={preview} />
           ))}

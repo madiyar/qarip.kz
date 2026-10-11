@@ -56,8 +56,8 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `src/layouts/Base.astro` | `<head>` (title, canonical, hreflang, OG, verification), header, mobile tab bar, footer, search |
 | `src/components/{Header,Footer,MobileNav,LangSwitch}.astro`, `layout/`, `search/` | Site shell: glass header, bottom tab bar + "More" sheet (below `lg`), logo, tool glyphs, ⌘K search over `/search.json` |
 | `src/components/common/` | `PageHeader`, `SectionHead`, `Breadcrumbs`, `ArticleCard`, `Accordion`, `DownloadCount`, `ShareButton` |
-| `src/components/fonts/` | `FontRow` (`FontCard`/`FontRow`), `PreviewToolbar`, `FontBrowser` (catalog engine), `HomeFonts`, `FontActions`, `FontDetail` (tabs), `GlyphGrid`, `usePreview`… |
-| `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range`/`RangeField`, `Switch`, `CopyButton`/`CodeBlock`, `OwnBadge` |
+| `src/components/fonts/` | `Catalog` (catalog page, in-place category switch), `FontRow` (`FontCard`/`FontRow`), `PreviewToolbar`, `FontBrowser` (catalog engine), `HomeFonts`, `FontActions`, `FontDetail` (tabs), `GlyphGrid`, `usePreview`… |
+| `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range`/`RangeField`, `Switch`, `CopyButton`/`CodeBlock`, `OwnBadge`, `Skeleton` |
 | `src/components/tools/` | Tester, Converter, Pairing, Proofing, Freezer, Kerning, Keyboard; `ToolHeader`, `OtherTools`, `Dropzone` |
 | `src/lib/journal.ts` | Published articles, reading time, cover glyph |
 | `src/lib/site.ts` | Contacts, nav, tools list, pangrams, donation card, keyboard zip |
@@ -95,6 +95,12 @@ Reusable classes (`btn-*`, `card`, `panel`, `note`, `pop`, `chip`, `pill`, `tabs
 or a component. UI fonts are self-hosted (`@fontsource-variable/onest`, JetBrains Mono, PT Serif) —
 no Google Fonts. `--header-h` / `--tabbar-h` let sticky and fixed elements clear the header and
 the mobile tab bar. The canvas's sidebar navigation mode was dropped.
+
+**Layout and loading.** Every page sits in the same `wrap` frame (1200 px) and starts at its
+left edge; narrower text columns are left-aligned (`measure`). Loading states are `ui/Skeleton`
+blocks of the final size. Islands render on the server unless their data is browser-only
+(`/profile` is `client:only` with a skeleton fallback). Preview sizes come from CSS variables
+set before paint (see DESIGN.md, Behaviour) — don't pass pixel sizes to previews.
 
 **Form controls.** No native `<select>` or bare range/checkbox inputs: use `ui/Select.tsx`
 (keyboard-accessible listbox), `ui/Range.tsx`, and the `checkbox` / `swatch` classes.

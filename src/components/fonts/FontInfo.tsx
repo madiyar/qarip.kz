@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { featureName } from '../../lib/userfont';
 import type { T } from '../../i18n';
+import Skeleton from '../ui/Skeleton';
 
 interface Rich {
   features: string[];
@@ -104,7 +105,19 @@ export default function FontInfo({ url, t }: { url: string; t: T }) {
       off = true;
     };
   }, [url]);
-  if (!rich) return <p className="meta">{t('Жүктелуде...')}</p>;
+  if (!rich)
+    return (
+      <div className="grid gap-x-14 gap-y-8 md:grid-cols-2" aria-busy="true">
+        {[4, 7].map((n, col) => (
+          <div key={col} className="flex flex-col gap-3">
+            <Skeleton className="h-5 w-48 rounded-md" />
+            {Array.from({ length: n }, (_, i) => (
+              <Skeleton key={i} className="h-[22px] rounded-md" />
+            ))}
+          </div>
+        ))}
+      </div>
+    );
   const rows: [string, string][] = [
     ['Кернинг жұптары', rich.kerningPairs ? rich.kerningPairs.toLocaleString() : t('Жоқ')],
     ['Тіл жүйелері', String(rich.langs || '—')],

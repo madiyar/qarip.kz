@@ -57,6 +57,12 @@
   --key: #ffffff;
   --key-sh: 0 1px 0 rgb(0 0 0 / 0.18), 0 0 0 1px rgb(0 0 0 / 0.06);
 
+  /* Font preview sizes. The inline script in Base.astro puts the visitor's saved sizes here
+   * before the first paint, and usePreview updates them, so samples never resize after load. */
+  --pv-list: 18px;
+  --pv-detail: 32px;
+  --pv-home: 26px;
+
   /* Sticky offset: the header height (the mobile tab bar sits at the bottom). */
   --header-h: 3.5rem;
   /* Space the fixed mobile tab bar takes at the bottom of the page. */
@@ -106,6 +112,23 @@
   :root {
     --tabbar-h: calc(3.75rem + env(safe-area-inset-bottom));
   }
+}
+
+@media (width >= 48rem) {
+  :root {
+    --pv-list: 24px;
+    --pv-detail: 48px;
+    --pv-home: 36px;
+  }
+}
+
+/* Saved preview text, case or view change a font list after hydration: Base.astro marks the
+ * lists that will change (data-pv-wait on <html>) and usePreview clears the mark once applied. */
+[data-pv-wait~='catalog'] [data-pv='catalog'],
+[data-pv-wait~='designer'] [data-pv='designer'],
+[data-pv-wait~='profile'] [data-pv='profile'],
+[data-pv-wait~='detail'] [data-pv='detail'] {
+  visibility: hidden;
 }
 
 @theme inline {
@@ -195,14 +218,9 @@
 }
 
 /* ── Layout ─────────────────────────────────────────────────────────────── */
+/* The one page frame: every page uses it, so content lines up with the header. */
 @utility wrap {
   @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6;
-}
-@utility wrap-md {
-  @apply mx-auto w-full max-w-[1080px] px-4 sm:px-6;
-}
-@utility wrap-sm {
-  @apply mx-auto w-full max-w-[880px] px-4 sm:px-6;
 }
 /* Vertical rhythm between page sections. */
 @utility section {
@@ -450,6 +468,15 @@
 /* Font name inside cards and rows: turns accent with its card. */
 @utility font-name {
   @apply block truncate text-[15px] font-semibold text-fg transition-colors;
+}
+
+/* Placeholder block while an island or a font file loads. Give it the size of what it stands for. */
+@utility skeleton {
+  @apply animate-pulse rounded-xl bg-fill-2;
+}
+/* Comfortable line length for reading columns (left-aligned inside .wrap). */
+@utility measure {
+  @apply max-w-[720px];
 }
 
 @utility no-scrollbar {

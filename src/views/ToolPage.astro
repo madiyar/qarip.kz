@@ -36,14 +36,14 @@ const intro: Record<ToolId, string> = {
 ---
 
 <Base lang={lang} title={t(meta.title)} description={t(intro[tool])} fontCss={fonts.length ? primaryFaces(fonts) : undefined} wide>
-  <div class:list={[tool === 'converter' ? 'wrap-sm' : 'wrap', 'pt-7']}>
+  <div class="wrap pt-7">
   <ToolHeader lang={lang} title={t(meta.title)} description={t(intro[tool])} local={tool !== 'pairing'} />
-  {tool === 'tester' && <Tester client:only="react" lang={lang} />}
-  {tool === 'converter' && <Converter client:only="react" lang={lang} />}
-  {tool === 'pairing' && <Pairing client:only="react" lang={lang} fonts={fonts} />}
-  {tool === 'proofing' && <Proofing client:only="react" lang={lang} fonts={fonts} />}
-  {tool === 'freezer' && <Freezer client:only="react" lang={lang} catalog={catalog} />}
-  {tool === 'kerning' && <Kerning client:only="react" lang={lang} />}
+  {tool === 'tester' && <Tester client:load lang={lang} />}
+  {tool === 'converter' && <Converter client:load lang={lang} />}
+  {tool === 'pairing' && <Pairing client:load lang={lang} fonts={fonts} />}
+  {tool === 'proofing' && <Proofing client:load lang={lang} fonts={fonts} />}
+  {tool === 'freezer' && <Freezer client:load lang={lang} catalog={catalog} />}
+  {tool === 'kerning' && <Kerning client:load lang={lang} />}
 
   <OtherTools lang={lang} current={meta.href} />
   </div>

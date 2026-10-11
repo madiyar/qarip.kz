@@ -111,7 +111,8 @@ Font previews are never set in UI fonts: they use `qf-<slug>` families (see CLAU
 - `Base` wraps the slot in `wrap pt-7 sm:pt-11`; pages with their own width pass `wide`.
 - Breakpoints: `sm` 640 (phones → tablets: sheets, fixed font bar), `lg` 1024 (tab bar ↔ header nav).
 - **Mobile shell:** header with logo, Support and search; bottom tab bar (`MobileNav.astro`:
-  Home, Fonts, Tools, Favorites, More) under `lg`. Fixed bars sit above it with
+  Home, Fonts, Tools, Favorites, More) under `lg`; "More" opens a full-screen panel under the tab
+  bar (only its tab is highlighted while open). Fixed bars sit above it with
   `bottom: var(--tabbar-h)`. Pages with a fixed bar add a spacer at the end.
 - Grids: `grid sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]`. If cards contain truncated
   text, give the base grid `grid-cols-[minmax(0,1fr)]` or phones overflow horizontally.
@@ -186,7 +187,7 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | Component | |
 | --- | --- |
 | `Header.astro` | Glass bar: logo, nav, tools menu, search, language, theme, favorites, Support |
-| `MobileNav.astro` | Tab bar + "More" sheet (sibling of the header — `backdrop-filter` traps fixed children) |
+| `MobileNav.astro` | Tab bar + full-screen "More" panel under it (sibling of the header — `backdrop-filter` traps fixed children) |
 | `Footer.astro` | Support / services CTAs, link columns, contacts |
 | `LangSwitch.astro` | KK · RU · EN segmented switch |
 | `layout/Logo.astro` | Mark + wordmark |
@@ -248,8 +249,10 @@ controls in `panel`s, results in `panel`/`CodeBlock`, actions in a row of `btn-r
 
 - **Tabs:** `role="tablist"`, ←/→/Home/End move, the font page keeps the tab in `#hash`.
 - **Popovers:** close on outside click and Esc; on phones they are bottom sheets with a handle and
-  a dimmed scrim. A popover opened from a `position: fixed` + `backdrop-filter` bar must be
-  portalled to `<body>` (see `FontActions` → `CatalogMenu`).
+  a dimmed scrim. Never give an ancestor of a `.pop` a `z-index` (or `transform`, `filter`,
+  `backdrop-filter`): it creates a stacking context and the sheet ends up under the tab bar.
+  A popover opened from such an element must be portalled to `<body>` (see `FontActions` →
+  `CatalogMenu`). As a safety net the tab bar hides while a `.pop-scrim` is on the page.
 - **Inputs on phones** are 16 px (no zoom). Touch targets ≥ 44 px in sheets and bars.
 - **Motion:** colour transitions 150 ms; cards may lift 2 px on desktop only; nothing else moves.
 - **No layout shift.** Font previews take their size from CSS variables (`--pv-list`,

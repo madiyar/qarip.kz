@@ -71,8 +71,9 @@ export default function PreviewToolbar({ t, state, onChange, showView = true, mi
   const ctl = 'inline-flex h-10 shrink-0 items-center justify-center rounded-[10px] px-2.5 text-sm transition-colors hover:bg-fill';
 
   return (
-    // relative + z-20: the menus must cover the font cards that follow.
-    <div role="toolbar" aria-label={t('Превью баптаулары')} className="relative z-20 flex h-[52px] items-center rounded-[14px] bg-elev pr-1.5 pl-3.5 shadow-1 sm:pl-4">
+    // `relative` positions the menus. No z-index here: it would make a stacking context and trap the
+    // phone bottom sheets under the tab bar; the menus' own z-index already covers the cards below.
+    <div role="toolbar" aria-label={t('Превью баптаулары')} className="relative flex h-[52px] items-center rounded-[14px] bg-elev pr-1.5 pl-3.5 shadow-1 sm:pl-4">
       <Icon name="pen" size={16} className="hidden shrink-0 text-fg-3 sm:block" />
       <label htmlFor={`${id}-text`} className="sr-only">
         {t('Превью мәтіні')}

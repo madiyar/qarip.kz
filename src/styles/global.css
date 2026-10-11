@@ -487,6 +487,11 @@
 }
 
 @layer components {
+  /* While "More" is open, only its tab is highlighted. */
+  [data-tabbar]:has([aria-expanded='true']) [aria-current='page'] {
+    color: var(--text-3) !important; /* beats the tab's text-accent-ink utility */
+  }
+
   .font-card:hover .font-name,
   .hover-name:hover .font-name {
     color: var(--accent-text);
@@ -521,6 +526,11 @@
     .pop-scrim {
       background: rgb(0 0 0 / 0.5) !important;
       z-index: 129 !important;
+    }
+    /* Safety net: while a sheet is open the tab bar steps aside, even if some ancestor of the
+       sheet created a stacking context. */
+    body:has(.pop-scrim) [data-tabbar] {
+      visibility: hidden;
     }
   }
 }

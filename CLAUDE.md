@@ -54,7 +54,7 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `DESIGN.md` | The design system: tokens, type, classes, components, page patterns, decisions |
 | `src/styles/global.css` | Tokens (CSS variables) and every reusable class (`@utility`) |
 | `src/layouts/Base.astro` | `<head>` (title, canonical, hreflang, OG, verification), header, mobile tab bar, footer, search |
-| `src/components/{Header,Footer,MobileNav,LangSwitch}.astro`, `layout/`, `search/` | Site shell: glass header, bottom tab bar + "More" sheet (below `lg`), logo, tool glyphs, ⌘K search over `/search.json` |
+| `src/components/{Header,Footer,MobileNav,LangSwitch}.astro`, `layout/`, `search/` | Site shell: glass header, bottom tab bar + full-screen "More" panel (below `lg`), logo, tool glyphs, ⌘K search over `/search.json` |
 | `src/components/common/` | `PageHeader`, `SectionHead`, `Breadcrumbs`, `ArticleCard`, `Accordion`, `DownloadCount`, `ShareButton` |
 | `src/components/fonts/` | `Catalog` (catalog page, in-place category switch), `FontRow` (`FontCard`/`FontRow`), `PreviewToolbar`, `FontBrowser` (catalog engine), `HomeFonts`, `FontActions`, `FontDetail` (tabs), `GlyphGrid`, `usePreview`… |
 | `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range`/`RangeField`, `Switch`, `CopyButton`/`CodeBlock`, `OwnBadge`, `Skeleton` |

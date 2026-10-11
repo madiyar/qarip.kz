@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
 
 interface Props {
@@ -9,15 +10,18 @@ const { lang } = Astro.props;
 const t = useT(lang);
 ---
 
-<Base lang={lang} title={t('Бет табылмады')}>
-  <meta name="robots" content="noindex" slot="head" />
-  <section class="flex flex-col items-center py-20 text-center">
-    <p class="text-[9rem] leading-none font-extrabold tracking-tighter text-accent">404</p>
-    <h1 class="mt-4 text-3xl font-bold">{t('Бет табылмады')}</h1>
-    <p class="mt-2 text-muted">{t('Сілтеме ескірген не бет жойылған болуы мүмкін.')}</p>
-    <div class="mt-8 flex gap-3">
-      <a href={localePath(lang, '/')} class="btn-primary">{t('Басты бетке')}</a>
-      <a href={localePath(lang, '/fonts')} class="btn-secondary">{t('Қаріптер')}</a>
+<Base lang={lang} title={t('Бет табылмады')} noindex>
+  <section class="flex flex-col items-center py-16 text-center sm:py-24">
+    <p aria-hidden="true" class="font-serif text-[clamp(96px,18vw,168px)] leading-none text-fg-3">404</p>
+    <h1 class="title-lg mt-4">{t('Бет табылмады')}</h1>
+    <p class="sub mt-2 max-w-[420px]">{t('Сілтеме ескірген не бет жойылған болуы мүмкін.')}</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-2.5">
+      <a href={localePath(lang, '/fonts')} class="btn-primary">{t('Қаріптер')}</a>
+      <a href={localePath(lang, '/')} class="btn-secondary">{t('Басты бетке')}</a>
+      <button type="button" class="btn-ghost" data-search-open>
+        <Icon name="search" size={16} />
+        {t('Іздеу')}
+      </button>
     </div>
   </section>
 </Base>

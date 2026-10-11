@@ -1,0 +1,24 @@
+---
+/** Square tile with a tool's glyph (Әа, ⇄, ¶…): header tools menu, tools page, tool pages. */
+interface Props {
+  glyph: string;
+  font: 'serif' | 'sans' | 'mono';
+  /** sm: 38px (menus), lg: 76px (tools page). */
+  size?: 'sm' | 'lg';
+}
+const { glyph, font, size = 'sm' } = Astro.props;
+const fonts = { serif: 'font-serif', sans: 'font-sans', mono: 'font-mono' };
+// Longer glyphs (ss01, «»…) get a smaller size so every tile looks equally full.
+const len = [...glyph].length;
+const text = size === 'lg' ? (len > 3 ? 'text-[17px]' : len > 2 ? 'text-[26px]' : 'text-[34px]') : len > 3 ? 'text-[10px]' : len > 1 ? 'text-[14px]' : 'text-[17px]';
+---
+
+<span
+  aria-hidden="true"
+  class:list={[
+    'inline-flex shrink-0 items-center justify-center bg-fill leading-none text-fg',
+    size === 'lg' ? 'size-[76px] rounded-2xl' : 'size-[38px] rounded-[10px]',
+    fonts[font],
+    text,
+  ]}>{glyph}</span
+>

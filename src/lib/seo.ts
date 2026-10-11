@@ -79,9 +79,13 @@ export const TOP: { title: L; description: L } = {
   },
 };
 
-/** Category names and copy for the static category pages. */
-export const CATEGORY: Record<string, { name: L; description: L }> = {
+/**
+ * Category names and copy for the static category pages.
+ * `short` is the label on pills and cards; `name` is the full, search-facing one.
+ */
+export const CATEGORY: Record<string, { short: L; name: L; description: L }> = {
   sans: {
+    short: { kk: 'Кесілген', ru: 'Без засечек', en: 'Sans serif' },
     name: { kk: 'Кесілген қаріптер (sans serif)', ru: 'Шрифты без засечек (sans serif)', en: 'Sans serif fonts' },
     description: {
       kk: 'Кертігі жоқ, таза әрі заманауи шрифттер. Сайтқа, интерфейске, презентацияға жақсы жарасады.',
@@ -90,6 +94,7 @@ export const CATEGORY: Record<string, { name: L; description: L }> = {
     },
   },
   serif: {
+    short: { kk: 'Кертілген', ru: 'С засечками', en: 'Serif' },
     name: { kk: 'Кертілген қаріптер (serif)', ru: 'Шрифты с засечками (serif)', en: 'Serif fonts' },
     description: {
       kk: 'Классикалық кертілген шрифттер. Кітап, газет-журнал және ұзақ мәтінге ыңғайлы.',
@@ -98,6 +103,7 @@ export const CATEGORY: Record<string, { name: L; description: L }> = {
     },
   },
   display: {
+    short: { kk: 'Көрнекі', ru: 'Акцидентные', en: 'Display' },
     name: { kk: 'Көрнекі қаріптер (display)', ru: 'Акцидентные и декоративные шрифты', en: 'Display fonts' },
     description: {
       kk: 'Тақырыпқа, логотипке, афишаға, комикске арналған мінезі бар көрнекі шрифттер.',
@@ -106,6 +112,7 @@ export const CATEGORY: Record<string, { name: L; description: L }> = {
     },
   },
   slab: {
+    short: { kk: 'Қырлы', ru: 'Брусковые', en: 'Slab serif' },
     name: { kk: 'Қырлы қаріптер (slab serif)', ru: 'Брусковые шрифты (slab serif)', en: 'Slab serif fonts' },
     description: {
       kk: 'Төртбұрыш кертігі бар салмақты шрифттер. Тақырып пен жарнамаға сай.',
@@ -114,6 +121,7 @@ export const CATEGORY: Record<string, { name: L; description: L }> = {
     },
   },
   handwritten: {
+    short: { kk: 'Қолжазба', ru: 'Рукописные', en: 'Handwritten' },
     name: { kk: 'Қолжазба қаріптер', ru: 'Рукописные шрифты', en: 'Handwritten fonts' },
     description: {
       kk: 'Қолмен жазғандай көрінетін шрифттер: шақыру қағазына, открыткаға, комикске.',
@@ -122,6 +130,7 @@ export const CATEGORY: Record<string, { name: L; description: L }> = {
     },
   },
   monospace: {
+    short: { kk: 'Бірке', ru: 'Моноширинные', en: 'Monospace' },
     name: { kk: 'Бірке қаріптер (monospace)', ru: 'Моноширинные шрифты', en: 'Monospace fonts' },
     description: {
       kk: 'Әр таңбасының ені бірдей шрифттер. Кодқа және кестеге арналған.',
@@ -130,6 +139,11 @@ export const CATEGORY: Record<string, { name: L; description: L }> = {
     },
   },
 };
+
+/** Short category label for pills and cards; a category added in the CMS falls back to its own name. */
+export function categoryLabel(lang: Lang, id: string, fallback: string): string {
+  return CATEGORY[id]?.short[lang] ?? fallback;
+}
 
 export function categoryTitle(lang: Lang, id: string, fallback: string): string {
   const name = CATEGORY[id]?.name[lang] ?? fallback;

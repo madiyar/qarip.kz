@@ -1,33 +1,36 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
-import Icon from '../components/ui/Icon';
+import ToolGlyph from '../components/layout/ToolGlyph.astro';
 import { type Lang, localePath, useT } from '../i18n';
-import { TOOLS } from '../lib/site';
+import { TOOLS, TOOL_GROUPS } from '../lib/site';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const t = useT(lang);
+const groups = TOOL_GROUPS.map((g) => ({ ...g, tools: TOOLS.filter((x) => x.group === g.id) }));
 ---
 
-<Base lang={lang} title={t('Құралдар')} description={t('Қаріппен жұмыс істеуге арналған тегін құралдар. Файлдар серверге жүктелмейді.')}>
-  <PageHeader eyebrow={t('Құралдар')} title={t('Дизайнерге арналған құралдар')} description={t('Қаріппен жұмыс істеуге арналған тегін құралдар. Файлдар серверге жүктелмейді.')} />
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {
-      TOOLS.map((tool) => (
-        <a href={localePath(lang, tool.href)} class="card group p-6 transition-colors hover:border-muted">
-          <span class="flex size-12 items-center justify-center rounded-xl bg-accent-soft text-accent">
-            <Icon name={tool.icon} size={22} />
-          </span>
-          <span class="mt-5 flex items-center justify-between text-lg font-semibold">
-            {t(tool.title)}
-            <Icon name="arrowRight" size={16} className="text-muted transition-transform group-hover:translate-x-0.5" />
-          </span>
-          <span class="mt-1 block text-sm text-muted">{t(tool.description)}</span>
-        </a>
-      ))
-    }
-  </div>
+<Base lang={lang} title={t('Құралдар')} description={t('Қаріппен жұмыс істейтін тегін құралдар. Барлығы браузерде орындалады — файлдарыңыз ешқайда жіберілмейді.')}>
+  <PageHeader size="lg" title={t('Құралдар')} description={t('Қаріппен жұмыс істейтін тегін құралдар. Барлығы браузерде орындалады — файлдарыңыз ешқайда жіберілмейді.')} class="!mb-9" />
+  {
+    groups.map((g) => (
+      <section class="mb-10">
+        <h2 class="label-caps mb-3.5 !text-sm">{t(g.title)}</h2>
+        <div class="grid gap-3 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
+          {g.tools.map((tool) => (
+            <a href={localePath(lang, tool.href)} class="panel flex gap-4 p-[18px] transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-2 max-sm:hover:translate-y-0">
+              <ToolGlyph glyph={tool.glyph} font={tool.glyphFont} size="lg" />
+              <span class="flex min-w-0 flex-col gap-1">
+                <b class="text-base font-semibold">{t(tool.title)}</b>
+                <span class="text-sm leading-[1.45] text-fg-3">{t(tool.long)}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
 </Base>

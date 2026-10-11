@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon';
-import Range from '../ui/Range';
 import Select from '../ui/Select';
 import { CodeBlock } from '../ui/CopyButton';
 import GlyphGrid from './GlyphGrid';
@@ -22,6 +21,9 @@ export interface LicenseInfo {
   modification: boolean;
   distribution: boolean;
   attribution: boolean;
+  /** Listed on /licenses. */
+  shown: boolean;
+  /** Has its own page with the full text or prices. */
   hasPage: boolean;
 }
 
@@ -39,6 +41,7 @@ interface Props {
   styles: StyleInfo[];
   primary: number;
   license: LicenseInfo;
+  purchaseUrl?: string;
   /** One @font-face block per style, same order as `styles`. */
   cssBlocks: string[];
   cssUrl: string;
@@ -49,12 +52,15 @@ interface Props {
   /** Contents of the ZIP archive. */
   files: FileInfo[];
   zipName: string;
+  /** Catalog links: tags and purposes. */
+  tags: { label: string; href: string }[];
+  designers: { name: string; href: string; fonts: number }[];
 }
 
 const TABS = [
   ['preview', 'Превью'],
   ['letters', 'Әріптер'],
-  ['glyphs', 'Глиф'],
+  ['glyphs', 'Глифтер'],
   ['license', 'Лицензия'],
   ['css', 'CSS'],
   ['variable', 'Вариативтілік'],
@@ -62,33 +68,61 @@ const TABS = [
 ] as const;
 type Tab = (typeof TABS)[number][0];
 
+/** Kazakh-specific letters (Cyrillic and Latin), highlighted on the Letters tab. */
+const KAZAKH = new Set('ӘәҒғҚқҢңӨөҰұҮүҺһІіÄäĞğİıÑñÖöŞşŪūÜü');
+const WATERFALL = [48, 32, 24, 18, 14];
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+/** Small heading inside a tab. */
+const H = ({ children }: { children: ReactNode }) => <h2 className="mb-1.5 text-[15px] font-semibold text-fg-2">{children}</h2>;
+
 export default function FontDetail(props: Props) {
   const { lang, styles, license } = props;
   const t = useT(lang);
   const [tab, setTab] = useState<Tab>('preview');
-  const [preview, setPreview] = usePreview('detail', { text: '', size: 40, textCase: 'none', view: 'list' }, true);
-  const [letterSize, setLetterSize] = useState(36);
+  const [preview, setPreview] = usePreview('detail', { text: '', size: 48, textCase: 'none', view: 'list' }, true);
+  const [letterSize, setLetterSize] = useState(32);
   const [cssSelected, setCssSelected] = useState<number[]>(() => styles.map((_, i) => i));
+  const [overrides, setOverrides] = useState<Record<string, string>>({});
+  const [styleIdx, setStyleIdx] = useState(props.primary);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  const downloads = useDownloads(props.slug, props.downloads);
   const variable = styles.find((s) => s.variable);
   const tabs = TABS.filter(([id]) => id !== 'variable' || variable);
   const css = props.cssBlocks.filter((_, i) => cssSelected.includes(i)).join('\n\n');
-  const [overrides, setOverrides] = useState<Record<string, string>>({});
-  const [styleIdx, setStyleIdx] = useState(props.primary);
-  const downloads = useDownloads(props.slug, props.downloads);
   const stats = [...props.stats, { label: 'Жүктеулер', value: String(downloads) }];
 
   useEffect(() => {
     const fromHash = window.location.hash.slice(1) as Tab;
-    if (TABS.some(([id]) => id === fromHash)) setTab(fromHash);
+    if (tabs.some(([id]) => id === fromHash)) setTab(fromHash);
+    if (window.innerWidth < 640) setLetterSize(24);
   }, []);
   const select = (id: Tab) => {
     setTab(id);
     history.replaceState(null, '', id === 'preview' ? window.location.pathname : `#${id}`);
   };
+  const onKey = (e: KeyboardEvent) => {
+    const i = tabs.findIndex(([id]) => id === tab);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    const n = (next + tabs.length) % tabs.length;
+    select(tabs[n][0]);
+    buttons.current[n]?.focus();
+  };
 
   const text = preview.text || props.previewText || DEFAULT_PREVIEW;
+  const primary = styles[props.primary] ?? styles[0];
   const current = styles[styleIdx] ?? styles[0];
-  const glyphSource = styles.find((s) => /\.(ttf|otf|woff)$/i.test(s.file) && s.slug === current.slug) ?? styles.find((s) => /\.(ttf|otf|woff)$/i.test(s.file));
+  const isSource = (s: StyleInfo) => /\.(ttf|otf|woff)$/i.test(s.file);
+  const glyphSource = styles.find((s) => isSource(s) && s.slug === current.slug) ?? styles.find(isSource);
+  const tt = caseStyle(preview.textCase);
 
   const stylePicker =
     styles.length > 1 ? (
@@ -100,128 +134,174 @@ export default function FontDetail(props: Props) {
       />
     ) : null;
 
+  const verdict = (ok: boolean, yes: string, no: string) => ({ text: ok ? yes : no, ok });
+  const licenseRows = [
+    { what: 'Коммерциялық қолдану', ...verdict(license.commercial, 'Рұқсат етілген', props.purchaseUrl ? 'Сатып алу керек' : 'Тыйым салынған') },
+    { what: 'Өзгерту', ...verdict(license.modification, 'Рұқсат етілген', 'Тыйым салынған') },
+    { what: 'Тарату', ...verdict(license.distribution, 'Рұқсат етілген', 'Тыйым салынған') },
+    { what: 'Авторды көрсету', text: license.attribution ? 'Міндетті' : 'Міндетті емес', ok: !license.attribution },
+    { what: 'Жеке жоба, оқу, портфолио', text: 'Тегін', ok: true },
+  ];
+
   return (
     <div>
-      <div className="no-scrollbar -mx-4 mb-8 overflow-x-auto px-4">
-        <div className="segmented" role="tablist">
-          {tabs.map(([id, label]) => (
-            <button key={id} type="button" role="tab" aria-selected={tab === id} aria-pressed={tab === id} onClick={() => select(id)} className="whitespace-nowrap">
-              {t(label)}
-            </button>
-          ))}
-        </div>
+      <div className="tabs" role="tablist" aria-label={t('Қаріп бөлімдері')} onKeyDown={onKey}>
+        {tabs.map(([id, label], i) => (
+          <button
+            key={id}
+            ref={(el) => {
+              buttons.current[i] = el;
+            }}
+            type="button"
+            role="tab"
+            id={`tab-${id}`}
+            aria-controls="font-tab"
+            aria-selected={tab === id}
+            tabIndex={tab === id ? 0 : -1}
+            className="tab"
+            onClick={() => select(id)}
+          >
+            {t(label)}
+          </button>
+        ))}
       </div>
 
-      {tab === 'preview' && (
-        <div className="space-y-2">
-          <PreviewToolbar t={t} state={preview} onChange={(n) => (setPreview(n), 'text' in n && setOverrides({}))} />
-          <p className="px-1 pt-2 text-xs text-muted">{t('Мәтінді өзгерту үшін превьюге басыңыз — әр стиль үшін жеке.')}</p>
-          <div className={preview.view === 'grid' ? 'grid gap-4 pt-2 sm:grid-cols-2' : ''}>
-          {styles.map((s, i) => (
-            <div key={s.slug + i} className={preview.view === 'grid' ? 'card p-5' : 'border-b border-line py-6'}>
-              <p className="mb-3 text-sm">
-                <span className="font-semibold">{props.name}</span> <span className="text-muted">{s.name}</span>
-                <span className="ml-2 font-mono text-xs text-muted">
-                  {s.variable ? '100–900' : s.weight}
-                  {s.italic ? ' italic' : ''}
-                </span>
-              </p>
-              <div
-                contentEditable
-                suppressContentEditableWarning
-                spellCheck={false}
-                className="break-words leading-tight outline-none focus:rounded-lg focus:bg-surface/50"
-                style={{ fontFamily: `'${s.family}', system-ui`, fontSize: preview.size, textTransform: caseStyle(preview.textCase) }}
-                onBlur={(e) => setOverrides((o) => ({ ...o, [i]: e.currentTarget.textContent ?? '' }))}
-              >
-                {overrides[i] ?? text}
+      <div id="font-tab" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+        {tab === 'preview' && (
+          <div className="pt-5">
+            <PreviewToolbar t={t} state={preview} onChange={(n) => (setPreview(n), 'text' in n && setOverrides({}))} showView={false} max={160} />
+            <div className="mt-2 rows">
+              {styles.map((s, i) => (
+                <div key={s.slug + i} className="pt-6 pb-7">
+                  <p className="mb-2.5 text-[13px] text-fg-3">
+                    <b className="font-semibold text-fg-2">{props.name}</b> {s.name}
+                    <span className="ml-2 font-mono text-xs">
+                      {s.variable ? '100–900' : s.weight}
+                      {s.italic ? ' italic' : ''}
+                    </span>
+                  </p>
+                  <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    spellCheck={false}
+                    title={t('Мәтінді өзгерту үшін превьюге басыңыз — әр стиль үшін жеке.')}
+                    className="line-clamp-3 cursor-text leading-[1.15] text-fg [overflow-wrap:anywhere] outline-none focus:line-clamp-none"
+                    style={{ fontFamily: `'${s.family}', system-ui`, fontSize: preview.size, textTransform: tt }}
+                    onBlur={(e) => setOverrides((o) => ({ ...o, [i]: e.currentTarget.textContent ?? '' }))}
+                  >
+                    {overrides[i] ?? text}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <h2 className="mt-12 mb-1 text-[15px] font-semibold text-fg-2">{t('Өлшем бойынша')}</h2>
+            <div className="rows">
+              {WATERFALL.map((px) => (
+                <div key={px} className="flex items-baseline gap-5 py-3.5">
+                  <span className="w-8 shrink-0 font-mono text-xs text-fg-3">{px}</span>
+                  <span className="min-w-0 flex-1 truncate leading-tight text-fg" style={{ fontFamily: `'${primary.family}', system-ui`, fontSize: px, textTransform: tt }}>
+                    {text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tab === 'letters' && (
+          <div className="pt-6">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+              <span className="meta">
+                {t('Қазақ әріптері')} <span className="text-accent-ink">{t('түспен белгіленген')}</span>
+              </span>
+              <div className="flex items-center gap-2">
+                {stylePicker}
+                <div role="group" aria-label={t('Кегль өлшемі')} className="segmented">
+                  <button type="button" aria-label={t('Кішірейту')} className="w-8 !px-0 text-[17px] !text-fg" onClick={() => setLetterSize((n) => Math.max(16, n - 4))}>
+                    −
+                  </button>
+                  <span className="inline-flex min-w-12 items-center justify-center text-[13px] font-medium tabular-nums">{letterSize} px</span>
+                  <button type="button" aria-label={t('Үлкейту')} className="w-8 !px-0 text-[17px] !text-fg" onClick={() => setLetterSize((n) => Math.min(96, n + 4))}>
+                    +
+                  </button>
+                </div>
               </div>
             </div>
-          ))}
+            <div className="rows">
+              {CHARSETS.map((set) => (
+                <div key={set.label} className="pt-[18px] pb-[22px]">
+                  <p className="mb-2.5 meta">{t(set.label)}</p>
+                  <p className="flex flex-wrap gap-x-3.5 gap-y-1 leading-[1.3]" style={{ fontFamily: `'${current.family}', system-ui`, fontSize: letterSize }}>
+                    {[...set.chars.replace(/\s/g, '')].map((ch, i) => (
+                      <span key={ch + i} className={KAZAKH.has(ch) ? 'text-accent-ink' : 'text-fg'}>
+                        {ch}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {tab === 'letters' && (
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
+        {tab === 'glyphs' && (
+          <div className="space-y-4 pt-6">
             {stylePicker}
-            <div className="ml-auto flex items-center gap-3 text-sm text-muted">
-              {t('Кегль өлшемі')}
-              <Range min={16} max={120} value={letterSize} onChange={setLetterSize} className="w-32" label={t('Кегль өлшемі')} />
-              <span className="w-12 tabular-nums">{letterSize}px</span>
+            {glyphSource ? <GlyphGrid url={glyphSource.file} t={t} /> : <p className="text-fg-3">{t('Превью қолжетімді емес')}</p>}
+          </div>
+        )}
+
+        {tab === 'license' && (
+          <div className="max-w-[720px] pt-6">
+            <h2 className="title-md mb-1.5">{license.name}</h2>
+            <p className="mb-4 text-[15px] leading-relaxed whitespace-pre-line text-fg-2">{license.description}</p>
+            <div className="rows">
+              {licenseRows.map((row) => (
+                <div key={row.what} className="flex justify-between gap-4 py-3.5 text-[15px]">
+                  <span>{t(row.what)}</span>
+                  <span className={`font-medium whitespace-nowrap ${row.ok ? 'text-ok' : 'text-fg-3'}`}>{t(row.text)}</span>
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="card space-y-8 p-6">
-            {CHARSETS.map((set) => (
-              <div key={set.label}>
-                <p className="mb-3 text-sm text-muted">{t(set.label)}</p>
-                <p className="leading-snug tracking-wide break-all" style={{ fontFamily: `'${current.family}', system-ui`, fontSize: letterSize }}>
-                  {set.chars.split('').join(' ')}
-                </p>
+            {props.purchaseUrl && !license.commercial && (
+              <div className="note mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-[18px]">
+                <span className="flex-[1_1_300px] text-[15px] text-fg-2">{t('Логотипке, жарнамаға немесе сатылатын өнімге керек пе? Коммерциялық лицензияны авторынан сатып алыңыз.')}</span>
+                <a href={props.purchaseUrl} className="btn-primary btn-rect h-[42px]" {...(props.purchaseUrl.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                  <Icon name="cart" size={17} />
+                  {t('Лицензия сатып алу')}
+                </a>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {tab === 'glyphs' && (
-        <div className="space-y-4">
-          {stylePicker}
-          {glyphSource ? <GlyphGrid url={glyphSource.file} t={t} /> : <p className="text-muted">{t('Превью қолжетімді емес')}</p>}
-        </div>
-      )}
-
-      {tab === 'license' && (
-        <div className="card p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="text-xl font-bold">{license.name}</h3>
-            {license.hasPage && (
-              <a className="link text-sm" href={localePath(lang, `/licenses/${license.slug}`)}>
-                {t('Толық мәтін')} →
-              </a>
             )}
-          </div>
-          <p className="mt-3 whitespace-pre-line text-muted">{license.description}</p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {(
-              [
-                ['Коммерциялық қолдану', license.commercial],
-                ['Өзгерту', license.modification],
-                ['Таратуға болады', license.distribution],
-                ['Авторды көрсету', license.attribution],
-              ] as const
-            ).map(([label, ok], i) => (
-              <div key={label} className="rounded-xl border border-line p-4">
-                <p className="text-sm text-muted">{t(label)}</p>
-                <p className={`mt-1 flex items-center gap-1.5 font-semibold ${i === 3 ? (ok ? 'text-amber-500' : 'text-muted') : ok ? 'text-emerald-500' : 'text-rose-500'}`}>
-                  <Icon name={i === 3 ? 'info' : ok ? 'check' : 'x'} size={16} />
-                  {i === 3 ? (ok ? t('Міндетті') : t('Міндетті емес')) : ok ? t('Рұқсат етілген') : t('Тыйым салынған')}
-                </p>
-              </div>
-            ))}
-          </div>
-          {license.url && (
-            <p className="mt-6 text-sm">
-              <span className="text-muted">{t('Қосымша ақпарат')}: </span>
-              <a className="link break-all" href={license.url} target="_blank" rel="noopener noreferrer">
-                {license.url}
-              </a>
+            <p className="mt-[18px] flex flex-wrap gap-x-2 text-sm text-fg-3">
+              {license.hasPage && (
+                <>
+                  <a className="link-quiet" href={localePath(lang, `/licenses/${license.slug}`)}>
+                    {t('Толық мәтін')}
+                  </a>
+                  <span aria-hidden="true">·</span>
+                </>
+              )}
+              {license.shown && (
+                <a className="link-quiet" href={localePath(lang, '/licenses')}>
+                  {t('Барлық лицензия түрлері')}
+                </a>
+              )}
+              {license.url && (
+                <>
+                  {license.shown && <span aria-hidden="true">·</span>}
+                  <a className="link-quiet break-all" href={license.url} target="_blank" rel="noopener noreferrer">
+                    {license.url.replace(/^https?:\/\//, '')}
+                  </a>
+                </>
+              )}
             </p>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {tab === 'css' && (
-        <div className="space-y-6">
-          <section>
-            <h3 className="mb-3 font-semibold">{t('Ендіру')}</h3>
-            <CodeBlock code={`<link rel="stylesheet" href="${props.cssUrl}">`} label={t('Көшіру')} done={t('Көшірілді')} />
-          </section>
-          {styles.length > 1 && (
-            <section>
-              <h3 className="mb-3 font-semibold">{t('Қаріп түрлері')}</h3>
-              <div className="flex flex-wrap gap-2">
+        {tab === 'css' && (
+          <div className="flex max-w-[720px] flex-col gap-4 pt-6">
+            {styles.length > 1 && (
+              <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('Қаріп түрлері')}>
                 {styles.map((s, i) => (
                   <button
                     key={s.slug + i}
@@ -230,84 +310,111 @@ export default function FontDetail(props: Props) {
                     aria-pressed={cssSelected.includes(i)}
                     onClick={() => setCssSelected((sel) => (sel.includes(i) ? sel.filter((x) => x !== i) : [...sel, i]))}
                   >
-                    {s.name} <span className="font-mono text-xs text-muted">{s.variable ? 'var' : s.weight}</span>
+                    {cssSelected.includes(i) && <Icon name="check" size={12} strokeWidth={3} />}
+                    {s.name}
                   </button>
                 ))}
               </div>
-            </section>
-          )}
-          <section>
-            <h3 className="mb-3 font-semibold">@font-face</h3>
-            <CodeBlock code={css} label={t('CSS көшіру')} done={t('Көшірілді')} />
-          </section>
-          <section>
-            <h3 className="mb-3 font-semibold">{'<style>'}</h3>
-            <CodeBlock code={`<style>\n${css}\n</style>`} label={t('Ендіруді көшіру')} done={t('Көшірілді')} />
-          </section>
-          <section>
-            <h3 className="mb-3 font-semibold">{t('Қолдану мысалы')}</h3>
+            )}
+            <CodeBlock title={t('Ендіру')} code={`<link rel="stylesheet" href="${props.cssUrl}">`} label={t('Көшіру')} done={t('Көшірілді')} />
+            <CodeBlock title="@font-face" code={css} label={t('Көшіру')} done={t('Көшірілді')} />
             <CodeBlock
-              code={`font-family: '${props.name}', sans-serif;\n${[...new Set(styles.map((s) => s.weight))].map((w) => `font-weight: ${w};`).join('\n')}`}
+              title={t('Қолдану мысалы')}
+              code={`font-family: '${props.name}', sans-serif;\n${[...new Set(styles.filter((_, i) => cssSelected.includes(i)).map((s) => s.weight))].map((w) => `font-weight: ${w};`).join('\n')}`}
               label={t('Көшіру')}
               done={t('Көшірілді')}
             />
-          </section>
-          <p className="text-sm text-muted">{t('Сайтта қолданбас бұрын лицензия веб-қолдануға рұқсат беретінін тексеріңіз.')}</p>
-        </div>
-      )}
+            <p className="text-sm text-fg-3">
+              {t('WOFF2 керек пе?')}{' '}
+              <a className="link" href={localePath(lang, '/tools/converter')}>
+                {t('Конвертер')}
+              </a>{' '}
+              {t('бір қадамда жасайды.')} {t('Сайтта қолданбас бұрын лицензия веб-қолдануға рұқсат беретінін тексеріңіз.')}
+            </p>
+          </div>
+        )}
 
-      {tab === 'variable' && variable && <VariableTab name={props.name} family={variable.family} url={variable.file} t={t} />}
+        {tab === 'variable' && variable && (
+          <div className="pt-6">
+            <VariableTab name={props.name} family={variable.family} url={variable.file} t={t} />
+          </div>
+        )}
 
-      {tab === 'info' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="card p-5">
-                <p className="text-3xl font-bold tabular-nums">{s.value}</p>
-                <p className="mt-1 text-sm text-muted">{t(s.label)}</p>
+        {tab === 'info' && (
+          <div className="flex flex-col gap-8 pt-6">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {stats.map((s) => (
+                <div key={s.label} className="card px-[18px] py-4">
+                  <b className="block text-2xl font-[650] tracking-[-0.02em] tabular-nums">{s.value}</b>
+                  <span className="meta">{t(s.label)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="grid gap-x-14 gap-y-8 md:grid-cols-2">
+              <div>
+                <H>{t('Жалпы ақпарат')}</H>
+                <dl className="rows text-sm">
+                  {props.info.map((row) => (
+                    <div key={row.label} className="flex justify-between gap-4 py-[11px]">
+                      <dt className="text-fg-3">{t(row.label)}</dt>
+                      <dd className="text-right">{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
-            ))}
-          </div>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <section className="card p-5">
-              <h3 className="mb-4 font-semibold">{t('Жалпы ақпарат')}</h3>
-              <dl className="divide-y divide-line text-sm">
-                {props.info.map((row) => (
-                  <div key={row.label} className="flex justify-between gap-4 py-2.5">
-                    <dt className="text-muted">{t(row.label)}</dt>
-                    <dd className="text-right font-medium">{row.value}</dd>
+              <div className="flex flex-col gap-7">
+                <div>
+                  <H>
+                    {t('Архивтегі файлдар')} · {props.files.length}
+                  </H>
+                  <ul className="rows max-h-96 overflow-y-auto text-sm" title={props.zipName}>
+                    {props.files.map((f) => {
+                      const slash = f.name.lastIndexOf('/');
+                      return (
+                        <li key={f.name} className="flex items-center justify-between gap-4 py-2.5" title={f.name}>
+                          <span className="min-w-0">
+                            <span className="block truncate font-mono text-[13px]">{f.name.slice(slash + 1)}</span>
+                            {slash > 0 && <span className="block truncate text-xs text-fg-3">{f.name.slice(0, slash)}/</span>}
+                          </span>
+                          <span className="shrink-0 text-fg-3 tabular-nums">
+                            {f.format && <span className="uppercase">{f.format}</span>}
+                            {f.format && ' · '}
+                            {f.size}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+                {props.tags.length > 0 && (
+                  <div>
+                    <h2 className="mb-2.5 text-[15px] font-semibold text-fg-2">{t('Тегтер')}</h2>
+                    <div className="flex flex-wrap gap-1.5">
+                      {props.tags.map((tag) => (
+                        <a key={tag.href} href={tag.href} className="inline-flex h-[30px] items-center rounded-full bg-fill px-3 text-[13px] text-fg-2 transition-colors hover:bg-fill-2 hover:text-fg">
+                          {tag.label}
+                        </a>
+                      ))}
+                    </div>
                   </div>
+                )}
+                {props.designers.map((d) => (
+                  <a key={d.href} href={d.href} className="hover-name flex items-center gap-3">
+                    <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent-ink">
+                      {initials(d.name)}
+                    </span>
+                    <span className="min-w-0">
+                      <b className="font-name">{d.name}</b>
+                      <span className="meta">{t('{n} қаріп', { n: d.fonts })}</span>
+                    </span>
+                  </a>
                 ))}
-              </dl>
-            </section>
-            <section className="card p-5">
-              <h3 className="font-semibold">
-                {t('Файлдар')} <span className="text-muted">({props.files.length})</span>
-              </h3>
-              <p className="mt-1 mb-4 truncate text-sm text-muted">
-                {t('Архив ішінде')}: <span className="font-mono text-xs">{props.zipName}</span>
-              </p>
-              <ul className="max-h-96 divide-y divide-line overflow-y-auto text-sm">
-                {props.files.map((f) => {
-                  const slash = f.name.lastIndexOf('/');
-                  return (
-                    <li key={f.name} className="flex items-center gap-3 py-2.5">
-                      <Icon name="file" size={16} className="shrink-0 text-muted" />
-                      <span className="min-w-0 flex-1" title={f.name}>
-                        <span className="block truncate">{f.name.slice(slash + 1)}</span>
-                        {slash > 0 && <span className="block truncate text-xs text-muted">{f.name.slice(0, slash)}/</span>}
-                      </span>
-                      <span className="shrink-0 text-muted tabular-nums">{f.size}</span>
-                      {f.format && <span className="badge shrink-0 bg-surface-2 uppercase">{f.format}</span>}
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
+              </div>
+            </div>
+            {glyphSource && <FontInfo url={glyphSource.file} t={t} />}
           </div>
-          {glyphSource && <FontInfo url={glyphSource.file} t={t} />}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

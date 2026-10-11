@@ -1,35 +1,66 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/common/PageHeader.astro';
 import ArticleCard from '../components/common/ArticleCard.astro';
 import Icon from '../components/ui/Icon';
 import { type Lang, useT } from '../i18n';
+import { getPosts } from '../lib/journal';
+import { SITE } from '../lib/site';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const posts = (await getCollection('journal', (p) => !p.data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = await getPosts();
+const [featured, ...rest] = posts;
 ---
 
-<Base lang={lang} title="Journal" description={t('Типография, қаріптер және дизайн туралы мақалалар')}>
-  <PageHeader eyebrow={t('Мақалалар')} title="Journal" description={t('Типография, қаріптер және дизайн туралы мақалалар')} center>
-    <label class="relative mx-auto mt-8 block max-w-md">
-      <Icon name="search" size={16} className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
-      <input type="search" class="input pl-11" placeholder={t('Мақала іздеу...')} aria-label={t('Мақала іздеу...')} data-journal-search />
-    </label>
-  </PageHeader>
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-journal-list>
-    {posts.map((post) => <ArticleCard post={post} lang={lang} />)}
+<Base lang={lang} title="Journal" description={t('Типография, қаріп және қазақ жазуы туралы мақалалар')}>
+  <header class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-[32px] leading-[1.1] font-[650] tracking-[-0.035em] sm:text-[40px]">Journal</h1>
+      <p class="lead mt-1.5">{t('Типография, қаріп және қазақ жазуы туралы мақалалар')}</p>
+    </div>
+    {
+      posts.length > 3 && (
+        <label class="field panel h-[42px] w-full bg-elev sm:w-72">
+          <Icon name="search" size={16} />
+          <span class="sr-only">{t('Мақала іздеу...')}</span>
+          <input type="search" placeholder={t('Мақала іздеу...')} data-journal-search />
+        </label>
+      )
+    }
+  </header>
+
+  <div data-journal-list>
+    {featured && <ArticleCard post={featured} lang={lang} variant="featured" />}
+    {
+      rest.length > 0 && (
+        <div class="mt-5 grid gap-x-5 gap-y-8 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
+          {rest.map((post) => (
+            <ArticleCard post={post} lang={lang} />
+          ))}
+        </div>
+      )
+    }
   </div>
-  <p class="hidden py-16 text-center text-muted" data-journal-empty>{t('Ештеңе табылмады')}</p>
+  <p class="sub hidden py-16 text-center" data-journal-empty>{t('Ештеңе табылмады')}</p>
+
+  <section class="panel mt-14 flex flex-wrap items-center justify-between gap-4 px-[26px] py-6">
+    <div>
+      <b class="text-[17px] font-semibold">{t('Жаңа мақаланы жіберіп алмаңыз')}</b>
+      <p class="sub">{t('Жаңа мақалалар мен қаріптер туралы Telegram арнасында жазамыз.')}</p>
+    </div>
+    <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class="btn-primary btn-sm h-[42px]!">
+      <Icon name="send" size={16} />
+      {t('Telegram-ға жазылу')}
+    </a>
+  </section>
 </Base>
 
 <script>
   const input = document.querySelector<HTMLInputElement>('[data-journal-search]');
-  const items = [...document.querySelectorAll<HTMLElement>('[data-journal-list] > [data-search]')];
+  const items = [...document.querySelectorAll<HTMLElement>('[data-journal-list] [data-search]')];
   const empty = document.querySelector<HTMLElement>('[data-journal-empty]');
   input?.addEventListener('input', () => {
     const q = input.value.trim().toLowerCase();

@@ -51,14 +51,19 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `src/data/{tags,purposes}.json`, `faq.ts`, `unicode.ts` | Taxonomies, FAQ (per language), Unicode reference sections |
 | `src/views/*.astro` | Page logic, each takes `lang` |
 | `src/pages/**`, `src/pages/ru/**`, `src/pages/en/**` | Thin wrappers: `<View lang="kk|ru|en" />` |
-| `src/layouts/Base.astro` | `<head>` (title, canonical, hreflang, OG, verification), header, footer |
-| `src/components/fonts/` | `FontBrowser` (catalog engine), `HomeFonts` (home tabs), `FontDetail` (tabs), `GlyphGrid`, `usePreview`… |
-| `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range` (slider), `CopyButton` |
-| `src/components/tools/` | Tester, Converter, Pairing, Proofing, Freezer, Kerning, Keyboard |
+| `DESIGN.md` | The design system: tokens, type, classes, components, page patterns, decisions |
+| `src/styles/global.css` | Tokens (CSS variables) and every reusable class (`@utility`) |
+| `src/layouts/Base.astro` | `<head>` (title, canonical, hreflang, OG, verification), header, mobile tab bar, footer, search |
+| `src/components/{Header,Footer,MobileNav,LangSwitch}.astro`, `layout/`, `search/` | Site shell: glass header, bottom tab bar + "More" sheet (below `lg`), logo, tool glyphs, ⌘K search over `/search.json` |
+| `src/components/common/` | `PageHeader`, `SectionHead`, `Breadcrumbs`, `ArticleCard`, `Accordion`, `DownloadCount`, `ShareButton` |
+| `src/components/fonts/` | `FontRow` (`FontCard`/`FontRow`), `PreviewToolbar`, `FontBrowser` (catalog engine), `HomeFonts`, `FontActions`, `FontDetail` (tabs), `GlyphGrid`, `usePreview`… |
+| `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range`/`RangeField`, `Switch`, `CopyButton`/`CodeBlock`, `OwnBadge` |
+| `src/components/tools/` | Tester, Converter, Pairing, Proofing, Freezer, Kerning, Keyboard; `ToolHeader`, `OtherTools`, `Dropzone` |
+| `src/lib/journal.ts` | Published articles, reading time, cover glyph |
 | `src/lib/site.ts` | Contacts, nav, tools list, pangrams, donation card, keyboard zip |
 | `src/lib/seo.ts` | Search-facing titles/descriptions per language + JSON-LD builders |
 | `src/lib/sfnt.ts` | Font binary toolkit: SFNT parse/build, WOFF, WOFF2, cmap rebuild, family rename |
-| `src/lib/store.ts` | localStorage store: favorites, download history, catalogs, prefs |
+| `src/lib/store.ts`, `src/lib/useStore.ts` | localStorage store: favorites, download history, collections (`catalogs` in code), prefs; React hook |
 | `src/lib/og.ts`, `src/pages/og*.ts` | Social preview PNGs rendered at build time |
 | `scripts/add-font.mjs` | CLI equivalent of the CMS form: copies files and writes `font.json` |
 | `public/admin/` | Sveltia CMS (`index.html` + `config.yml`; keep fields in sync with `content.config.ts`) |
@@ -81,12 +86,15 @@ prefix and a trailing slash — Netlify serves pages only with a trailing slash 
 pages come from `src/lib/seo.ts`, not from `t()`. Kazakh copy uses both words.
 Categories are static pages (`/fonts/category/<id>/`), not query filters.
 
-**Styling.** Tailwind 4. Design tokens are CSS variables in `src/styles/global.css`
-(`bg-bg`, `bg-surface`, `text-muted`, `border-line`, `bg-accent`…); dark is default, light via
-`html[data-theme]`. Reusable classes (`btn-primary`, `card`, `chip`, `input`, `icon-btn`,
-`segmented`, `range`, `checkbox`, `swatch`) are defined with `@utility` — `@layer components`
-classes cannot be `@apply`'d in Tailwind 4. `--header-h` lets sticky elements sit under the
-header or the sidebar mode.
+**Styling.** Read `DESIGN.md` first. Tailwind 4; tokens are CSS variables in
+`src/styles/global.css` exposed as `bg-bg`, `bg-elev`, `bg-fill`, `text-fg`/`fg-2`/`fg-3`,
+`border-line`, `bg-accent`, `text-accent-ink`…; dark is default, light via `html[data-theme]`.
+Reusable classes (`btn-*`, `card`, `panel`, `note`, `pop`, `chip`, `pill`, `tabs`/`tab`,
+`segmented`, `switch`, `input`, `field`, `font-card`, `rows`…) are defined with `@utility` —
+`@layer components` classes cannot be `@apply`'d in Tailwind 4. A look used twice becomes a class
+or a component. UI fonts are self-hosted (`@fontsource-variable/onest`, JetBrains Mono, PT Serif) —
+no Google Fonts. `--header-h` / `--tabbar-h` let sticky and fixed elements clear the header and
+the mobile tab bar. The canvas's sidebar navigation mode was dropped.
 
 **Form controls.** No native `<select>` or bare range/checkbox inputs: use `ui/Select.tsx`
 (keyboard-accessible listbox), `ui/Range.tsx`, and the `checkbox` / `swatch` classes.
@@ -127,8 +135,9 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
 - **zsh globbing**: quote paths with brackets (`'src/pages/fonts/[slug].astro'`); an
   unmatched glob aborts the whole command line. Shell heredocs with long Cyrillic lines have
   corrupted files before — write such files with the editor tools, not `cat <<EOF`.
-- `position: fixed` children of the header get trapped by its `backdrop-filter`; the mobile
-  drawer and the sidebar are siblings of `<header>` for that reason.
+- `position: fixed` children of any element with `backdrop-filter` get trapped by it: the mobile
+  tab bar and its sheet are siblings of `<header>`, and the font page's fixed action bar portals
+  its "add to collection" sheet to `<body>`.
 - `media.base44.com` (base44 file storage) is unreachable from this network, so base44
   font files and the keyboard-layout zip could not be downloaded.
 - Never add a Netlify redirect from a host to itself (it loops).
@@ -179,3 +188,5 @@ the entry. Netlify Identity and Git Gateway are no longer used.
   was a placeholder. `src/data/donators.json` is empty (block hidden).
 - Journal articles exist only in Kazakh; glossary and license texts are Kazakh-only content.
 - Proofing tool uses each font's primary style only (no style picker).
+- Personal lists are called "Жинақ" (collection) in the UI; the code and localStorage still say
+  `catalogs`. Old `#catalogs` links on `/profile/` open the collections tab.

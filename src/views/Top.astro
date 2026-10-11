@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/common/PageHeader.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import DownloadCount from '../components/common/DownloadCount.astro';
+import Icon from '../components/ui/Icon';
+import OwnBadge from '../components/ui/OwnBadge';
+import { type Lang, localePath, useT } from '../i18n';
+import { byPopularity } from '../lib/downloads';
+import { familyName, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
+import { TOP, breadcrumbLd, itemListLd } from '../lib/seo';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const fonts = (await toSummaries(await getFonts(), lang)).sort(byPopularity).slice(0, 20);
+const rank = (i: number) => String(i + 1).padStart(2, '0');
+const family = (slug: string) => `font-family:'${familyName(slug)}', system-ui`;
+const label = t('{n} жүктеу', { n: '{n}' });
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Qarip', path: localePath(lang, '/') },
+  { name: t('Қаріптер'), path: localePath(lang, '/fonts') },
+  { name: t('Танымал'), path: localePath(lang, '/top') },
+];
+---
+
+<Base lang={lang} fullTitle={`${TOP.title[lang]} | Qarip`} description={TOP.description[lang]} fontCss={primaryFaces(fonts)}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(itemListLd(site, lang, t('Танымал қаріптер'), fonts))} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbLd(site, crumbs))} />
+
+  <Breadcrumbs class="mb-2.5" label={t('Жол')} items={[{ label: t('Қаріптер'), href: localePath(lang, '/fonts') }, { label: t('Танымал') }]} />
+  <PageHeader title={t('Танымал қаріптер')} description={t('Жүктеу саны бойынша рейтинг.')} class="!mb-7" />
+
+  <div class="mb-4 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+    {
+      fonts.slice(0, 3).map((f, i) => (
+        <a href={localePath(lang, `/fonts/${f.slug}`)} class:list={['font-card gap-6 !pb-5', f.our && 'card-own']}>
+          <span class="flex items-center justify-between text-[13px] text-fg-3">
+            <span class="inline-flex items-center gap-2.5">
+              <span class="font-mono font-semibold text-fg-2">{rank(i)}</span>
+              {f.our && <OwnBadge />}
+            </span>
+            <DownloadCount slug={f.slug} count={f.downloads} label={label} />
+          </span>
+          <span class="truncate text-[56px] leading-none text-fg" style={family(f.slug)}>
+            {f.name}
+          </span>
+          <span class="truncate text-sm text-fg-3">
+            {f.designers.map((d) => d.name).join(', ')} · {f.category.name} · {t('{n} стиль', { n: f.stylesCount })}
+          </span>
+        </a>
+      ))
+    }
+  </div>
+
+  <ol>
+    {
+      fonts.slice(3).map((f, i) => (
+        <li class="row-link flex items-center gap-3 border-b border-line px-1 py-3.5 sm:gap-5">
+          <span class="w-8 shrink-0 font-mono text-[13px] font-medium text-fg-3">{rank(i + 3)}</span>
+          <a href={localePath(lang, `/fonts/${f.slug}`)} class="min-w-0 flex-1 truncate text-[22px] leading-tight text-fg sm:flex-[1_1_260px] sm:text-[28px]" style={family(f.slug)}>
+            {f.name}
+          </a>
+          {f.our && <OwnBadge />}
+          <span class="hidden w-[220px] truncate text-sm text-fg-2 sm:block">{f.designers.map((d) => d.name).join(', ')}</span>
+          <span class="hidden w-[90px] text-sm text-fg-3 tabular-nums sm:block">
+            <DownloadCount slug={f.slug} count={f.downloads} label={label} />
+          </span>
+          <a href={f.zip} download class="icon-btn size-9 rounded-full" aria-label={t('{name} жүктеу', { name: f.name })} data-download={f.slug}>
+            <Icon name="download" size={17} />
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="mt-6 text-sm text-fg-3">
+    {t('Барлық қаріптер')} <a class="link-quiet" href={localePath(lang, '/fonts')}>{t('каталогта')}</a>.
+  </p>
+</Base>

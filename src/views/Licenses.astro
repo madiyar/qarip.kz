@@ -2,9 +2,9 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
-import Permission from '../components/common/Permission.astro';
 import { type Lang, localePath, useT } from '../i18n';
-import { hasLicensePage, isLicenseShown } from '../lib/licenses';
+import { type LicenseEntry, hasLicensePage, isLicenseShown } from '../lib/licenses';
+import { getFonts } from '../lib/fonts';
 
 interface Props {
   lang: Lang;
@@ -12,41 +12,153 @@ interface Props {
 const { lang } = Astro.props;
 const t = useT(lang);
 const licenses = (await getCollection('licenses', isLicenseShown)).sort((a, b) => Number(b.data.commercial) - Number(a.data.commercial) || a.data.name.localeCompare(b.data.name));
+const fonts = await getFonts();
+const countFor = (ids: string[]) => fonts.filter((f) => ids.includes(f.data.license.id)).length;
+const groups = [
+  { ok: true, title: 'Кез келген жобаға', text: 'Жұмыс, клиент, логотип, сатылатын өнім — бәріне болады.', list: licenses.filter((l) => l.data.commercial) },
+  { ok: false, title: 'Жеке жобаға', text: 'Оқу, портфолио, жеке пост, достарға открытка. Коммерцияға керек болса — авторға жазыңыз.', list: licenses.filter((l) => !l.data.commercial) },
+].filter((g) => g.list.length);
+
+// "What do you want to do?": a verdict per license for each use case, from the license flags.
+type Verdict = { ok: boolean; text: string };
+const forSale = (l: LicenseEntry): Verdict => (l.data.prices.length ? { ok: false, text: 'Лицензия сатып алу керек' } : { ok: false, text: 'Авторға жазыңыз' });
+const CASES: { id: string; label: string; verdict: (l: LicenseEntry) => Verdict }[] = [
+  { id: 'personal', label: 'Жеке жоба, оқу', verdict: () => ({ ok: true, text: 'Болады' }) },
+  { id: 'client', label: 'Клиентке жұмыс', verdict: (l) => (l.data.commercial ? { ok: true, text: 'Болады' } : forSale(l)) },
+  { id: 'logo', label: 'Логотип', verdict: (l) => (l.data.commercial ? { ok: true, text: 'Болады' } : forSale(l)) },
+  { id: 'product', label: 'Сатылатын өнім', verdict: (l) => (l.data.commercial ? { ok: true, text: 'Болады' } : forSale(l)) },
+  { id: 'web', label: 'Сайтқа ендіру', verdict: (l) => (l.data.commercial && l.data.distribution ? { ok: true, text: 'Болады' } : forSale(l)) },
+  { id: 'modify', label: 'Қаріпті өзгерту', verdict: (l) => (l.data.modification ? { ok: true, text: 'Болады' } : { ok: false, text: 'Болмайды' }) },
+];
+const yesNo = (ok: boolean, yes = 'Иә', no = 'Жоқ') => ({ ok, text: ok ? yes : no });
 ---
 
-<Base lang={lang} title={t('Лицензиялар')} description={t('Сайттағы қаріптер үшін қолданылатын лицензиялар туралы толық ақпарат')}>
-  <PageHeader eyebrow={t('Заңды ақпарат')} title={t('Лицензиялар')} description={t('Сайттағы қаріптер үшін қолданылатын лицензиялар туралы толық ақпарат')} />
-  <div class="space-y-4">
-    {
-      licenses.map((l) => {
-        const hasPage = hasLicensePage(l);
-        return (
-          <section class="card p-6" id={l.id}>
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <h2 class="text-xl font-bold">{l.data.name}</h2>
-              {hasPage && (
-                <a class="link text-sm" href={localePath(lang, `/licenses/${l.id}`)}>
-                  {t('Толық мәтін')} →
-                </a>
-              )}
-            </div>
-            <p class="mt-3 whitespace-pre-line text-muted">{l.data.description}</p>
-            <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Permission label={t('Коммерциялық қолдану')} ok={l.data.commercial} yes={t('Рұқсат етілген')} no={t('Тыйым салынған')} />
-              <Permission label={t('Өзгерту')} ok={l.data.modification} yes={t('Рұқсат етілген')} no={t('Тыйым салынған')} />
-              <Permission label={t('Тарату')} ok={l.data.distribution} yes={t('Рұқсат етілген')} no={t('Тыйым салынған')} />
-              <Permission label={t('Авторды көрсету')} ok={l.data.attribution} yes={t('Міндетті')} no={t('Міндетті емес')} neutral />
-            </div>
-            {l.data.url && (
-              <p class="mt-5 text-sm">
-                <a class="link break-all" href={l.data.url} target="_blank" rel="noopener noreferrer">
-                  {l.data.url}
-                </a>
+<Base lang={lang} title={t('Лицензия түрлері')} description={t('Qarip-тегі барлық қаріп тегін. Лицензия тек бір нәрсені анықтайды: қаріпті қай жобада қолдануға болады.')}>
+  <div class="mx-auto max-w-[1040px]">
+    <PageHeader size="lg" title={t('Лицензия түрлері')} description={t('Qarip-тегі барлық қаріп тегін. Лицензия тек бір нәрсені анықтайды: қаріпті қай жобада қолдануға болады.')} />
+
+    <div class="mb-10 grid gap-3 sm:grid-cols-2">
+      {
+        groups.map((g) => (
+          <div class="panel flex flex-col gap-2 p-[22px]">
+            <span class="inline-flex items-center gap-2 text-lg font-semibold">
+              <span class:list={['size-[9px] rounded-full', g.ok ? 'bg-ok' : 'bg-fg-3']} />
+              {t(g.title)}
+            </span>
+            <span class="text-fg-2">
+              {t(g.text)} {t('Каталогтағы {n} қаріп.', { n: countFor(g.list.map((l) => l.id)) })}
+            </span>
+            <span class="meta">{g.list.map((l) => l.data.name).join(' · ')}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <section class="mb-12">
+      <h2 class="title-md mb-1.5">{t('Не жасағыңыз келеді?')}</h2>
+      <p class="sub mb-3.5">{t('Таңдаңыз — қай лицензия сәйкес келетінін көрсетеміз.')}</p>
+      <div role="tablist" aria-label={t('Жоба түрі')} class="mb-3.5 flex flex-wrap gap-1.5" data-cases>
+        {
+          CASES.map((c, i) => (
+            <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} class="pill h-[38px] px-4" data-case={c.id}>
+              {t(c.label)}
+            </button>
+          ))
+        }
+      </div>
+      {
+        CASES.map((c, i) => (
+          <div role="tabpanel" hidden={i !== 0} data-verdicts={c.id} class="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+            {licenses.map((l) => {
+              const v = c.verdict(l);
+              return (
+                <div class:list={['flex flex-col gap-0.5 rounded-[14px] px-4 py-3.5', v.ok ? 'bg-ok-soft' : 'bg-fill']}>
+                  <b class="text-[15px] font-semibold">{l.data.name}</b>
+                  <span class:list={['text-[13px] font-medium', v.ok ? 'text-ok' : 'text-fg-3']}>{t(v.text)}</span>
+                </div>
+              );
+            })}
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="mb-12">
+      <h2 class="title-md mb-3.5">{t('Салыстыру кестесі')}</h2>
+      <div class="panel overflow-x-auto">
+        <table class="w-full min-w-[720px] border-collapse text-sm">
+          <thead>
+            <tr class="text-left text-fg-3">
+              <th class="px-[18px] py-3.5 font-medium">{t('Лицензия')}</th>
+              <th class="px-3 py-3.5 font-medium">{t('Жеке жоба')}</th>
+              <th class="px-3 py-3.5 font-medium">{t('Коммерция')}</th>
+              <th class="px-3 py-3.5 font-medium">{t('Өзгерту')}</th>
+              <th class="px-3 py-3.5 font-medium">{t('Тарату')}</th>
+              <th class="px-3 py-3.5 font-medium">{t('Авторды көрсету')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              licenses.map((l) => {
+                const cells = [yesNo(true), yesNo(l.data.commercial), yesNo(l.data.modification), yesNo(l.data.distribution)];
+                return (
+                  <tr class="border-t border-line">
+                    <td class="px-[18px] py-3.5">
+                      <a href={`#${l.id}`} class="font-semibold transition-colors hover:text-accent-ink">
+                        {l.data.name}
+                      </a>
+                      <span class="block text-xs text-fg-3">{t('{n} қаріп', { n: countFor([l.id]) })}</span>
+                    </td>
+                    {cells.map((c) => (
+                      <td class:list={['px-3 py-3.5', c.ok ? 'text-ok' : 'text-fg-3']}>{t(c.text)}</td>
+                    ))}
+                    <td class="px-3 py-3.5 text-fg-2">{l.data.attribution ? t('Міндетті') : t('Міндетті емес')}</td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="meta mt-3.5">{t('Бұл — қысқаша түсіндірме, заңдық кеңес емес. Толық шарттар — лицензияның ресми мәтінінде.')}</p>
+    </section>
+
+    <section>
+      <h2 class="title-md mb-3.5">{t('Лицензиялар туралы')}</h2>
+      <div class="panel overflow-hidden">
+        {
+          licenses.map((l) => (
+            <article id={l.id} class="scroll-mt-[calc(var(--header-h)+1rem)] border-b border-line px-5 py-5 last:border-0 target:bg-accent-soft sm:px-6">
+              <h3 class="title-sm">{l.data.name}</h3>
+              <p class="mt-1.5 max-w-[720px] text-[15px] leading-relaxed whitespace-pre-line text-fg-2">{l.data.description}</p>
+              <p class="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                {hasLicensePage(l) && (
+                  <a class="link" href={localePath(lang, `/licenses/${l.id}`)}>
+                    {l.data.prices.length ? t('Бағалар мен толық мәтін') : t('Толық мәтін')} →
+                  </a>
+                )}
+                {l.data.url && (
+                  <a class="link-quiet break-all" href={l.data.url} target="_blank" rel="noopener noreferrer">
+                    {l.data.url.replace(/^https?:\/\//, '')}
+                  </a>
+                )}
               </p>
-            )}
-          </section>
-        );
-      })
-    }
+            </article>
+          ))
+        }
+      </div>
+    </section>
   </div>
 </Base>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-cases] [data-case]')];
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => {
+      for (const x of tabs) {
+        x.setAttribute('aria-selected', String(x === tab));
+        document.querySelector<HTMLElement>(`[data-verdicts="${x.dataset.case}"]`)!.hidden = x !== tab;
+      }
+    });
+  }
+</script>

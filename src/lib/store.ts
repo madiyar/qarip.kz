@@ -1,5 +1,3 @@
-import { useSyncExternalStore } from 'react';
-
 /**
  * Personal data lives in this browser only (localStorage): favorites,
  * download history and user catalogs. None of it is sent to a server (the anonymous
@@ -43,9 +41,12 @@ function write(next: State) {
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch {}
   listeners.forEach((l) => l());
+  // Static parts of the page (the favourites counter in the header) listen to this.
+  window.dispatchEvent(new Event('qarip:store'));
 }
 
-function subscribe(cb: () => void) {
+/** For React: see useStore() in src/lib/useStore.ts. */
+export function subscribe(cb: () => void) {
   listeners.add(cb);
   const onStorage = (e: StorageEvent) => {
     if (e.key === KEY) {
@@ -60,11 +61,11 @@ function subscribe(cb: () => void) {
   };
 }
 
-export function useStore(): State {
-  return useSyncExternalStore(subscribe, read, () => EMPTY);
-}
+export const EMPTY_STATE = EMPTY;
+export const readState = read;
 
 export const store = {
+  get: read,
   toggleFavorite(slug: string) {
     const s = read();
     const favorites = s.favorites.includes(slug) ? s.favorites.filter((x) => x !== slug) : [slug, ...s.favorites];

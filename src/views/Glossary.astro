@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
-import Accordion from '../components/common/Accordion.astro';
 import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
 import { SITE } from '../lib/site';
@@ -13,48 +12,100 @@ interface Props {
 const { lang } = Astro.props;
 const t = useT(lang);
 const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'kk'));
-const CATS = [
-  ['', 'Барлығы'],
-  ['fonts', 'Қаріптер'],
-  ['typography', 'Типография'],
-  ['design', 'Дизайн'],
-  ['other', 'Басқа'],
-] as const;
-const present = new Set(terms.map((x) => x.data.category));
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+const CATS = { fonts: 'Қаріптер', typography: 'Типография', design: 'Дизайн', other: 'Басқа' } as const;
+const counts = Object.fromEntries(Object.keys(CATS).map((id) => [id, terms.filter((x) => x.data.category === id).length]));
+
+// Terms grouped by first letter, in Kazakh alphabet order; letters with no terms stay in the index, disabled.
+const ALPHABET = [...'АӘБВГҒДЕЁЖЗИЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЪЫІЬЭЮЯ'];
+const first = (s: string) => [...s.trim()][0]?.toUpperCase() ?? '#';
+const groups = new Map<string, typeof terms>();
+for (const x of terms) groups.set(first(x.data.term), [...(groups.get(first(x.data.term)) ?? []), x]);
+const rank = (l: string) => (ALPHABET.includes(l) ? ALPHABET.indexOf(l) : 100 + l.charCodeAt(0));
+const letters = [...groups.keys()].sort((a, b) => rank(a) - rank(b));
+const index = [...ALPHABET, ...letters.filter((l) => !ALPHABET.includes(l))];
+const anchor = (l: string) => `letter-${l.codePointAt(0)}`;
 ---
 
-<Base lang={lang} title={t('Типографиялық сөздік')} description={t('Қаріп және типография саласындағы негізгі терминдер')}>
-  <div class="mx-auto max-w-3xl">
-    <PageHeader eyebrow={t('Білім базасы')} title={t('Типографиялық сөздік')} description={t('Қаріп және типография саласындағы негізгі терминдер')} />
-    <div class="mb-6 space-y-3">
-      <label class="relative block">
-        <Icon name="search" size={16} className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
-        <input type="search" class="input pl-11" placeholder={t('Термин іздеу...')} aria-label={t('Термин іздеу...')} data-glossary-search />
+<Base lang={lang} title={t('Типографиялық сөздік')} description={t('Қаріп және типография саласындағы негізгі терминдер — мысалдарымен және ағылшынша баламаларымен.')}>
+  <div class="mx-auto max-w-[960px]">
+    <PageHeader size="lg" title={t('Типографиялық сөздік')} description={t('Қаріп және типография саласындағы негізгі терминдер — мысалдарымен және ағылшынша баламаларымен.')} />
+
+    <div class="sticky top-[calc(var(--header-h)+0.75rem)] z-20 mb-6 flex flex-col gap-2.5 rounded-[18px] bg-[var(--glass)] p-2.5 shadow-2 backdrop-blur-xl backdrop-saturate-[1.8]">
+      <label class="field">
+        <Icon name="search" size={16} />
+        <span class="sr-only">{t('Термин іздеу')}</span>
+        <input type="search" placeholder={t('Термин іздеу: кернинг, апрош, serif…')} data-glossary-search />
       </label>
-      <div class="flex flex-wrap gap-2" data-glossary-cats>
+      <div role="tablist" aria-label={t('Санат')} class:list={['no-scrollbar flex gap-1 overflow-x-auto', Object.values(counts).filter(Boolean).length < 2 && 'hidden']} data-glossary-cats>
+        <button type="button" role="tab" aria-selected="true" class="pill h-8 px-3 text-[13px]" data-cat="">
+          {t('Барлығы')}<span class="opacity-60 tabular-nums">{terms.length}</span>
+        </button>
         {
-          CATS.filter(([id]) => !id || present.has(id as never)).map(([id, label]) => (
-            <button type="button" class="chip" aria-pressed={id === '' ? 'true' : 'false'} data-cat={id}>
-              {t(label)}
-            </button>
-          ))
+          Object.entries(CATS)
+            .filter(([id]) => counts[id])
+            .map(([id, label]) => (
+              <button type="button" role="tab" aria-selected="false" class="pill h-8 px-3 text-[13px]" data-cat={id}>
+                {t(label)}
+                <span class="opacity-60 tabular-nums">{counts[id]}</span>
+              </button>
+            ))
         }
       </div>
+      <nav aria-label={t('Әліпби')} class="hidden flex-wrap gap-0.5 sm:flex">
+        {
+          index.map((l) =>
+            groups.has(l) ? (
+              <a href={`#${anchor(l)}`} class="inline-flex size-[30px] items-center justify-center rounded-lg text-sm font-semibold text-fg transition-colors hover:bg-fill-2">
+                {l}
+              </a>
+            ) : (
+              <span aria-hidden="true" class="inline-flex size-[30px] items-center justify-center text-sm text-fg-3/50">
+                {l}
+              </span>
+            ),
+          )
+        }
+      </nav>
     </div>
+
     <div data-glossary-list>
-      <Accordion
-        items={terms.map((x) => ({
-          id: x.id,
-          title: x.data.term,
-          meta: x.data.en,
-          group: x.data.category,
-          search: `${x.data.term} ${x.data.en ?? ''} ${x.data.definition}`.toLowerCase(),
-          html: `<p>${esc(x.data.definition)}</p>${x.data.example ? `<p><em>${esc(t('Мысал'))}:</em> ${esc(x.data.example)}</p>` : ''}`,
-        }))}
-      />
+      {
+        letters.map((l) => (
+          <section id={anchor(l)} class="mb-7 scroll-mt-[calc(var(--header-h)+11rem)]" data-letter>
+            <h2 class="mb-2.5 font-serif text-[34px] leading-tight text-fg-3">{l}</h2>
+            <dl class="panel overflow-hidden">
+              {groups.get(l)!.map((x) => (
+                <div
+                  id={x.id}
+                  class="flex scroll-mt-[calc(var(--header-h)+11rem)] flex-wrap gap-x-6 gap-y-1 border-b border-line px-5 py-4 last:border-0 target:bg-accent-soft"
+                  data-group={x.data.category}
+                  data-search={`${x.data.term} ${x.data.en ?? ''} ${x.data.definition}`.toLowerCase()}
+                >
+                  <dt class="flex flex-[0_0_200px] flex-col gap-0.5 text-base font-semibold">
+                    {x.data.term}
+                    <span class="text-xs font-medium text-fg-3">{t(CATS[x.data.category])}</span>
+                  </dt>
+                  <dd class="flex flex-[1_1_360px] flex-col gap-1">
+                    <span class="text-fg-2">{x.data.definition}</span>
+                    {x.data.example && (
+                      <span class="text-sm text-fg-3 italic">
+                        {t('Мысал')}: {x.data.example}
+                      </span>
+                    )}
+                    {x.data.en && <span class="text-[13px] text-fg-3">eng. {x.data.en}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))
+      }
     </div>
-    <p class="mt-8 text-center text-sm text-muted">
+    <div class="panel hidden p-10 text-center text-fg-3" data-glossary-empty>
+      {t('Термин табылмады.')} <a class="link" href={SITE.telegram} target="_blank" rel="noopener noreferrer">{t('Ұсыныс жіберу')}</a>
+    </div>
+
+    <p class="sub mt-8 text-center">
       {t('Қате таптыңыз ба не жаңа термин ұсынасыз ба?')} <a class="link" href={SITE.telegram} target="_blank" rel="noopener noreferrer">{t('Бізге жазыңыз')}</a> ·
       <a class="link" href={localePath(lang, '/typography')}>{t('Типография негіздері')}</a>
     </p>
@@ -64,21 +115,30 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 <script>
   const input = document.querySelector<HTMLInputElement>('[data-glossary-search]')!;
   const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-glossary-cats] [data-cat]')];
-  const items = [...document.querySelectorAll<HTMLDetailsElement>('[data-glossary-list] details')];
+  const sections = [...document.querySelectorAll<HTMLElement>('[data-glossary-list] [data-letter]')];
+  const empty = document.querySelector<HTMLElement>('[data-glossary-empty]')!;
   let cat = '';
   const apply = () => {
     const q = input.value.trim().toLowerCase();
-    for (const el of items) el.hidden = !((!cat || el.dataset.group === cat) && (!q || el.dataset.search!.includes(q)));
+    let shown = 0;
+    for (const s of sections) {
+      let n = 0;
+      for (const el of s.querySelectorAll<HTMLElement>('[data-search]')) {
+        const ok = (!cat || el.dataset.group === cat) && (!q || el.dataset.search!.includes(q));
+        el.hidden = !ok;
+        if (ok) n++;
+      }
+      s.hidden = n === 0;
+      shown += n;
+    }
+    empty.classList.toggle('hidden', shown > 0);
   };
   input.addEventListener('input', apply);
   buttons.forEach((b) =>
     b.addEventListener('click', () => {
       cat = b.dataset.cat!;
-      buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      buttons.forEach((x) => x.setAttribute('aria-selected', String(x === b)));
       apply();
     }),
   );
-  // Open a term linked by #id.
-  const target = location.hash && document.getElementById(location.hash.slice(1));
-  if (target instanceof HTMLDetailsElement) target.open = true;
 </script>

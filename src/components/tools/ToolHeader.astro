@@ -1,0 +1,35 @@
+---
+/**
+ * Top of every tool page: breadcrumb, title, one-line description and,
+ * for tools that open files, the "the file never leaves the browser" note.
+ */
+import Breadcrumbs from '../common/Breadcrumbs.astro';
+import Icon from '../ui/Icon';
+import { type Lang, localePath, useT } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** The tool reads local files. */
+  local?: boolean;
+}
+const { lang, title, description, local = false } = Astro.props;
+const t = useT(lang);
+---
+
+<Breadcrumbs class="mb-3.5" label={t('Жол')} items={[{ label: t('Құралдар'), href: localePath(lang, '/tools') }, { label: title }]} />
+<div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+  <div class="max-w-[640px]">
+    <h1 class="title-lg">{title}</h1>
+    <p class="mt-1.5 text-base text-fg-2">{description}</p>
+  </div>
+  {
+    local && (
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-fill px-3 py-1.5 text-[13px] text-fg-2">
+        <Icon name="lock" size={14} />
+        {t('Файл браузерден шықпайды')}
+      </span>
+    )
+  }
+</div>

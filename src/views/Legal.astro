@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/common/PageHeader.astro';
 import { type Lang, localePath, useT } from '../i18n';
 import { SITE } from '../lib/site';
 
@@ -25,32 +24,55 @@ const content = {
     title: 'Құпия саясаты',
     sections: [
       ['Қандай дерек жинаймыз', 'Сайт тіркелуді қажет етпейді және жеке деректеріңізді жинамайды.'],
-      ['Браузердегі деректер', 'Таңдаулылар, жүктеу тарихы, каталогтар, тақырып пен тіл параметрлері тек сіздің браузеріңізде (localStorage) сақталады және серверге жіберілмейді. Оларды браузер деректерін тазалау арқылы өшіре аласыз.'],
+      ['Браузердегі деректер', 'Таңдаулылар, жүктеу тарихы, жинақтар, тақырып пен тіл параметрлері тек сіздің браузеріңізде (localStorage) сақталады және серверге жіберілмейді. Оларды браузер деректерін тазалау арқылы өшіре аласыз.'],
       ['Жүктеу саны', 'Қаріпті жүктегенде серверге тек қаріптің атауы жіберіледі — сайттағы жүктеу санын есептеу үшін. Сіз туралы ешқандай дерек сақталмайды.'],
       ['Құралдар', 'Тестер, конвертер, Font Freezer сияқты құралдарға жүктеген файлдар сіздің құрылғыңызда өңделеді және ешқайда жіберілмейді.'],
-      ['Үшінші тарап', 'Сайт Google Fonts қызметінен интерфейс қаріптерін жүктейді. Хостинг провайдері (Netlify) стандартты сервер журналдарын жүргізуі мүмкін.'],
+      ['Үшінші тарап', 'Интерфейс қаріптері де сайттың өз серверінен жүктеледі, сыртқы қаріп сервистері қолданылмайды. Хостинг провайдері (Netlify) стандартты сервер журналдарын жүргізуі мүмкін.'],
       ['Байланыс', 'Сұрақтар бойынша бізге жазыңыз: {email}'],
     ],
   },
 }[page];
+const nav = [
+  ['/licenses', 'Лицензия түрлері'],
+  ['/privacy', 'Құпия саясаты'],
+  ['/terms', 'Қолдану шарты'],
+] as const;
 ---
 
 <Base lang={lang} title={t(content.title)}>
-  <div class="mx-auto max-w-3xl">
-    <PageHeader eyebrow={t('Заңды ақпарат')} title={t(content.title)} />
-    <div class="space-y-8">
+  <div class="mx-auto flex max-w-[1080px] flex-wrap items-start gap-x-16 gap-y-6">
+    <nav aria-label={t('Заңды ақпарат')} class="no-scrollbar flex w-full gap-1 overflow-x-auto sm:w-auto sm:flex-[0_0_200px] sm:flex-col sm:gap-0">
+      <span class="label-caps mb-1.5 hidden sm:block">{t('Заңды ақпарат')}</span>
       {
-        content.sections.map(([title, text]) => (
-          <section>
-            <h2 class="text-xl font-semibold">{t(title)}</h2>
-            <p class="mt-2 text-muted">{t(text, { email: SITE.email, host: SITE.host })}</p>
+        nav.map(([href, label]) => {
+          const current = href === `/${page}`;
+          return (
+            <a
+              href={localePath(lang, href)}
+              aria-current={current ? 'page' : undefined}
+              class:list={['max-sm:pill py-2 text-sm whitespace-nowrap transition-colors hover:text-fg', current ? 'font-semibold text-fg' : 'text-fg-3']}
+            >
+              {t(label)}
+            </a>
+          );
+        })
+      }
+    </nav>
+    <article class="max-w-[680px] min-w-0 flex-[999_1_520px]">
+      <h1 class="title-lg mb-6">{t(content.title)}</h1>
+      {
+        content.sections.map(([title, text], i) => (
+          <section class="border-t border-line py-6">
+            <h2 class="mb-2.5 text-lg font-[650] tracking-[-0.01em]">
+              {i + 1}. {t(title)}
+            </h2>
+            <p class="text-[15px] leading-[1.7] text-fg-2">{t(text, { email: SITE.email, host: SITE.host })}</p>
           </section>
         ))
       }
-    </div>
-    <p class="mt-12 text-sm text-muted">
-      <a class="link" href={localePath(lang, page === 'terms' ? '/privacy' : '/terms')}>{t(page === 'terms' ? 'Құпия саясаты' : 'Қолдану шарты')}</a> ·
-      <a class="link" href={localePath(lang, '/licenses')}>{t('Лицензия түрлері')}</a>
-    </p>
+      <p class="mt-2 text-sm text-fg-3">
+        {t('Сұрақтарыңыз болса:')} <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </p>
+    </article>
   </div>
 </Base>

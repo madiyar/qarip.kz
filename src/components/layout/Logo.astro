@@ -1,0 +1,18 @@
+---
+/** Qarip mark (crescent and star, in the accent colour) with the "qarip" wordmark. */
+interface Props {
+  href: string;
+  label: string;
+  size?: number;
+  class?: string;
+}
+const { href, label, size = 28, class: className } = Astro.props;
+---
+
+<a href={href} aria-label={label} class:list={['flex shrink-0 items-center gap-[7px] text-[18px] font-[650] tracking-[-0.02em] text-fg', className]}>
+  <svg width={size} height={size} viewBox="120 125 425 415" aria-hidden="true" class="fill-accent">
+    <path d="M504.9 332.6A185 185 0 1 0 374.3 502A140 140 0 1 1 504.9 332.6Z"></path>
+    <path d="M430 321Q441 412 531 423Q441 434 430 525Q419 434 329 423Q419 412 430 321Z"></path>
+  </svg>
+  qarip
+</a>

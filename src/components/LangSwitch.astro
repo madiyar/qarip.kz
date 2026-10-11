@@ -4,11 +4,13 @@ import { type Lang, LANGS, LANG_LABEL, LOCALE_TAG, switchLocale } from '../i18n'
 interface Props {
   lang: Lang;
   class?: string;
+  /** Stretch the buttons to the full width (mobile sheet). */
+  wide?: boolean;
 }
-const { lang, class: className } = Astro.props;
+const { lang, class: className, wide = false } = Astro.props;
 ---
 
-<div class:list={['segmented', className]} role="group" aria-label="Language">
+<div class:list={['segmented', wide && 'flex w-full', className]} role="group" aria-label="Language">
   {
     LANGS.map((l) => (
       <a
@@ -16,8 +18,8 @@ const { lang, class: className } = Astro.props;
         hreflang={LOCALE_TAG[l]}
         lang={LOCALE_TAG[l]}
         title={LANG_LABEL[l]}
-        aria-current={lang === l ? 'true' : undefined}
-        class:list={['rounded-lg px-2 py-1 text-xs font-semibold', lang === l ? 'bg-bg text-fg' : 'text-muted hover:text-fg']}
+        aria-current={lang === l ? 'page' : undefined}
+        class:list={['text-xs font-semibold', wide ? '!h-10 flex-1' : '!h-7 !px-2']}
       >
         {l.toUpperCase()}
       </a>

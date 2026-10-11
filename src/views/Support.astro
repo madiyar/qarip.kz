@@ -1,9 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/common/PageHeader.astro';
 import ShareButton from '../components/common/ShareButton';
 import CopyButton from '../components/ui/CopyButton';
-import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
 import { SITE } from '../lib/site';
 import donatorsData from '../data/donators.json';
@@ -13,87 +11,96 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const siteUrl = SITE.url;
+const card = SITE.donation.card;
 // src/data/donators.json: { "items": [{ "name": "…", "amount": 10000, "message": "…" }] }
-const donators = (donatorsData.items as { name: string; amount?: number; message?: string }[]).sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)).slice(0, 10);
-const medal = ['bg-yellow-400 text-yellow-900', 'bg-neutral-300 text-neutral-700', 'bg-amber-600 text-white'];
+const donators = (donatorsData.items as { name: string; amount?: number; message?: string }[]).sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)).slice(0, 12);
+const tile = 'hover-name flex flex-col gap-1.5 rounded-[18px] bg-elev px-5 py-[18px] text-left transition-colors hover:bg-hover';
 ---
 
 <Base lang={lang} title={t('Жобаны қолдау')} description={t('Qarip — тегін қазақ қаріп қоры. Жобаны дамыту үшін сіздің қолдауыңыз өте маңызды.')}>
-  <PageHeader eyebrow={t('Қолдау')} title={t('Жобаны қолдап кетіңіз')} description={t('Qarip — тегін қазақ қаріп қоры. Жобаны дамыту үшін сіздің қолдауыңыз өте маңызды. Мүмкіндіктеріңізше өз үлесіңізді қосыңыз.')} />
-  <div class="grid gap-4 md:grid-cols-2">
-    <section class="card p-6">
-      <span class="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name="share" /></span>
-      <h2 class="mt-4 text-xl font-bold">{t('Тарату')}</h2>
-      <p class="mt-1 text-sm text-muted">{t('Сілтемені достарыңызбен бөлісіңіз')}</p>
-      <div class="mt-5 flex flex-wrap items-center gap-2">
-        <code class="input flex items-center font-mono sm:w-auto">{siteUrl}</code>
-        <ShareButton client:idle url={siteUrl} title="Qarip" label={t('Бөлісу')} copied={t('Көшірілді')} />
+  <div class="mx-auto max-w-[1100px]">
+    <div class="flex flex-wrap items-start gap-12">
+      <div class="min-w-0 flex-[1_1_420px]">
+        <p class="eyebrow mb-3">{t('Қолдау')}</p>
+        <h1 class="text-[clamp(34px,4.6vw,52px)] leading-[1.05] font-[650] tracking-[-0.04em]">{t('Жобаны қолдап кетіңіз')}</h1>
+        <p class="mt-4 max-w-[540px] text-lg leading-normal text-fg-2">{t('Qarip — тегін және жарнамасыз. Жоба сіздің қолдауыңызбен дамиды: жаңа қаріптерге қазақ әріптерін қосамыз, құралдар жасаймыз.')}</p>
       </div>
-    </section>
-    <section class="card p-6">
-      <span class="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name="heart" /></span>
-      <h2 class="mt-4 text-xl font-bold">{t('Жазылу & Лайк')}</h2>
-      <p class="mt-1 text-sm text-muted">{t('Әлеуметтік желіде қолдаңыз')}</p>
-      <div class="mt-5 grid gap-2 sm:grid-cols-2">
-        <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class="rounded-xl border border-line p-4 hover:bg-surface-2">
-          <span class="flex items-center gap-2 font-semibold"><Icon name="send" size={16} />Telegram</span>
-          <span class="mt-1 block text-xs text-muted">{t('Жаңалықтарды бірінші болып алыңыз')}</span>
-        </a>
-        <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" class="rounded-xl border border-line p-4 hover:bg-surface-2">
-          <span class="flex items-center gap-2 font-semibold"><Icon name="instagram" size={16} />Instagram</span>
-          <span class="mt-1 block text-xs text-muted">{t('Жобаның артқы сахнасы')}</span>
-        </a>
-      </div>
-    </section>
-    {
-      SITE.donation.card && (
-        <section class="card p-6">
-          <span class="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name="gift" /></span>
-          <h2 class="mt-4 text-xl font-bold">{t('Донат')}</h2>
-          <p class="mt-1 text-sm text-muted">{t('Картаға аудару арқылы қолдаңыз')}</p>
-          <div class="mt-5 rounded-2xl bg-gradient-to-br from-accent to-indigo-700 p-5 text-white">
-            <p class="text-sm text-white/70">{SITE.donation.bank}</p>
-            <p class="mt-3 font-mono text-xl tracking-widest">{SITE.donation.card}</p>
-            <p class="mt-2 text-sm text-white/80">{SITE.donation.holder}</p>
+      {
+        card && (
+          <div id="donate" class="card card-own sticky top-[calc(var(--header-h)+2rem)] flex w-full flex-col gap-4 !rounded-3xl p-6 max-sm:static sm:max-w-[420px] sm:flex-[1_1_340px]">
+            <b class="text-lg font-[650]">{t('Картаға аудару')}</b>
+            <div class="note p-[18px]">
+              <span class="meta block">{SITE.donation.bank} · {t('Карта нөмірі')}</span>
+              <span class="mt-1 mb-2.5 block font-mono text-[22px] font-medium tracking-[0.02em] tabular-nums">{card}</span>
+              {SITE.donation.holder && (
+                <>
+                  <span class="meta block">{t('Алушы')}</span>
+                  <span class="mt-0.5 block font-semibold">{SITE.donation.holder}</span>
+                </>
+              )}
+            </div>
+            <CopyButton client:idle text={card.replace(/\s/g, '')} label={t('Карта нөмірін көшіру')} done={t('Көшірілді')} className="btn-primary btn-lg rounded-[14px]!" />
+            <p class="meta leading-normal">{t('Аударымға пікір жазсаңыз, есіміңізді қолдаушылар тізіміне қосамыз. Сома маңызды емес — кез келген көмек құнды.')}</p>
           </div>
-          <div class="mt-3">
-            <CopyButton client:idle text={SITE.donation.card.replace(/\s/g, '')} label={t('Карта нөмірін көшіру')} done={t('Көшірілді')} />
-          </div>
-        </section>
-      )
-    }
+        )
+      }
+    </div>
+
     {
       donators.length > 0 && (
-        <section class="card p-6">
-          <span class="flex size-10 items-center justify-center rounded-xl bg-yellow-400/15 text-yellow-500"><Icon name="trophy" /></span>
-          <h2 class="mt-4 text-xl font-bold">{t('Топ донаторлар')}</h2>
-          <p class="mt-1 text-sm text-muted">{t('Жобаны ең көп қолдағандар')}</p>
-          <ol class="mt-5 space-y-2">
-            {donators.map((d, i) => (
-              <li class="flex items-start gap-3 rounded-xl bg-bg p-3">
-                <span class:list={['flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold', medal[i] ?? 'bg-surface-2 text-muted']}>{i + 1}</span>
-                <div class="min-w-0 flex-1">
-                  <div class="flex items-baseline justify-between gap-2">
-                    <p class="truncate text-sm font-semibold">{d.name}</p>
-                    <p class="text-sm font-semibold whitespace-nowrap text-emerald-500">{(d.amount ?? 0).toLocaleString('ru-RU')} ₸</p>
-                  </div>
-                  {d.message && <p class="mt-1 text-xs break-words whitespace-pre-wrap text-muted">{d.message}</p>}
+        <section class="mt-16">
+          <h2 class="title-md mb-1.5">{t('Қолдаушылар')}</h2>
+          <p class="sub mb-4">{t('Рақмет — Qarip сіздердің арқаңызда өмір сүріп тұр.')}</p>
+          <div class="grid gap-3 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
+            {donators.map((d) => (
+              <figure class="flex flex-col gap-1.5 rounded-[18px] bg-elev px-5 py-[18px]">
+                <div class="flex justify-between gap-2.5">
+                  <b class="font-semibold">{d.name}</b>
+                  {d.amount ? <span class="font-semibold text-accent-ink tabular-nums">{d.amount.toLocaleString('ru-RU')} ₸</span> : null}
                 </div>
-              </li>
+                {d.message && <blockquote class="text-[15px] break-words whitespace-pre-wrap text-fg-2">«{d.message}»</blockquote>}
+              </figure>
             ))}
-          </ol>
+            {card && (
+              <a href="#donate" class="flex flex-col justify-center gap-1 rounded-[18px] px-5 py-[18px] shadow-[inset_0_0_0_1px_var(--line-2)] transition-colors hover:bg-fill">
+                <b class="font-semibold">{t('Сіздің есіміңіз осында болады')}</b>
+                <span class="text-sm text-fg-3">{t('Аударымға пікір қалдырыңыз')}</span>
+              </a>
+            )}
+          </div>
         </section>
       )
     }
-    <section class="card p-6">
-      <span class="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name="type" /></span>
-      <h2 class="mt-4 text-xl font-bold">{t('Қаріп ұсыну')}</h2>
-      <p class="mt-1 text-sm text-muted">{t('Қазақ әріптері бар қаріп жасадыңыз ба? Бізге жіберіңіз — қорға қосамыз.')}</p>
-      <a href={`mailto:${SITE.email}?subject=${encodeURIComponent('Qarip: жаңа қаріп')}`} class="btn-secondary mt-5"><Icon name="mail" size={16} />{t('Жіберу')}</a>
+
+    <section class="mt-16">
+      <h2 class="title-md mb-4">{card ? t('Ақшасыз да көмектесуге болады') : t('Қалай көмектесуге болады')}</h2>
+      <div class="grid gap-3 sm:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
+        <ShareButton
+          client:idle
+          url={SITE.url}
+          title="Qarip"
+          label={t('Сілтемемен бөлісу')}
+          copied={t('Сілтеме көшірілді')}
+          hint={t('Достарыңызбен бөлісіңіз — бұл ең үлкен көмек.')}
+          className={tile}
+        />
+        <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class={tile}>
+          <b class="font-name">Telegram</b>
+          <span class="text-sm text-fg-3">{t('Жаңа қаріптер мен мақалалар алдымен осында шығады.')}</span>
+        </a>
+        <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" class={tile}>
+          <b class="font-name">Instagram</b>
+          <span class="text-sm text-fg-3">{t('Жобаның ішкі жағы мен жаңа қаріптер.')}</span>
+        </a>
+        <a href={`mailto:${SITE.email}?subject=${encodeURIComponent('Qarip: жаңа қаріп')}`} class={tile}>
+          <b class="font-name">{t('Қаріп ұсыну')}</b>
+          <span class="text-sm text-fg-3">{t('Қазақ әріптері бар қаріп жасадыңыз ба? Бізге жіберіңіз — қорға қосамыз.')}</span>
+        </a>
+      </div>
     </section>
+
+    <p class="sub mt-12">
+      {t('Қаріпке тапсырыс бергіңіз келе ме?')} <a class="link" href={localePath(lang, '/services')}>{t('Қызметтер')}</a>
+    </p>
   </div>
-  <p class="mt-10 text-center text-sm text-muted">
-    {t('Қаріпке тапсырыс бергіңіз келе ме?')} <a class="link" href={localePath(lang, '/services')}>{t('Қызметтер')}</a>
-  </p>
 </Base>

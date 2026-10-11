@@ -1,32 +1,44 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import { type Lang, formatDate, localePath } from '../../i18n';
+/**
+ * Journal article preview.
+ * "featured": wide card with a large cover (first article on /journal).
+ * "card": cover on top, text below (grid).
+ */
+import { type Lang, formatDate, localePath, useT } from '../../i18n';
+import { type Post, postGlyph, readingMinutes } from '../../lib/journal';
 
 interface Props {
-  post: CollectionEntry<'journal'>;
+  post: Post;
   lang: Lang;
+  variant?: 'featured' | 'card';
 }
-const { post, lang } = Astro.props;
+const { post, lang, variant = 'card' } = Astro.props;
+const t = useT(lang);
+const href = localePath(lang, `/journal/${post.id}`);
+const meta = [post.data.author, formatDate(lang, post.data.pubDate), t('{n} мин оқу', { n: readingMinutes(post) })].filter(Boolean).join(' · ');
+const search = `${post.data.title} ${post.data.excerpt ?? ''} ${post.data.author ?? ''}`.toLowerCase();
 ---
 
-<article class="card group relative overflow-hidden transition-colors hover:border-muted" data-search={`${post.data.title} ${post.data.excerpt ?? ''} ${post.data.author ?? ''}`.toLowerCase()}>
-  <div class="aspect-[16/9] overflow-hidden bg-surface-2">
-    {
-      post.data.cover ? (
-        <img src={post.data.cover} alt="" loading="lazy" decoding="async" class="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-      ) : (
-        <div class="flex size-full items-center justify-center text-5xl font-bold text-muted/40">Aa</div>
-      )
-    }
-  </div>
-  <div class="p-5">
-    <h3 class="font-bold">
-      <a href={localePath(lang, `/journal/${post.id}`)} class="after:absolute after:inset-0">{post.data.title}</a>
-    </h3>
-    {post.data.excerpt && <p class="mt-1 line-clamp-2 text-sm text-muted">{post.data.excerpt}</p>}
-    <p class="mt-3 text-xs text-muted">
-      {post.data.author && <span>{post.data.author} · </span>}
-      <time datetime={post.data.pubDate.toISOString()}>{formatDate(lang, post.data.pubDate)}</time>
-    </p>
-  </div>
-</article>
+{
+  variant === 'featured' ? (
+    <a href={href} class="panel hover-name flex flex-wrap overflow-hidden !rounded-3xl transition-shadow hover:shadow-2" data-search={search}>
+      <span class="flex min-h-[200px] flex-[1_1_420px] items-center justify-center overflow-hidden bg-fill font-serif text-[120px] leading-none text-fg sm:min-h-[300px]">
+        {post.data.cover ? <img src={post.data.cover} alt="" class="size-full object-cover" /> : postGlyph(post)}
+      </span>
+      <span class="flex flex-[1_1_360px] flex-col justify-center gap-3 p-6 sm:p-8">
+        <b class="font-name text-[26px] leading-[1.15] font-[650] tracking-[-0.02em] whitespace-normal sm:text-[30px]">{post.data.title}</b>
+        {post.data.excerpt && <span class="text-base text-fg-2">{post.data.excerpt}</span>}
+        <span class="text-sm text-fg-3">{meta}</span>
+      </span>
+    </a>
+  ) : (
+    <a href={href} class="hover-name flex flex-col gap-2.5" data-search={search}>
+      <span class="panel flex aspect-[16/10] items-center justify-center overflow-hidden font-serif text-[64px] text-fg">
+        {post.data.cover ? <img src={post.data.cover} alt="" loading="lazy" decoding="async" class="size-full object-cover" /> : postGlyph(post)}
+      </span>
+      <span class="meta">{meta}</span>
+      <b class="font-name text-[19px] leading-[1.3] whitespace-normal">{post.data.title}</b>
+      {post.data.excerpt && <span class="line-clamp-2 text-[15px] text-fg-2">{post.data.excerpt}</span>}
+    </a>
+  )
+}

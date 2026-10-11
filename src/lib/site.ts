@@ -21,57 +21,43 @@ export const SITE = {
   keyboardZip: '',
 };
 
+/** Top navigation (desktop). Tools are a separate drop-down. */
 export const NAV = [
-  { href: '/fonts', label: 'Қаріптер' },
-  { href: '/services', label: 'Қызметтер' },
   { href: '/journal', label: 'Journal' },
+  { href: '/services', label: 'Қызметтер' },
+];
+
+/** Pages behind "More" in the mobile tab bar. */
+export const MORE_NAV = [
+  { href: '/journal', label: 'Journal' },
+  { href: '/glossary', label: 'Сөздік' },
+  { href: '/typography', label: 'Типография' },
+  { href: '/services', label: 'Қызметтер' },
+  { href: '/licenses', label: 'Лицензия түрлері' },
+  { href: '/faq', label: 'Жиі сұрақтар' },
   { href: '/about', label: 'Біз туралы' },
 ];
 
+/**
+ * Tools. `glyph` is drawn in `glyphFont` on the tool's tile (header menu, tools page);
+ * `group` sorts them on the tools page.
+ */
 export const TOOLS = [
-  { href: '/tools/tester', label: 'Тестер', title: 'Қаріп тестері', description: 'Өз қаріп файлыңызды браузерде тексеріңіз', icon: 'type' },
-  { href: '/tools/converter', label: 'Конвертер', title: 'Веб-қаріп конвертері', description: 'TTF, OTF, WOFF, WOFF2 арасында конвертациялау', icon: 'repeat' },
-  { href: '/tools/pairing', label: 'Үйлесім', title: 'Қаріп үйлесімі', description: 'Тақырып пен мәтінге қаріп жұбын табыңыз', icon: 'layers' },
-  { href: '/tools/proofing', label: 'Баспа тексту', title: 'Баспа тексту', description: 'Сарқырама, алфавит, кернинг — басып шығаруға дайын', icon: 'printer' },
-  { href: '/tools/freezer', label: 'Font Freezer', title: 'Font Freezer', description: 'OpenType мүмкіндіктерін қаріпке бекіту', icon: 'snowflake' },
-  { href: '/tools/kerning', label: 'Кернинг жұптары', title: 'Кернинг жұптары генераторы', description: 'Кернинг тексеруге арналған таңба комбинациялары', icon: 'kerning' },
-  { href: '/keyboard', label: 'Пернетақта', title: 'Қазақ пернетақтасы', description: 'Раскладка және виртуалды пернетақта', icon: 'keyboard' },
-  { href: '/tools/unicode', label: 'Юникодтар', title: 'Типографиялық юникодтар', description: 'Тире, пробел, тырнақша және басқа таңбаларды көшіру', icon: 'hash' },
+  { href: '/tools/tester', label: 'Тестер', title: 'Қаріп тестері', description: 'Файлдағы қазақ әріптерін тексеру', long: 'Файлды тастаңыз: қазақ әріптері, глифтер, OpenType, вариативті осьтер.', glyph: 'Әа', glyphFont: 'serif', group: 'check' },
+  { href: '/tools/proofing', label: 'Баспа тексті', title: 'Баспа тексті', description: 'Сарқырама, тақырып, мәтін', long: 'Сарқырама, тақырыптар, мәтін, алфавит, кернинг — басып шығаруға дайын.', glyph: '¶', glyphFont: 'serif', group: 'check' },
+  { href: '/tools/kerning', label: 'Кернинг жұптары', title: 'Кернинг жұптары', description: 'Жұптар мен үштіктер генераторы', long: 'Кернинг тексеруге арналған жұптар мен үштіктер, қазақ әріптерімен.', glyph: 'ҚА', glyphFont: 'sans', group: 'check' },
+  { href: '/tools/converter', label: 'Конвертер', title: 'Веб-қаріп конвертері', description: 'TTF, OTF, WOFF, WOFF2', long: 'TTF, OTF, WOFF, WOFF2 арасында бірнеше файлды бірден түрлендіру.', glyph: '⇄', glyphFont: 'sans', group: 'convert' },
+  { href: '/tools/freezer', label: 'Font Freezer', title: 'Font Freezer', description: 'OpenType мүмкіндіктерін бекіту', long: 'OpenType мүмкіндіктерін (ss01, tnum…) қаріпке тұрақты бекіту.', glyph: 'ss01', glyphFont: 'mono', group: 'convert' },
+  { href: '/tools/pairing', label: 'Үйлесім', title: 'Қаріп үйлесімі', description: 'Тақырып пен мәтінге жұп', long: 'Тақырып пен мәтінге жарасатын қаріп жұбын табыңыз.', glyph: 'Aa', glyphFont: 'serif', group: 'choose' },
+  { href: '/keyboard', label: 'Пернетақта', title: 'Қазақ пернетақтасы', description: 'Қазақ раскладкасы', long: 'Виртуалды пернетақта және раскладканы орнату нұсқаулығы.', glyph: 'Ә', glyphFont: 'sans', group: 'choose' },
+  { href: '/tools/unicode', label: 'Юникодтар', title: 'Типографиялық юникодтар', description: 'Тире, тырнақша, ₸', long: 'Тире, тырнақша, бос орын түрлері, ₸ — бір басумен көшіру.', glyph: '«»', glyphFont: 'serif', group: 'choose' },
 ] as const;
 
-const CATEGORY_LINKS = ['Sans', 'Serif', 'Display', 'Slab', 'Handwritten', 'Monospace'];
-
-/** Navigation tree for the mobile drawer and the desktop sidebar mode. */
-export const SIDE_NAV: { label: string; href?: string; icon: string; children?: { label: string; href: string; raw?: boolean }[] }[] = [
-  { label: 'Жеке кабинет', href: '/profile', icon: 'user' },
-  {
-    label: 'Қаріптер',
-    icon: 'type',
-    children: [
-      { label: 'Барлығы', href: '/fonts' },
-      { label: 'Біздің қаріп', href: '/fonts?our=1' },
-      { label: 'Топ қаріптер', href: '/top' },
-      ...CATEGORY_LINKS.map((c) => ({ label: c, href: `/fonts/category/${c.toLowerCase()}`, raw: true })),
-    ],
-  },
-  {
-    label: 'Қызметтер',
-    icon: 'wrench',
-    children: [{ label: 'Қызмет', href: '/services' }, ...TOOLS.map((x) => ({ label: x.label as string, href: x.href as string }))],
-  },
-  { label: 'Journal', href: '/journal', icon: 'book' },
-  { label: 'Сөздік', href: '/glossary', icon: 'search' },
-  {
-    label: 'Заңды',
-    icon: 'shield',
-    children: [
-      { label: 'Лицензия түрлері', href: '/licenses' },
-      { label: 'Құпия саясаты', href: '/privacy' },
-      { label: 'Қолдану шарты', href: '/terms' },
-    ],
-  },
-  { label: 'Біз туралы', href: '/about', icon: 'info' },
-];
+export const TOOL_GROUPS = [
+  { id: 'check', title: 'Тексеру' },
+  { id: 'convert', title: 'Түрлендіру' },
+  { id: 'choose', title: 'Таңдау және жазу' },
+] as const;
 
 export const PANGRAMS = [
   { label: 'Қазақша панграмма 1', text: 'Бұл гүлді қызға һәм ұлға бер, ал көрші Францияны Пырансы де, ой туғанда хатыңды жаз.' },

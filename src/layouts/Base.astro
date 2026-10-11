@@ -1,7 +1,9 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import MobileNav from '../components/MobileNav.astro';
 import Footer from '../components/Footer.astro';
+import SearchDialog from '../components/search/SearchDialog';
 import { type Lang, LANGS, LOCALE_TAG, switchLocale, useT, withSlash } from '../i18n';
 import { HOME } from '../lib/seo';
 import { SITE } from '../lib/site';
@@ -18,6 +20,7 @@ interface Props {
   noindex?: boolean;
   /** Inline CSS (e.g. @font-face rules for previews). */
   fontCss?: string;
+  /** The page lays out its own width (no default .wrap container). */
   wide?: boolean;
 }
 
@@ -60,10 +63,8 @@ const ogImage = new URL(image ?? '/og.png', Astro.site);
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={desc} />
     <meta name="twitter:image" content={ogImage} />
-    <meta name="theme-color" content="#0a0a0a" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
     <script is:inline>
       (() => {
         let theme = 'dark';
@@ -71,27 +72,25 @@ const ogImage = new URL(image ?? '/og.png', Astro.site);
           theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
         } catch {}
         document.documentElement.dataset.theme = theme;
-        try {
-          document.documentElement.dataset.nav = localStorage.getItem('nav') || 'top';
-          document.documentElement.dataset.side = localStorage.getItem('side') || 'open';
-        } catch {}
       })();
     </script>
     {fontCss && <style is:inline set:html={fontCss} />}
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-fg">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent">
       {t('Мазмұнға өту')}
     </a>
     <Header lang={lang} />
-    <main id="main" class:list={['flex-1', !wide && 'container-page py-10 sm:py-14']}>
+    <main id="main" class:list={['flex-1', !wide && 'wrap pt-7 sm:pt-11']}>
       <slot />
     </main>
     <Footer lang={lang} />
+    <MobileNav lang={lang} />
+    <SearchDialog client:idle lang={lang} />
     <button
       id="to-top"
-      class="no-print icon-btn fixed right-4 bottom-4 z-40 hidden border border-line bg-surface shadow-lg"
+      class="no-print icon-btn fixed right-4 bottom-[calc(var(--tabbar-h)+1rem)] z-40 hidden rounded-full bg-elev text-fg shadow-2"
       aria-label={t('Жоғарыға')}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>

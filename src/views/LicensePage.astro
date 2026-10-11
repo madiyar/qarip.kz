@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
 import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
 
@@ -11,33 +12,51 @@ interface Props {
 const { lang, license } = Astro.props;
 const t = useT(lang);
 const { Content } = await render(license);
-const prices = license.data.prices;
+const d = license.data;
+const rows = [
+  ['Коммерциялық қолдану', d.commercial, 'Рұқсат етілген', 'Тыйым салынған'],
+  ['Өзгерту', d.modification, 'Рұқсат етілген', 'Тыйым салынған'],
+  ['Тарату', d.distribution, 'Рұқсат етілген', 'Тыйым салынған'],
+] as const;
 ---
 
-<Base lang={lang} title={license.data.name} description={license.data.description}>
-  <div class="mx-auto max-w-4xl">
-    <a href={localePath(lang, '/licenses')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
-      <Icon name="arrowLeft" size={16} />
-      {t('Лицензиялар')}
-    </a>
-    <h1 class="page-title">{license.data.name}</h1>
-    <p class="mt-4 text-lg text-muted">{license.data.description}</p>
+<Base lang={lang} title={d.name} description={d.description}>
+  <div class="mx-auto max-w-[880px]">
+    <Breadcrumbs class="mb-6" label={t('Жол')} items={[{ label: t('Лицензиялар'), href: localePath(lang, '/licenses') }, { label: d.name }]} />
+    <h1 class="text-[32px] leading-[1.1] font-[650] tracking-[-0.035em] break-words sm:text-[40px]">{d.name}</h1>
+    <p class="lead mt-2 max-w-[680px] whitespace-pre-line">{d.description}</p>
+
+    <dl class="rows mt-6 max-w-[720px]">
+      {
+        rows.map(([what, ok, yes, no]) => (
+          <div class="flex justify-between gap-4 py-3.5 text-[15px]">
+            <dt>{t(what)}</dt>
+            <dd class:list={['font-medium whitespace-nowrap', ok ? 'text-ok' : 'text-fg-3']}>{t(ok ? yes : no)}</dd>
+          </div>
+        ))
+      }
+      <div class="flex justify-between gap-4 py-3.5 text-[15px]">
+        <dt>{t('Авторды көрсету')}</dt>
+        <dd class="font-medium whitespace-nowrap text-fg-2">{d.attribution ? t('Міндетті') : t('Міндетті емес')}</dd>
+      </div>
+    </dl>
+
     {
-      prices.length > 0 && (
-        <div class="mt-10 grid gap-4 md:grid-cols-3">
-          {prices.map((p) => (
-            <div class:list={['card flex flex-col p-6', p.highlight && 'border-accent ring-1 ring-accent']}>
+      d.prices.length > 0 && (
+        <div class="mt-10 grid gap-3.5 sm:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
+          {d.prices.map((p) => (
+            <div class:list={['panel flex flex-col p-6', p.highlight && 'card-own']}>
               <h2 class="font-semibold">{t(p.title)}</h2>
-              <p class="my-4 text-4xl font-extrabold">{p.price}</p>
-              <ul class="mb-6 flex-1 space-y-2 text-sm">
+              <p class="my-3.5 text-[34px] leading-none font-[650] tracking-[-0.02em]">{p.price}</p>
+              <ul class="mb-6 flex flex-1 flex-col gap-2 text-sm text-fg-2">
                 {p.features.map((f) => (
                   <li class="flex gap-2">
-                    <Icon name="check" size={16} className="mt-0.5 shrink-0 text-emerald-500" />
+                    <Icon name="check" size={16} strokeWidth={2.4} className="mt-0.5 shrink-0 text-ok" />
                     {t(f)}
                   </li>
                 ))}
               </ul>
-              <a href={localePath(lang, p.href)} class={p.highlight ? 'btn-primary' : 'btn-secondary'}>
+              <a href={localePath(lang, p.href)} class:list={[p.highlight ? 'btn-primary' : 'btn-secondary', 'btn-rect']}>
                 {t(p.cta)}
               </a>
             </div>
@@ -45,8 +64,23 @@ const prices = license.data.prices;
         </div>
       )
     }
-    <div class="prose mt-12 max-w-none dark:prose-invert prose-headings:tracking-tight prose-a:text-accent">
-      <Content />
-    </div>
+
+    {
+      license.body?.trim() && (
+        <div class="prose prose-q mt-12">
+          <Content />
+        </div>
+      )
+    }
+    {
+      d.url && (
+        <p class="sub mt-8">
+          {t('Ресми мәтін')}:{' '}
+          <a class="link break-all" href={d.url} target="_blank" rel="noopener noreferrer">
+            {d.url.replace(/^https?:\/\//, '')}
+          </a>
+        </p>
+      )
+    }
   </div>
 </Base>

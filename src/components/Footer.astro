@@ -1,6 +1,7 @@
 ---
 import { type Lang, localePath, useT } from '../i18n';
 import { SITE, TOOLS } from '../lib/site';
+import Logo from './layout/Logo.astro';
 import Icon from './ui/Icon';
 
 interface Props {
@@ -13,11 +14,12 @@ const columns = [
     title: 'Қаріптер',
     links: [
       { href: '/fonts', label: 'Барлық қаріп' },
-      { href: '/fonts?our=1', label: 'Біздің қаріп' },
-      { href: '/top', label: 'Топ қаріптер' },
+      { href: '/fonts?our=1', label: 'Qarip қаріптері' },
+      { href: '/top', label: 'Танымал' },
       { href: '/fonts?free=1', label: 'Тегін қаріптер' },
     ],
   },
+  { title: 'Құралдар', links: TOOLS.map((x) => ({ href: x.href, label: x.label })) },
   {
     title: 'Ақпарат',
     links: [
@@ -25,11 +27,10 @@ const columns = [
       { href: '/journal', label: 'Journal' },
       { href: '/glossary', label: 'Сөздік' },
       { href: '/typography', label: 'Типография' },
-      { href: '/faq', label: 'Жиі қойылатын сұрақтар' },
-      { href: '/support', label: 'Жобаны қолдау' },
+      { href: '/faq', label: 'Жиі сұрақтар' },
+      { href: '/services', label: 'Қызметтер' },
     ],
   },
-  { title: 'Құралдар', links: [{ href: '/services', label: 'Қызметтер' }, ...TOOLS.map((x) => ({ href: x.href, label: x.label }))] },
   {
     title: 'Заңды',
     links: [
@@ -41,35 +42,56 @@ const columns = [
 ];
 ---
 
-<footer class="mt-20 border-t border-line">
-  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
-    <div>
-      <a href={localePath(lang, '/')} class="text-lg font-extrabold tracking-tight">Qarip</a>
-      <p class="mt-3 max-w-xs text-sm text-muted">{t('Қазақ тілін қолдайтын тегін қаріптер жинағы.')}</p>
-      <div class="mt-5 flex gap-1">
-        <a href={SITE.telegram} class="icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><Icon name="send" /></a>
-        <a href={SITE.instagram} class="icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Icon name="instagram" /></a>
-        <a href={`mailto:${SITE.email}`} class="icon-btn" aria-label="Email"><Icon name="mail" /></a>
+<footer class="mt-24 border-t border-line text-sm text-fg-3">
+  <div class="wrap grid gap-3 pt-12 md:grid-cols-2">
+    <section class="flex flex-col gap-3.5 rounded-[20px] bg-accent-soft p-6 text-fg">
+      <div class="flex items-center gap-2.5 text-accent-ink">
+        <Icon name="tenge" size={20} />
+        <h2 class="text-[17px] font-[650] tracking-[-0.01em] text-fg">{t('Qarip тегін және жарнамасыз')}</h2>
       </div>
+      <p class="text-[15px] leading-relaxed text-fg-2">{t('Жоба тек сіздің қолдауыңызбен өмір сүреді. Әр көмек жаңа қаріпке қазақ әріптерін қосуға жұмсалады.')}</p>
+      <a href={localePath(lang, '/support')} class="btn-primary mt-0.5 self-start">
+        <Icon name="tenge" size={16} />
+        {t('Қолдау көрсету')}
+      </a>
+    </section>
+    <section class="flex flex-col gap-3.5 rounded-[20px] bg-fill p-6 text-fg">
+      <h2 class="text-[17px] font-[650] tracking-[-0.01em]">{t('Брендіңізге жеке қаріп керек пе?')}</h2>
+      <p class="text-[15px] leading-relaxed text-fg-2">{t('Бар қаріпке қазақ әріптерін қосамыз немесе нөлден жаңа қаріп жасаймыз.')}</p>
+      <div class="mt-auto flex flex-wrap gap-2">
+        <a href={localePath(lang, '/services')} class="btn bg-elev text-fg hover:bg-fill-2">{t('Қызметтер мен бағалар')}</a>
+        <a href={SITE.telegram} class="btn-ghost" target="_blank" rel="noopener noreferrer"><Icon name="send" size={17} />{t('Telegram-ға жазу')}</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap grid grid-cols-2 gap-x-4 gap-y-8 pt-12 pb-10 sm:grid-cols-[repeat(auto-fit,minmax(150px,1fr))] sm:gap-8">
+    <div class="col-span-2 flex flex-col gap-3 sm:col-span-1">
+      <Logo href={localePath(lang, '/')} label={t('Qarip — басты бет')} size={26} class="text-[17px]" />
+      <p class="max-w-60 leading-relaxed">{t('Қазақ қаріп қоры. Қазақ әріптерін толық қолдайтын тегін қаріптер.')}</p>
     </div>
     {
       columns.map((col) => (
-        <div>
-          <p class="mb-4 text-sm font-semibold">{t(col.title)}</p>
-          <ul class="space-y-2.5">
-            {col.links.map((link) => (
-              <li>
-                <a href={localePath(lang, link.href)} class="text-sm text-muted transition-colors hover:text-fg">
-                  {t(link.label)}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <div class="flex flex-col gap-2.5">
+          <h2 class="text-[13px] font-semibold text-fg">{t(col.title)}</h2>
+          {col.links.map((link) => (
+            <a href={localePath(lang, link.href)} class="transition-colors hover:text-fg">
+              {t(link.label)}
+            </a>
+          ))}
         </div>
       ))
     }
   </div>
-  <div class="container-page border-t border-line py-6 text-sm text-muted">
-    © {new Date().getFullYear()} Qarip. {t('Барлық құқы қорғалған')}
+
+  <div class="wrap pb-8">
+    <div class="flex flex-wrap justify-between gap-3 border-t border-line pt-5 text-[13px]">
+      <span>© {new Date().getFullYear()} Qarip. {t('Барлық құқы қорғалған')}</span>
+      <span class="flex flex-wrap gap-5">
+        <a href={SITE.telegram} target="_blank" rel="noopener noreferrer" class="hover:text-fg">Telegram</a>
+        <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" class="hover:text-fg">Instagram</a>
+        <a href={`mailto:${SITE.email}`} class="hover:text-fg">{SITE.email}</a>
+      </span>
+    </div>
   </div>
 </footer>

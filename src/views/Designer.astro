@@ -1,9 +1,10 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import DownloadCount from '../components/common/DownloadCount.astro';
 import FontBrowser from '../components/fonts/FontBrowser';
-import Icon from '../components/ui/Icon';
-import { type Lang, localePath, useT } from '../i18n';
+import { type Lang, formatDate, localePath, useT } from '../i18n';
 import { byDesigner, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
 
 interface Props {
@@ -12,45 +13,104 @@ interface Props {
 }
 const { lang, designer } = Astro.props;
 const t = useT(lang);
-const fonts = await toSummaries(byDesigner(await getFonts(), designer.id));
+const all = await getFonts();
+const mine = byDesigner(all, designer.id);
+const fonts = await toSummaries(mine, lang);
 const d = designer.data;
 // Kazakh is the default; the other languages fall back to it.
 const bio = { kk: d.bio, ru: d.bioRu || d.bio, en: d.bioEn || d.bio }[lang];
-const LINKS = { website: ['globe', 'Сайт'], telegram: ['send', 'Telegram'], instagram: ['instagram', 'Instagram'], behance: ['globe', 'Behance'], twitter: ['globe', 'X'], facebook: ['globe', 'Facebook'] } as const;
-const links = Object.entries(designer.data.links).filter(([, v]) => v) as [keyof typeof LINKS, string][];
+const LINKS = { website: 'Сайт', telegram: 'Telegram', instagram: 'Instagram', behance: 'Behance', twitter: 'X', facebook: 'Facebook' } as const;
+const links = Object.entries(d.links).filter(([, v]) => v) as [keyof typeof LINKS, string][];
+const styles = mine.reduce((n, f) => n + f.data.styles.length, 0);
+const downloads = mine.reduce((n, f) => n + f.data.downloads, 0);
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+// Articles signed with the designer's name.
+const posts = (await getCollection('journal', (p) => !p.data.draft && p.data.author?.trim().toLowerCase() === d.name.toLowerCase())).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const others = (await getCollection('designers'))
+  .filter((x) => x.id !== designer.id)
+  .map((x) => ({ id: x.id, name: x.data.name, count: byDesigner(all, x.id).length }))
+  .filter((x) => x.count > 0)
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 ---
 
-<Base lang={lang} title={designer.data.name} description={bio} fontCss={primaryFaces(fonts)}>
-  <a href={localePath(lang, '/fonts')} class="mb-8 inline-flex items-center gap-2 text-sm text-muted hover:text-fg">
-    <Icon name="arrowLeft" size={16} />
-    {t('Барлық қаріп')}
-  </a>
-  <header class="mb-12 flex flex-col gap-6 sm:flex-row sm:items-center">
+<Base lang={lang} title={d.name} description={bio} fontCss={primaryFaces(fonts)}>
+  <Breadcrumbs label={t('Жол')} items={[{ label: t('Қаріптер'), href: localePath(lang, '/fonts') }, { label: t('Дизайнерлер') }, { label: d.name }]} />
+
+  <header class="flex flex-wrap items-center gap-x-7 gap-y-5 pt-8 pb-10">
     {
-      designer.data.photo ? (
-        <img src={designer.data.photo} alt="" class="size-24 rounded-full object-cover" />
+      d.photo ? (
+        <img src={d.photo} alt="" class="size-[88px] shrink-0 rounded-full object-cover" />
       ) : (
-        <div class="flex size-24 items-center justify-center rounded-full bg-accent-soft text-3xl font-bold text-accent">{designer.data.name.slice(0, 1)}</div>
+        <span aria-hidden="true" class="inline-flex size-[88px] shrink-0 items-center justify-center rounded-full bg-accent-soft text-[28px] font-[650] text-accent-ink">
+          {initials(d.name)}
+        </span>
       )
     }
-    <div>
-      <p class="eyebrow mb-2">{t('Дизайнер')}</p>
-      <h1 class="page-title">{designer.data.name}</h1>
-      {bio && <p class="mt-3 max-w-2xl whitespace-pre-line text-muted">{bio}</p>}
-      {
-        links.length > 0 && (
-          <div class="mt-4 flex flex-wrap gap-2">
-            {links.map(([key, url]) => (
-              <a href={url} target="_blank" rel="noopener noreferrer" class="chip">
-                <Icon name={LINKS[key][0]} size={15} />
-                {LINKS[key][1]}
-              </a>
-            ))}
-          </div>
-        )
-      }
+    <div class="min-w-0 flex-[1_1_360px]">
+      <h1 class="title-lg">{d.name}</h1>
+      {bio && <p class="mt-2 max-w-[560px] text-[15px] leading-relaxed whitespace-pre-line text-fg-2">{bio}</p>}
+      <p class="mt-3 flex flex-wrap gap-x-[18px] gap-y-1.5 text-sm text-fg-3">
+        <span>
+          {t('{n} қаріп', { n: fonts.length })} · {t('{n} стиль', { n: styles })} ·{' '}
+          <DownloadCount slugs={fonts.map((f) => f.slug)} count={downloads} label={t('{n} жүктеу', { n: '{n}' })} />
+        </span>
+        {
+          links.map(([key, url]) => (
+            <a href={url} target="_blank" rel="noopener noreferrer" class="text-fg-2 transition-colors hover:text-accent-ink">
+              {LINKS[key] === 'Сайт' ? t('Сайт') : LINKS[key]}
+            </a>
+          ))
+        }
+      </p>
     </div>
   </header>
-  <h2 class="mb-6 text-2xl font-bold">{t('Қаріптері')} <span class="text-muted">({fonts.length})</span></h2>
-  <FontBrowser client:load fonts={fonts} lang={lang} prefKey="designer" />
+
+  <h2 class="title-md mb-3.5">
+    {t('Қаріптері')} <span class="font-medium text-fg-3">{fonts.length}</span>
+  </h2>
+  <FontBrowser client:load fonts={fonts} lang={lang} prefKey="designer" viewSwitch={false} view="grid" />
+
+  {
+    posts.length > 0 && (
+      <section class="section">
+        <h2 class="title-md mb-2">{t('Мақалалары')}</h2>
+        {posts.map((post) => (
+          <a href={localePath(lang, `/journal/${post.id}`)} class="hover-name flex max-w-[640px] flex-col gap-1 border-b border-line py-4">
+            <b class="font-name text-[17px] whitespace-normal">{post.data.title}</b>
+            <span class="text-sm text-fg-3">{[formatDate(lang, post.data.pubDate), post.data.excerpt].filter(Boolean).join(' · ')}</span>
+          </a>
+        ))}
+      </section>
+    )
+  }
+
+  {
+    others.length > 0 && (
+      <section class="section">
+        <h2 class="title-md mb-4">{t('Басқа дизайнерлер')}</h2>
+        <div class="grid gap-2 sm:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]">
+          {others.map((x) => (
+            <a href={localePath(lang, `/designers/${x.id}`)} class="hover-name row-link flex items-center gap-3 rounded-[14px] p-2.5">
+              <span aria-hidden="true" class="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-fill text-xs font-semibold text-fg-2">
+                {initials(x.name)}
+              </span>
+              <span class="min-w-0">
+                <b class="font-name text-sm">{x.name}</b>
+                <span class="meta">{t('{n} қаріп', { n: x.count })}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
 </Base>

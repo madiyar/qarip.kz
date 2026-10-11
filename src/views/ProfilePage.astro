@@ -10,11 +10,11 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const fonts = await toSummaries(await getFonts());
+const fonts = await toSummaries(await getFonts(), lang);
 ---
 
 <Base lang={lang} title={t('Менің қаріптерім')} fontCss={primaryFaces(fonts)}>
   <meta name="robots" content="noindex" slot="head" />
-  <PageHeader eyebrow={t('Жеке кабинет')} title={t('Менің қаріптерім')} description={t('Таңдаулылар, жүктеу тарихы және жеке каталогтар бір жерде')} />
+  <PageHeader title={t('Менің қаріптерім')} description={t('Таңдаулылар, жүктеу тарихы және жеке жинақтар. Тіркелу керек емес.')} class="!mb-6" />
   <Profile client:only="react" fonts={fonts} lang={lang} />
 </Base>

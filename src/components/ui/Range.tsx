@@ -27,3 +27,16 @@ export default function Range({ value, min, max, step = 1, onChange, label, clas
     />
   );
 }
+
+/** Slider with a label on the left and the current value on the right (tool settings). */
+export function RangeField({ label, display, ...props }: Props & { display?: string }) {
+  return (
+    <label className="flex min-w-0 flex-col gap-1.5">
+      <span className="flex justify-between gap-3 text-[13px] text-fg-3">
+        <span className="truncate">{label}</span>
+        <span className="font-medium text-fg-2 tabular-nums">{display ?? props.value}</span>
+      </span>
+      <Range {...props} label={label} className={`w-full ${props.className ?? ''}`} />
+    </label>
+  );
+}

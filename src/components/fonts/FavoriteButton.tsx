@@ -1,12 +1,27 @@
 import Icon from '../ui/Icon';
-import { store, useStore } from '../../lib/store';
+import { store } from '../../lib/store';
+import { useStore } from '../../lib/useStore';
 import { type Lang, useT } from '../../i18n';
 
-export default function FavoriteButton({ slug, lang, large = false }: { slug: string; lang: Lang; large?: boolean }) {
+interface Props {
+  slug: string;
+  lang: Lang;
+  /** Font name for the screen-reader label. */
+  name?: string;
+  /** "square": 46px filled button (font page actions); default: round icon button in cards and rows. */
+  variant?: 'round' | 'square';
+  className?: string;
+}
+
+export default function FavoriteButton({ slug, lang, name, variant = 'round', className = '' }: Props) {
   const t = useT(lang);
   const { favorites } = useStore();
   const active = favorites.includes(slug);
-  const label = active ? t('Таңдаулылардан алу') : t('Таңдаулыларға қосу');
+  const label = name ? (active ? t('{name} таңдаулыдан алу', { name }) : t('{name} таңдаулыға қосу', { name })) : active ? t('Таңдаулыдан алу') : t('Таңдаулыға қосу');
+  const look =
+    variant === 'square'
+      ? `size-[46px] rounded-xl bg-fill hover:bg-fill-2 ${active ? 'text-heart' : 'text-fg'}`
+      : `size-10 rounded-full hover:bg-fill ${active ? 'text-heart' : 'text-fg-3 hover:text-fg'}`;
   return (
     <button
       type="button"
@@ -17,13 +32,9 @@ export default function FavoriteButton({ slug, lang, large = false }: { slug: st
       aria-pressed={active}
       aria-label={label}
       title={label}
-      className={
-        large
-          ? `inline-flex size-11 items-center justify-center rounded-xl border border-line transition-colors hover:bg-surface-2 ${active ? 'text-rose-500' : ''}`
-          : `icon-btn ${active ? 'text-rose-500 hover:text-rose-500' : ''}`
-      }
+      className={`inline-flex shrink-0 items-center justify-center transition-colors ${look} ${className}`}
     >
-      <Icon name="heart" size={large ? 20 : 18} fill={active ? 'currentColor' : 'none'} />
+      <Icon name="heart" size={variant === 'square' ? 20 : 19} strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />
     </button>
   );
 }

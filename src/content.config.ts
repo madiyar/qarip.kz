@@ -24,29 +24,32 @@ const fonts = defineCollection({
   loader: fontLoader(),
   schema: z.object({
     name: z.string(),
-    designer: reference('designers'),
+    /** One or more designers (older entries had a single `designer`, the loader converts it). */
+    designers: z.array(reference('designers')).min(1),
     category: reference('categories'),
     tags: z.array(reference('tags')).default([]),
     purposes: z.array(reference('purposes')).default([]),
     license: reference('licenses'),
     our: z.boolean().default(false),
-    featured: z.boolean().default(false),
     description: z.string().optional(),
     descriptionEn: z.string().optional(),
     descriptionRu: z.string().optional(),
-    /** Editorial quality score, 1 (poor) – 10 (excellent). */
+    /** Editorial quality score, 1 (poor) – 10 (excellent); halves like 7.5 are allowed. */
     quality: z.number().min(1).max(10).optional(),
     previewText: z.string().optional(),
     purchaseUrl: z.string().optional(),
     releaseDate: z.string().optional(),
     updatedDate: z.string().optional(),
     addedDate: z.coerce.date(),
+    /** Real download count, fetched from the live site at build time (netlify/functions/downloads.mts). */
     downloads: z.number().default(0),
     primary: z.number().default(0),
     scripts: z.array(z.string()).default([]),
     zip: z.string(),
     zipName: z.string().optional(),
     zipSize: z.number().default(0),
+    /** What is inside the ZIP (shown on the font page). */
+    zipFiles: z.array(z.object({ name: z.string(), size: z.number() })).default([]),
     styles: z.array(style).min(1),
   }),
 });
@@ -55,7 +58,10 @@ const designers = defineCollection({
   loader: glob({ pattern: '*.json', base: './src/content/designers' }),
   schema: z.object({
     name: z.string(),
+    /** Kazakh bio; also the fallback for the other languages. */
     bio: z.string().optional(),
+    bioRu: z.string().optional(),
+    bioEn: z.string().optional(),
     photo: z.string().optional(),
     links: z
       .object({
@@ -93,7 +99,8 @@ const licenses = defineCollection({
     modification: z.boolean(),
     distribution: z.boolean(),
     attribution: z.boolean().default(false),
-    featured: z.boolean().default(false),
+    /** Listed on /licenses and given its own page. Fonts show their license either way. */
+    visible: z.boolean().default(false),
   }),
 });
 

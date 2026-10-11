@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import Icon from '../ui/Icon';
+import Range from '../ui/Range';
+import Select from '../ui/Select';
 import { CodeBlock } from '../ui/CopyButton';
 import GlyphGrid from './GlyphGrid';
 import FontInfo from './FontInfo';
 import VariableTab from './VariableTab';
 import PreviewToolbar, { caseStyle } from './PreviewToolbar';
 import { usePreview } from './usePreview';
+import { useDownloads } from './useDownloads';
 import { CHARSETS, DEFAULT_PREVIEW } from '../../lib/site';
 import { type Lang, localePath, useT } from '../../i18n';
 import type { StyleInfo } from '../../lib/types';
@@ -26,7 +29,6 @@ export interface FileInfo {
   name: string;
   format: string;
   size: string;
-  style: string;
 }
 
 interface Props {
@@ -42,7 +44,11 @@ interface Props {
   cssUrl: string;
   info: { label: string; value: string }[];
   stats: { label: string; value: string }[];
+  /** Build-time download count; the live one replaces it after load. */
+  downloads: number;
+  /** Contents of the ZIP archive. */
   files: FileInfo[];
+  zipName: string;
 }
 
 const TABS = [
@@ -68,6 +74,8 @@ export default function FontDetail(props: Props) {
   const css = props.cssBlocks.filter((_, i) => cssSelected.includes(i)).join('\n\n');
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [styleIdx, setStyleIdx] = useState(props.primary);
+  const downloads = useDownloads(props.slug, props.downloads);
+  const stats = [...props.stats, { label: 'Жүктеулер', value: String(downloads) }];
 
   useEffect(() => {
     const fromHash = window.location.hash.slice(1) as Tab;
@@ -82,15 +90,14 @@ export default function FontDetail(props: Props) {
   const current = styles[styleIdx] ?? styles[0];
   const glyphSource = styles.find((s) => /\.(ttf|otf|woff)$/i.test(s.file) && s.slug === current.slug) ?? styles.find((s) => /\.(ttf|otf|woff)$/i.test(s.file));
 
-  const StylePicker = () =>
+  const stylePicker =
     styles.length > 1 ? (
-      <select className="chip pr-8" value={styleIdx} onChange={(e) => setStyleIdx(Number(e.target.value))} aria-label={t('Стиль')}>
-        {styles.map((s, i) => (
-          <option key={s.slug + i} value={i}>
-            {s.name}
-          </option>
-        ))}
-      </select>
+      <Select
+        label={t('Стиль')}
+        value={styleIdx}
+        onChange={setStyleIdx}
+        options={styles.map((s, i) => ({ value: i, text: s.name, label: s.variable ? `${s.name} (${t('Вариативті')})` : s.name }))}
+      />
     ) : null;
 
   return (
@@ -138,12 +145,12 @@ export default function FontDetail(props: Props) {
       {tab === 'letters' && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <StylePicker />
-            <label className="ml-auto flex items-center gap-2 text-sm text-muted">
+            {stylePicker}
+            <div className="ml-auto flex items-center gap-3 text-sm text-muted">
               {t('Кегль өлшемі')}
-              <input type="range" min={16} max={120} value={letterSize} onChange={(e) => setLetterSize(Number(e.target.value))} className="w-32 accent-[var(--accent)]" />
+              <Range min={16} max={120} value={letterSize} onChange={setLetterSize} className="w-32" label={t('Кегль өлшемі')} />
               <span className="w-12 tabular-nums">{letterSize}px</span>
-            </label>
+            </div>
           </div>
           <div className="card space-y-8 p-6">
             {CHARSETS.map((set) => (
@@ -160,7 +167,7 @@ export default function FontDetail(props: Props) {
 
       {tab === 'glyphs' && (
         <div className="space-y-4">
-          <StylePicker />
+          {stylePicker}
           {glyphSource ? <GlyphGrid url={glyphSource.file} t={t} /> : <p className="text-muted">{t('Превью қолжетімді емес')}</p>}
         </div>
       )}
@@ -254,7 +261,7 @@ export default function FontDetail(props: Props) {
       {tab === 'info' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {props.stats.map((s) => (
+            {stats.map((s) => (
               <div key={s.label} className="card p-5">
                 <p className="text-3xl font-bold tabular-nums">{s.value}</p>
                 <p className="mt-1 text-sm text-muted">{t(s.label)}</p>
@@ -274,18 +281,27 @@ export default function FontDetail(props: Props) {
               </dl>
             </section>
             <section className="card p-5">
-              <h3 className="mb-4 font-semibold">
+              <h3 className="font-semibold">
                 {t('Файлдар')} <span className="text-muted">({props.files.length})</span>
               </h3>
-              <ul className="divide-y divide-line text-sm">
-                {props.files.map((f) => (
-                  <li key={f.name} className="flex items-center gap-3 py-2.5">
-                    <Icon name="file" size={16} className="text-muted" />
-                    <span className="flex-1 truncate">{f.name}</span>
-                    <span className="text-muted">{f.size}</span>
-                    <span className="badge bg-surface-2 uppercase">{f.format}</span>
-                  </li>
-                ))}
+              <p className="mt-1 mb-4 truncate text-sm text-muted">
+                {t('Архив ішінде')}: <span className="font-mono text-xs">{props.zipName}</span>
+              </p>
+              <ul className="max-h-96 divide-y divide-line overflow-y-auto text-sm">
+                {props.files.map((f) => {
+                  const slash = f.name.lastIndexOf('/');
+                  return (
+                    <li key={f.name} className="flex items-center gap-3 py-2.5">
+                      <Icon name="file" size={16} className="shrink-0 text-muted" />
+                      <span className="min-w-0 flex-1" title={f.name}>
+                        <span className="block truncate">{f.name.slice(slash + 1)}</span>
+                        {slash > 0 && <span className="block truncate text-xs text-muted">{f.name.slice(0, slash)}/</span>}
+                      </span>
+                      <span className="shrink-0 text-muted tabular-nums">{f.size}</span>
+                      {f.format && <span className="badge shrink-0 bg-surface-2 uppercase">{f.format}</span>}
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           </div>

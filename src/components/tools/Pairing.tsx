@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import Icon from '../ui/Icon';
+import Range from '../ui/Range';
+import Select from '../ui/Select';
 import { type Lang, localePath, useT } from '../../i18n';
 import type { FontSummary } from '../../lib/types';
 
@@ -79,7 +81,7 @@ export default function Pairing({ fonts, lang }: { fonts: FontSummary[]; lang: L
         </button>
         <label className="card flex h-11 items-center gap-3 px-4 text-sm">
           <span className="text-muted">{t('Ұқсас')}</span>
-          <input type="range" min={0} max={100} value={contrast} onChange={(e) => setContrast(Number(e.target.value))} className="w-32 accent-[var(--accent)]" aria-label={t('Ұқсас / Контраст')} />
+          <Range min={0} max={100} value={contrast} onChange={setContrast} className="w-32" label={t('Ұқсас / Контраст')} />
           <span className="text-muted">{t('Контраст')}</span>
         </label>
         <span className="ml-auto flex items-center gap-2 text-sm text-muted">
@@ -105,13 +107,15 @@ export default function Pairing({ fonts, lang }: { fonts: FontSummary[]; lang: L
                   <Icon name={locked[s.id] ? 'lock' : 'unlock'} size={15} />
                 </button>
               </div>
-              <select className="mt-2 w-full bg-transparent text-lg font-semibold outline-none" value={pair[s.id]} onChange={(e) => setPair((p) => ({ ...p, [s.id]: e.target.value }))} aria-label={t(s.label)}>
-                {fonts.map((x) => (
-                  <option key={x.slug} value={x.slug}>
-                    {x.name}
-                  </option>
-                ))}
-              </select>
+              <div className="mt-2 -ml-2">
+                <Select
+                  label={t(s.label)}
+                  value={pair[s.id]}
+                  onChange={(v) => setPair((p) => ({ ...p, [s.id]: v }))}
+                  className="inline-flex h-10 items-center gap-2 rounded-lg px-2 text-lg font-semibold hover:bg-surface-2"
+                  options={fonts.map((x) => ({ value: x.slug, label: x.name, hint: x.category.name }))}
+                />
+              </div>
               {f && (
                 <p className="text-xs text-muted">
                   {f.category.name} · {t('{n} стиль', { n: f.stylesCount })}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Dropzone from './Dropzone';
 import Icon from '../ui/Icon';
+import Range from '../ui/Range';
+import Select from '../ui/Select';
 import { loadFontFile, type LoadedFont } from '../../lib/userfont';
 import { CHARSETS, SITE } from '../../lib/site';
 import { type Lang, localePath, useT } from '../../i18n';
@@ -52,39 +54,33 @@ export default function Proofing({ fonts, lang }: { fonts: FontSummary[]; lang: 
   return (
     <div className="space-y-4">
       <div className="no-print card flex flex-wrap items-center gap-3 p-3">
-        <select
-          className="chip h-10 pr-8 font-semibold"
+        <Select
+          label={t('Қаріп')}
           value={custom ? '__custom' : slug}
-          onChange={(e) => {
-            if (e.target.value !== '__custom') {
+          className="chip h-10 font-semibold"
+          onChange={(v) => {
+            if (v !== '__custom') {
               setCustom(null);
-              setSlug(e.target.value);
+              setSlug(v);
             }
           }}
-          aria-label={t('Қаріп')}
-        >
-          {fonts.map((f) => (
-            <option key={f.slug} value={f.slug}>
-              {f.name}
-            </option>
-          ))}
-          {custom && <option value="__custom">{custom.name}</option>}
-        </select>
+          options={[...fonts.map((f) => ({ value: f.slug, label: f.name })), ...(custom ? [{ value: '__custom', label: custom.name }] : [])]}
+        />
         <label className="flex items-center gap-2 text-sm text-muted">
           {t('Өлшемі')}
-          <input type="range" min={10} max={32} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-24 accent-[var(--accent)]" />
+          <Range min={10} max={32} value={size} onChange={setSize} className="w-24" label={t('Өлшемі')} />
           <span className="w-10 tabular-nums">{size}px</span>
         </label>
         <label className="flex items-center gap-2 text-sm text-muted">
           {t('Мәтін')}
-          <input type="color" value={fg} onChange={(e) => setFg(e.target.value)} className="size-8 cursor-pointer rounded border border-line bg-transparent" />
+          <input type="color" value={fg} onChange={(e) => setFg(e.target.value)} className="swatch" />
         </label>
         <button type="button" className="icon-btn size-8" onClick={() => (setFg(bg), setBg(fg))} aria-label={t('Түстерді ауыстыру')}>
           <Icon name="swap" size={15} />
         </button>
         <label className="flex items-center gap-2 text-sm text-muted">
           {t('Фон')}
-          <input type="color" value={bg} onChange={(e) => setBg(e.target.value)} className="size-8 cursor-pointer rounded border border-line bg-transparent" />
+          <input type="color" value={bg} onChange={(e) => setBg(e.target.value)} className="swatch" />
         </label>
         {current && !custom && (
           <a className="link text-sm" href={localePath(lang, `/fonts/${current.slug}`)}>

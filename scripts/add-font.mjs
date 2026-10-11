@@ -4,11 +4,13 @@
  * in the CMS at /admin:
  *
  *   npm run font:add -- --name "Balpaq" --designer abay-emes --category display \
- *     --license ofl --tags free,cyrillic --our [--archive designer.zip] path/to/*.ttf
+ *     --license ofl --tags free,cyrillic --our --archive Balpaq.zip path/to/*.ttf
  *
+ * Several designers: --designer paratype,abay-emes.
  * It copies the files to public/fonts/<slug>/ and writes public/fonts/<slug>/font.json.
- * Styles, weights, glyph counts, alphabets, WOFF2 previews and the ZIP are derived
- * from the files at build time (src/lib/fontLoader.ts), so nothing else is needed.
+ * Styles, weights, glyph counts, alphabets, WOFF2 previews and the list of files in the
+ * archive are derived at build time (src/lib/fontLoader.ts), so nothing else is needed.
+ * Without --archive a ZIP is built from the font files.
  * Re-running on an existing slug keeps fields that are not passed again.
  */
 import fs from 'node:fs/promises';
@@ -24,6 +26,7 @@ const { values: args, positionals: files } = parseArgs({
     name: { type: 'string' },
     slug: { type: 'string' },
     designer: { type: 'string' },
+    designers: { type: 'string' },
     category: { type: 'string' },
     license: { type: 'string' },
     tags: { type: 'string' },
@@ -37,7 +40,6 @@ const { values: args, positionals: files } = parseArgs({
     'primary-style': { type: 'string' },
     archive: { type: 'string' },
     our: { type: 'boolean' },
-    featured: { type: 'boolean' },
   },
 });
 
@@ -68,13 +70,12 @@ async function main() {
 
   const entry = {
     name: args.name,
-    designer: args.designer ?? prev.designer,
+    designers: list(args.designers ?? args.designer) ?? prev.designers ?? (prev.designer ? [prev.designer] : undefined),
     category: args.category ?? prev.category ?? 'sans',
     tags: list(args.tags) ?? prev.tags ?? [],
     purposes: list(args.purposes) ?? prev.purposes ?? [],
     license: args.license ?? prev.license ?? 'ofl',
     our: args.our ?? prev.our ?? false,
-    featured: args.featured ?? prev.featured ?? false,
     quality: args.quality ? Number(args.quality) : prev.quality,
     description: args.description ?? prev.description,
     descriptionRu: args['description-ru'] ?? prev.descriptionRu,
@@ -82,12 +83,11 @@ async function main() {
     previewText: args.preview ?? prev.previewText,
     purchaseUrl: args.purchase ?? prev.purchaseUrl,
     addedDate: prev.addedDate ?? new Date().toISOString().slice(0, 10),
-    downloads: prev.downloads ?? 0,
     primaryStyle: args['primary-style'] ?? prev.primaryStyle,
     files: [...new Set([...(prev.files ?? []), ...files.map(safeName)])],
     archive: args.archive ? safeName(args.archive) : prev.archive,
   };
-  if (!entry.designer) throw new Error('--designer is required for a new font');
+  if (!entry.designers?.length) throw new Error('--designer is required for a new font');
   await fs.writeFile(jsonPath, JSON.stringify(entry, null, 2) + '\n');
   console.log(`✓ ${args.name} → public/fonts/${slug}/font.json (${entry.files.length} file(s))`);
 }

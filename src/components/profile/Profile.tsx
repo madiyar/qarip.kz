@@ -4,6 +4,7 @@ import { FontRow } from '../fonts/FontRow';
 import PreviewToolbar from '../fonts/PreviewToolbar';
 import { usePreview } from '../fonts/usePreview';
 import { store, useStore } from '../../lib/store';
+import { trackDownload } from '../../lib/downloads';
 import { type Lang, LOCALE_TAG, localePath, useT } from '../../i18n';
 import type { FontSummary } from '../../lib/types';
 
@@ -121,7 +122,7 @@ export default function Profile({ fonts, lang }: Props) {
                   {bySlug[d.slug].name}
                 </a>
                 <time className="text-sm text-muted">{new Date(d.at).toLocaleString(LOCALE_TAG[lang])}</time>
-                <a href={bySlug[d.slug].zip} download className="icon-btn" aria-label={t('Қайта жүктеу')} onClick={() => store.recordDownload(d.slug)}>
+                <a href={bySlug[d.slug].zip} download className="icon-btn" aria-label={t('Қайта жүктеу')} onClick={() => (store.recordDownload(d.slug), trackDownload(d.slug))}>
                   <Icon name="download" size={16} />
                 </a>
               </li>

@@ -45,13 +45,12 @@ export async function toSummaries(fonts: FontEntry[]): Promise<FontSummary[]> {
     return {
       slug: f.id,
       name: f.data.name,
-      designer: { slug: f.data.designer.id, name: d[f.data.designer.id]?.data.name ?? f.data.designer.id },
+      designers: f.data.designers.map((x) => ({ slug: x.id, name: d[x.id]?.data.name ?? x.id })),
       category: { id: f.data.category.id, name: cat?.data.name ?? f.data.category.id, color: cat?.data.color ?? '#71717a' },
       tags: f.data.tags.map((t) => t.id),
       purposes: f.data.purposes.map((t) => t.id),
       quality: f.data.quality,
       our: f.data.our,
-      featured: f.data.featured,
       free: f.data.tags.some((t) => t.id === 'free') || Boolean(lic?.data.commercial),
       license: lic?.data.name ?? f.data.license.id,
       downloads: f.data.downloads,
@@ -106,10 +105,13 @@ export function publicCss(font: FontEntry, site: URL | string): string {
   return publicCssBlocks(font, site).join('\n\n');
 }
 
+/** Fonts made (or co-made) by a designer. */
+export const byDesigner = (fonts: FontEntry[], designer: string) => fonts.filter((f) => f.data.designers.some((d) => d.id === designer));
+
 export async function similarFonts(font: FontEntry, all: FontEntry[], limit = 3): Promise<FontEntry[]> {
   const score = (f: FontEntry) =>
     (f.data.category.id === font.data.category.id ? 3 : 0) +
-    (f.data.designer.id === font.data.designer.id ? 2 : 0) +
+    (f.data.designers.some((d) => font.data.designers.some((x) => x.id === d.id)) ? 2 : 0) +
     f.data.tags.filter((t) => font.data.tags.some((x) => x.id === t.id)).length;
   return all
     .filter((f) => f.id !== font.id)

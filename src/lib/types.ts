@@ -2,13 +2,12 @@
 export interface FontSummary {
   slug: string;
   name: string;
-  designer: { slug: string; name: string };
+  designers: { slug: string; name: string }[];
   category: { id: string; name: string; color: string };
   tags: string[];
   purposes: string[];
   quality?: number;
   our: boolean;
-  featured: boolean;
   /** Free for commercial use. */
   free: boolean;
   license: string;

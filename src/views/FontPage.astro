@@ -2,6 +2,7 @@
 import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/common/SectionHead.astro';
+import DownloadCount from '../components/common/DownloadCount.astro';
 import FontActions from '../components/fonts/FontActions';
 import FontDetail from '../components/fonts/FontDetail';
 import FontBrowser from '../components/fonts/FontBrowser';
@@ -9,6 +10,7 @@ import Icon from '../components/ui/Icon';
 import { CATEGORY, breadcrumbLd, fontSummary, fontTitle } from '../lib/seo';
 import QualityIndicator from '../components/fonts/QualityIndicator';
 import { type Lang, formatDate, localePath, useT } from '../i18n';
+import { hasLicensePage } from '../lib/licenses';
 import { type FontEntry, familyName, formatBytes, getFonts, primaryFaces, publicCssBlocks, similarFonts, styleFaces, toSummaries } from '../lib/fonts';
 
 interface Props {
@@ -19,10 +21,13 @@ const { lang, font } = Astro.props;
 const t = useT(lang);
 const d = font.data;
 
-const [designer, category, license, all] = await Promise.all([getEntry(d.designer), getEntry(d.category), getEntry(d.license), getFonts()]);
+const [category, license, all] = await Promise.all([getEntry(d.category), getEntry(d.license), getFonts()]);
+const designers = (await Promise.all(d.designers.map((x) => getEntry(x)))).filter((x) => x !== undefined);
+const designerNames = designers.map((x) => x.data.name);
 const tags = await Promise.all(d.tags.map((x) => getEntry(x)));
 const purposes = await Promise.all(d.purposes.map((x) => getEntry(x)));
-const similar = await toSummaries(await similarFonts(font, all, 4));
+const similar = await toSummaries(await similarFonts(font, all, 3));
+const licenseShown = Boolean(license?.data.visible);
 const description = { kk: d.description, ru: d.descriptionRu ?? d.description, en: d.descriptionEn ?? d.description }[lang];
 
 const SCRIPT_LABELS: Record<string, string> = { kazakh: 'Қазақ кирилл', 'kazakh-latin': 'Қазақ латын', cyrillic: 'Кирилл', latin: 'Латын' };
@@ -34,7 +39,7 @@ const cssUrl = new URL(`/fonts/${font.id}.css`, Astro.site).toString();
 const info = [
   { label: 'Қаріп атауы', value: d.name },
   { label: 'Категория', value: category?.data.name ?? '' },
-  { label: 'Дизайнер', value: designer?.data.name ?? '' },
+  { label: designers.length > 1 ? 'Дизайнерлер' : 'Дизайнер', value: designerNames.join(', ') },
   { label: 'Стиль саны', value: String(d.styles.length) },
   { label: 'Форматтар', value: formats },
   { label: 'Лицензия', value: license?.data.name ?? '' },
@@ -48,10 +53,9 @@ const stats = [
   { label: 'Стиль саны', value: String(d.styles.length) },
   { label: 'Глиф саны', value: glyphs ? String(glyphs) : '—' },
   { label: 'Әліпбилер', value: String(d.scripts.length) },
-  { label: 'Жүктеулер', value: String(d.downloads) },
 ];
-const files = d.styles.map((s) => ({ name: s.file.split('/').pop()!, format: s.format, size: formatBytes(s.size), style: s.name }));
-files.push({ name: d.zipName ?? `${font.id}.zip`, format: 'zip', size: formatBytes(d.zipSize), style: '' });
+// The Files block lists what the visitor gets: the contents of the ZIP.
+const files = d.zipFiles.map((f) => ({ name: f.name, format: f.name.includes('.') ? f.name.split('.').pop()!.toLowerCase() : '', size: formatBytes(f.size) }));
 
 const site = Astro.site!;
 const pageUrl = new URL(localePath(lang, `/fonts/${font.id}`), site).toString();
@@ -59,7 +63,7 @@ const ogImage = `/og/${font.id}.png`;
 // Factual summary used for the meta description and shown on the page.
 const summary = fontSummary(lang, {
   name: d.name,
-  designer: designer?.data.name ?? '',
+  designers: designerNames,
   category: d.category.id,
   styles: d.styles.length,
   glyphs,
@@ -82,7 +86,7 @@ const jsonLd = {
   operatingSystem: 'Windows, macOS, Linux',
   inLanguage: ['kk', 'ru', 'en'],
   datePublished: d.addedDate.toISOString().slice(0, 10),
-  author: { '@type': 'Person', name: designer?.data.name, url: new URL(localePath(lang, `/designers/${d.designer.id}`), site).toString() },
+  author: designers.map((x) => ({ '@type': 'Person', name: x.data.name, url: new URL(localePath(lang, `/designers/${x.id}`), site).toString() })),
   publisher: { '@id': new URL('/#organization', site).toString() },
   offers: { '@type': 'Offer', price: 0, priceCurrency: 'KZT', availability: 'https://schema.org/InStock' },
   license: license?.data.url,
@@ -113,36 +117,44 @@ const downloadHeading = { kk: `${d.name} шрифтін жүктеу`, ru: `Ск
     {t('Артқа')}
   </a>
 
-  <header class="mb-10">
-    <div class="mb-4 flex flex-wrap gap-2">
-      {
-        category && (
-          <a href={localePath(lang, `/fonts/category/${category.id}`)} class="badge" style={`background:${category.data.color}22;color:${category.data.color}`}>
-            {category.data.name}
-          </a>
-        )
-      }
-      {d.featured && <span class="badge bg-gradient-to-r from-orange-500 to-pink-500 text-white">{t('Топ қаріп')}</span>}
-      {d.our && <span class="badge-accent">{t('Біздің қаріп')}</span>}
-      {purposes.map((p) => p && <a href={localePath(lang, `/fonts?purpose=${p.id}`)} class="badge border border-line text-muted hover:text-fg">{t(p.data.name)}</a>)}
-      {tags.map((tag) => tag && <a href={localePath(lang, `/fonts?tag=${tag.id}`)} class="badge bg-surface-2 text-muted hover:text-fg">{t(tag.data.name)}</a>)}
+  <header class="mb-10 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
+    <div class="min-w-0 flex-1">
+      <div class="mb-4 flex flex-wrap gap-2">
+        {
+          category && (
+            <a href={localePath(lang, `/fonts/category/${category.id}`)} class="badge" style={`background:${category.data.color}22;color:${category.data.color}`}>
+              {category.data.name}
+            </a>
+          )
+        }
+        {d.our && <span class="badge-accent">{t('Біздің қаріп')}</span>}
+        {purposes.map((p) => p && <a href={localePath(lang, `/fonts?purpose=${p.id}`)} class="badge border border-line text-muted hover:text-fg">{t(p.data.name)}</a>)}
+        {tags.map((tag) => tag && <a href={localePath(lang, `/fonts?tag=${tag.id}`)} class="badge bg-surface-2 text-muted hover:text-fg">{t(tag.data.name)}</a>)}
+      </div>
+      <h1 class="text-5xl font-extrabold tracking-tight break-words sm:text-7xl" style={`font-family:'${styles[d.primary]?.family ?? styles[0].family}', system-ui`}>
+        {d.name}
+      </h1>
+      <p class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted">
+        <span>{t(designers.length > 1 ? 'Дизайнерлер' : 'Дизайнер')}:</span>
+        {
+          designers.map((x, i) => (
+            <>
+              <a href={localePath(lang, `/designers/${x.id}`)} class="font-medium text-fg hover:text-accent">{x.data.name}</a>
+              {i < designers.length - 1 && <span class="-ml-2">,</span>}
+            </>
+          ))
+        }
+        <span aria-hidden="true">•</span>
+        <span>{t('{n} стиль', { n: d.styles.length })}</span>
+        <span aria-hidden="true">•</span>
+        <DownloadCount slug={font.id} count={d.downloads} label={t('{n} жүктеу', { n: '{n}' })} />
+        <span aria-hidden="true">•</span>
+        <span>{license?.data.name}</span>
+      </p>
+      {d.quality && <p class="mt-3"><QualityIndicator quality={d.quality} label={t('Сапа')} /></p>}
+      {description && <p class="mt-4 max-w-3xl whitespace-pre-line">{description}</p>}
     </div>
-    <h1 class="text-5xl font-extrabold tracking-tight break-words sm:text-7xl" style={`font-family:'${styles[d.primary]?.family ?? styles[0].family}', system-ui`}>
-      {d.name}
-    </h1>
-    <p class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted">
-      <span>{t('Дизайнер')}:</span>
-      <a href={localePath(lang, `/designers/${d.designer.id}`)} class="font-medium text-fg hover:text-accent">{designer?.data.name}</a>
-      <span aria-hidden="true">•</span>
-      <span>{t('{n} стиль', { n: d.styles.length })}</span>
-      <span aria-hidden="true">•</span>
-      <span>{t('{n} жүктеу', { n: d.downloads })}</span>
-      <span aria-hidden="true">•</span>
-      <span>{license?.data.name}</span>
-    </p>
-    {d.quality && <p class="mt-3"><QualityIndicator quality={d.quality} label={t('Сапа')} /></p>}
-    {description && <p class="mt-4 max-w-3xl">{description}</p>}
-    <div class="mt-6">
+    <div class="shrink-0 lg:pt-11">
       <FontActions client:load slug={font.id} zip={d.zip} zipName={d.zipName} purchaseUrl={d.purchaseUrl} lang={lang} />
     </div>
   </header>
@@ -164,33 +176,35 @@ const downloadHeading = { kk: `${d.name} шрифтін жүктеу`, ru: `Ск
       modification: license!.data.modification,
       distribution: license!.data.distribution,
       attribution: license!.data.attribution,
-      hasPage: Boolean(license!.body?.trim()) || license!.data.prices.length > 0,
+      hasPage: hasLicensePage(license!),
     }}
     cssBlocks={publicCssBlocks(font, Astro.site!)}
     cssUrl={cssUrl}
     info={info}
     stats={stats}
+    downloads={d.downloads}
     files={files}
+    zipName={d.zipName ?? `${font.id}.zip`}
   />
 
   <section class="mt-20 max-w-3xl">
     <h2 class="text-2xl font-bold tracking-tight">{downloadHeading}</h2>
     <p class="mt-3 text-muted">{summary}</p>
     <p class="mt-4 flex flex-wrap gap-2">
-      <a href={d.zip} download={d.zipName ?? true} class="btn-secondary">
+      <a href={d.zip} download={d.zipName ?? true} class="btn-secondary" data-download={font.id}>
         <Icon name="download" size={16} />
         {t('Жүктеу')} · ZIP · {formatBytes(d.zipSize)}
       </a>
       <a href={localePath(lang, `/fonts/category/${d.category.id}`)} class="btn-ghost">{catName}</a>
-      <a href={localePath(lang, `/licenses#${d.license.id}`)} class="btn-ghost">{license?.data.name}</a>
+      {licenseShown ? <a href={localePath(lang, `/licenses#${d.license.id}`)} class="btn-ghost">{license?.data.name}</a> : <span class="btn-ghost pointer-events-none text-muted">{license?.data.name}</span>}
     </p>
   </section>
 
   {
     similar.length > 0 && (
       <section class="mt-24">
-        <SectionHead title={t('Ұқсас қаріптер')} href={localePath(lang, `/fonts/category/${d.category.id}`)} linkLabel={t('Барлығы')} />
-        <FontBrowser client:visible fonts={similar} lang={lang} prefKey="similar" />
+        <SectionHead title={t('Ұқсас қаріптер')} />
+        <FontBrowser client:visible fonts={similar} lang={lang} toolbar={false} view="grid" />
       </section>
     )
   }

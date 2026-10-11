@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
 import FontBrowser from '../components/fonts/FontBrowser';
 import { type Lang, localePath, useT } from '../i18n';
+import { byPopularity } from '../lib/downloads';
 import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
 import { CATALOG, CATEGORY, TOP, breadcrumbLd, categoryTitle, itemListLd } from '../lib/seo';
 
@@ -22,7 +23,7 @@ const purposes = (await getCollection('purposes')).map((x) => ({ id: x.id, name:
 
 const cat = categories.find((c) => c.id === category);
 const fonts = top
-  ? [...all].sort((a, b) => b.downloads - a.downloads || Number(b.featured) - Number(a.featured)).slice(0, 20)
+  ? [...all].sort(byPopularity).slice(0, 20)
   : cat
     ? all.filter((f) => f.category.id === cat.id)
     : all;

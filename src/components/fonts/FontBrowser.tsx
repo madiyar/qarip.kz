@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import Icon from '../ui/Icon';
-import PreviewToolbar from './PreviewToolbar';
+import Select from '../ui/Select';
+import PreviewToolbar, { type PreviewState, type View } from './PreviewToolbar';
 import { FontRow, FontTile } from './FontRow';
 import { usePreview } from './usePreview';
 import { type Lang, useT } from '../../i18n';
+import { byPopularity } from '../../lib/downloads';
 import type { CategoryInfo, FontSummary } from '../../lib/types';
 
 type Sort = 'popular' | 'new' | 'alpha';
@@ -38,6 +40,9 @@ interface Props {
   syncUrl?: boolean;
   /** Show rank numbers (top list). */
   ranked?: boolean;
+  /** Show the preview controls (text, case, size, view). Without them the list uses `view` and default sizes. */
+  toolbar?: boolean;
+  view?: View;
   initialSize?: number;
   prefKey?: string;
 }
@@ -75,11 +80,26 @@ function writeUrl(f: Filters) {
   history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
 }
 
-export default function FontBrowser({ fonts, lang, categories = [], tags = [], purposes = [], perPage = 0, filters: showFilters = false, syncUrl = false, ranked = false, initialSize = 24, prefKey = 'catalog' }: Props) {
+export default function FontBrowser({
+  fonts,
+  lang,
+  categories = [],
+  tags = [],
+  purposes = [],
+  perPage = 0,
+  filters: showFilters = false,
+  syncUrl = false,
+  ranked = false,
+  toolbar = true,
+  view = 'list',
+  initialSize = 24,
+  prefKey = 'catalog',
+}: Props) {
   const t = useT(lang);
   const [f, setF] = useState<Filters>(DEFAULT);
   const [page, setPage] = useState(1);
-  const [preview, setPreview] = usePreview(prefKey, { text: '', size: initialSize, textCase: 'none', view: 'list' });
+  const [saved, setPreview] = usePreview(prefKey, { text: '', size: initialSize, textCase: 'none', view });
+  const preview: PreviewState = toolbar ? saved : { text: '', size: initialSize, textCase: 'none', view };
 
   useEffect(() => {
     if (syncUrl) setF((s) => ({ ...s, ...readUrl() }));
@@ -97,7 +117,7 @@ export default function FontBrowser({ fonts, lang, categories = [], tags = [], p
     const q = f.q.trim().toLowerCase();
     const out = fonts.filter(
       (x) =>
-        (!q || x.name.toLowerCase().includes(q) || x.designer.name.toLowerCase().includes(q)) &&
+        (!q || x.name.toLowerCase().includes(q) || x.designers.some((d) => d.name.toLowerCase().includes(q))) &&
         (!f.category || x.category.id === f.category) &&
         (!f.free || x.free) &&
         (!f.our || x.our) &&
@@ -107,7 +127,7 @@ export default function FontBrowser({ fonts, lang, categories = [], tags = [], p
     );
     if (!showFilters && !ranked) return out;
     const sorters: Record<Sort, (a: FontSummary, b: FontSummary) => number> = {
-      popular: (a, b) => b.downloads - a.downloads || Number(b.featured) - Number(a.featured) || a.name.localeCompare(b.name),
+      popular: byPopularity,
       new: (a, b) => b.addedDate.localeCompare(a.addedDate),
       alpha: (a, b) => a.name.localeCompare(b.name),
     };
@@ -131,12 +151,17 @@ export default function FontBrowser({ fonts, lang, categories = [], tags = [], p
             <Icon name="search" size={16} className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
             <input
               type="search"
-              className="input pl-11"
+              className="input pr-11 pl-11"
               value={f.q}
               onChange={(e) => update({ q: e.target.value })}
               placeholder={t('Қаріп немесе дизайнер іздеу...')}
               aria-label={t('Қаріп іздеу')}
             />
+            {f.q && (
+              <button type="button" className="icon-btn absolute top-0.5 right-0.5" onClick={() => update({ q: '' })} aria-label={t('Тазалау')}>
+                <Icon name="x" size={16} />
+              </button>
+            )}
           </label>
           <div className="flex flex-wrap items-center gap-2">
             <span className="flex items-center gap-1.5 pr-1 text-sm text-muted">
@@ -144,47 +169,59 @@ export default function FontBrowser({ fonts, lang, categories = [], tags = [], p
               {t('Іріктеу')}
             </span>
             {categories.length > 0 && (
-              <select className="chip pr-8" value={f.category} onChange={(e) => update({ category: e.target.value })} aria-label={t('Категория')}>
-                <option value="">{t('Барлық категориялар')}</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} — {t(c.description)}
-                  </option>
-                ))}
-              </select>
+              <Select
+                label={t('Категория')}
+                value={f.category}
+                onChange={(category) => update({ category })}
+                options={[
+                  { value: '', label: t('Барлық категориялар') },
+                  ...categories.map((c) => ({
+                    value: c.id,
+                    text: c.name,
+                    label: (
+                      <span className="flex items-center gap-2">
+                        <span className="size-2 shrink-0 rounded-full" style={{ background: c.color }} />
+                        {c.name}
+                      </span>
+                    ),
+                    hint: t(c.description),
+                  })),
+                ]}
+              />
             )}
             {tags.length > 0 && (
-              <select className="chip pr-8" value={f.tag} onChange={(e) => update({ tag: e.target.value })} aria-label={t('Тег')}>
-                <option value="">{t('Барлық тегтер')}</option>
-                {tags.map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {t(x.name)}
-                  </option>
-                ))}
-              </select>
+              <Select label={t('Тег')} value={f.tag} onChange={(tag) => update({ tag })} options={[{ value: '', label: t('Барлық тегтер') }, ...tags.map((x) => ({ value: x.id, label: t(x.name) }))]} />
             )}
             {purposes.length > 0 && (
-              <select className="chip pr-8" value={f.purpose} onChange={(e) => update({ purpose: e.target.value })} aria-label={t('Мақсаты')}>
-                <option value="">{t('Кез келген мақсат')}</option>
-                {purposes.map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {t(x.name)}
-                  </option>
-                ))}
-              </select>
+              <Select
+                label={t('Мақсаты')}
+                value={f.purpose}
+                onChange={(purpose) => update({ purpose })}
+                options={[{ value: '', label: t('Кез келген мақсат') }, ...purposes.map((x) => ({ value: x.id, label: t(x.name) }))]}
+              />
             )}
-            <select className="chip pr-8" value={f.sort} onChange={(e) => update({ sort: e.target.value as Sort })} aria-label={t('Сұрыптау')}>
-              <option value="popular">{t('Популярлық')}</option>
-              <option value="new">{t('Жаңа')}</option>
-              <option value="alpha">{t('Алфавит')}</option>
-            </select>
-            <select className="chip pr-8" value={f.script} onChange={(e) => update({ script: e.target.value })} aria-label={t('Әліпби')}>
-              <option value="">{t('Кез келген әліпби')}</option>
-              <option value="kazakh">{t('Қазақ кирилл')}</option>
-              <option value="kazakh-latin">{t('Қазақ латын')}</option>
-              <option value="cyrillic">{t('Кирилл')}</option>
-              <option value="latin">{t('Латын')}</option>
-            </select>
+            <Select<Sort>
+              label={t('Сұрыптау')}
+              value={f.sort}
+              onChange={(sort) => update({ sort })}
+              options={[
+                { value: 'popular', label: t('Популярлық') },
+                { value: 'new', label: t('Жаңа') },
+                { value: 'alpha', label: t('Алфавит') },
+              ]}
+            />
+            <Select
+              label={t('Әліпби')}
+              value={f.script}
+              onChange={(script) => update({ script })}
+              options={[
+                { value: '', label: t('Кез келген әліпби') },
+                { value: 'kazakh', label: t('Қазақ кирилл') },
+                { value: 'kazakh-latin', label: t('Қазақ латын') },
+                { value: 'cyrillic', label: t('Кирилл') },
+                { value: 'latin', label: t('Латын') },
+              ]}
+            />
             <button type="button" className="chip" aria-pressed={f.free} onClick={() => update({ free: !f.free })}>
               {f.free && <Icon name="check" size={14} />}
               {t('100% тегін')}
@@ -205,9 +242,11 @@ export default function FontBrowser({ fonts, lang, categories = [], tags = [], p
         </div>
       )}
 
-      <div className={showFilters ? 'sticky top-[calc(var(--header-h)+0.5rem)] z-20' : ''}>
-        <PreviewToolbar t={t} state={preview} onChange={setPreview} />
-      </div>
+      {toolbar && (
+        <div className={showFilters ? 'sticky top-[calc(var(--header-h)+0.5rem)] z-20' : ''}>
+          <PreviewToolbar t={t} state={preview} onChange={setPreview} />
+        </div>
+      )}
 
       {list.length === 0 ? (
         <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center">

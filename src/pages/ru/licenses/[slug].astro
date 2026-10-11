@@ -1,9 +1,10 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
+import { hasLicensePage } from '../../../lib/licenses';
 import LicensePage from '../../../views/LicensePage.astro';
 
-export const getStaticPaths = (async () => (await getCollection('licenses')).filter((l) => Boolean(l.body?.trim()) || l.data.prices.length > 0).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
+export const getStaticPaths = (async () => (await getCollection('licenses', hasLicensePage)).map((entry) => ({ params: { slug: entry.id }, props: { entry } }))) satisfies GetStaticPaths;
 
 const { entry } = Astro.props;
 ---

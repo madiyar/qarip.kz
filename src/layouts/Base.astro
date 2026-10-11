@@ -73,6 +73,27 @@ const ogImage = new URL(image ?? '/og.png', Astro.site);
         } catch {}
         document.documentElement.dataset.theme = theme;
       })();
+      // Font previews: saved sizes go into CSS variables before the first paint, and lists that
+      // saved text, case or view will change are hidden until usePreview has applied them.
+      (() => {
+        try {
+          const get = (k) => JSON.parse(localStorage.getItem('qarip:pref:' + k) || 'null');
+          const root = document.documentElement;
+          const size = get('preview-size');
+          if (typeof size === 'number') root.style.setProperty('--pv-list', size + 'px');
+          const detail = get('detail');
+          if (detail && typeof detail.size === 'number') root.style.setProperty('--pv-detail', detail.size + 'px');
+          const text = get('preview-text');
+          const wait = ['catalog', 'designer', 'profile', 'detail'].filter((k) => {
+            const p = get(k) || {};
+            return text || (p.textCase && p.textCase !== 'none') || (k === 'catalog' && p.view === 'grid');
+          });
+          if (wait.length) {
+            root.dataset.pvWait = wait.join(' ');
+            setTimeout(() => delete root.dataset.pvWait, 3000);
+          }
+        } catch {}
+      })();
     </script>
     {fontCss && <style is:inline set:html={fontCss} />}
     <slot name="head" />

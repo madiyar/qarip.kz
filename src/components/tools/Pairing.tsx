@@ -33,7 +33,13 @@ export default function Pairing({ fonts, lang }: { fonts: FontSummary[]; lang: L
   const t = useT(lang);
   const [contrast, setContrast] = useState(80);
   const [locked, setLocked] = useState<Record<SlotId, boolean>>({ heading: false, sub: false, body: false });
-  const [pair, setPair] = useState<Record<SlotId, string>>(() => ({ heading: fonts[0]?.slug, sub: fonts[1 % fonts.length]?.slug, body: fonts[2 % fonts.length]?.slug }));
+  // A fixed first pairing (rendered on the server too): a heading font with character, readable text fonts.
+  const [pair, setPair] = useState<Record<SlotId, string>>(() => {
+    const heading = fonts.find((f) => ['serif', 'display', 'slab'].includes(f.category.id)) ?? fonts[0];
+    const body = fonts.find((f) => f.category.id === 'sans' && f !== heading) ?? fonts.find((f) => f !== heading) ?? heading;
+    const sub = fonts.find((f) => BODY.has(f.category.id) && f !== heading && f !== body) ?? body;
+    return { heading: heading?.slug, sub: sub?.slug, body: body?.slug };
+  });
   const [texts, setTexts] = useState<Record<SlotId, string>>({ heading: '', sub: '', body: '' });
   const bySlug = Object.fromEntries(fonts.map((f) => [f.slug, f]));
 
@@ -53,11 +59,6 @@ export default function Pairing({ fonts, lang }: { fonts: FontSummary[]; lang: L
       }
       return next;
     });
-
-  useEffect(() => {
-    if (fonts.length > 1) generate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

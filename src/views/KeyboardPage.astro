@@ -34,9 +34,9 @@ const STEPS: [string, string, string[]][] = [
 ---
 
 <Base lang={lang} title={t('Қазақ пернетақтасы')} description={t('Раскладка орнатылмаған болса — осында теріп, көшіріп алыңыз. Төменде әр жүйеге орнату жолы бар.')} wide>
-  <div class="wrap-md pt-7">
+  <div class="wrap pt-7">
     <ToolHeader lang={lang} title={t('Қазақ пернетақтасы')} description={t('Раскладка орнатылмаған болса — осында теріп, көшіріп алыңыз. Төменде әр жүйеге орнату жолы бар.')} />
-    <Keyboard client:only="react" lang={lang} />
+    <Keyboard client:load lang={lang} />
 
     <section class="mt-12">
       {

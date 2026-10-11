@@ -170,7 +170,7 @@ export default function FontDetail(props: Props) {
         {tab === 'preview' && (
           <div className="pt-5">
             <PreviewToolbar t={t} state={preview} onChange={(n) => (setPreview(n), 'text' in n && setOverrides({}))} showView={false} max={160} />
-            <div className="mt-2 rows">
+            <div className="mt-2 rows" data-pv="detail">
               {styles.map((s, i) => (
                 <div key={s.slug + i} className="pt-6 pb-7">
                   <p className="mb-2.5 text-[13px] text-fg-3">
@@ -186,7 +186,7 @@ export default function FontDetail(props: Props) {
                     spellCheck={false}
                     title={t('Мәтінді өзгерту үшін превьюге басыңыз — әр стиль үшін жеке.')}
                     className="line-clamp-3 cursor-text leading-[1.15] text-fg [overflow-wrap:anywhere] outline-none focus:line-clamp-none"
-                    style={{ fontFamily: `'${s.family}', system-ui`, fontSize: preview.size, textTransform: tt }}
+                    style={{ fontFamily: `'${s.family}', system-ui`, fontSize: 'var(--pv-detail)', textTransform: tt }}
                     onBlur={(e) => setOverrides((o) => ({ ...o, [i]: e.currentTarget.textContent ?? '' }))}
                   >
                     {overrides[i] ?? text}

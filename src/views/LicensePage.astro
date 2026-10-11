@@ -21,7 +21,7 @@ const rows = [
 ---
 
 <Base lang={lang} title={d.name} description={d.description}>
-  <div class="mx-auto max-w-[880px]">
+  <div>
     <Breadcrumbs class="mb-6" label={t('Жол')} items={[{ label: t('Лицензиялар'), href: localePath(lang, '/licenses') }, { label: d.name }]} />
     <h1 class="text-[32px] leading-[1.1] font-[650] tracking-[-0.035em] break-words sm:text-[40px]">{d.name}</h1>
     <p class="lead mt-2 max-w-[680px] whitespace-pre-line">{d.description}</p>
@@ -67,7 +67,7 @@ const rows = [
 
     {
       license.body?.trim() && (
-        <div class="prose prose-q mt-12">
+        <div class="prose prose-q measure mt-12">
           <Content />
         </div>
       )

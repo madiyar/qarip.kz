@@ -1,9 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/common/SectionHead.astro';
+import ArticleCard from '../components/common/ArticleCard.astro';
 import HomeFonts from '../components/fonts/HomeFonts';
-import { type Lang, formatDate, localePath, useT } from '../i18n';
+import { type Lang, localePath, useT } from '../i18n';
+import { getPosts } from '../lib/journal';
 import { byPopularity } from '../lib/downloads';
 import { familyName, getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
 import { CATEGORY, HOME, websiteLd } from '../lib/seo';
@@ -20,10 +21,11 @@ const popular = [...fonts].sort(byPopularity);
 // Six per tab: two rows of three cards.
 const PER_TAB = 6;
 const ours = fonts.filter((f) => f.our);
+// Order: new, Qarip's own, popular (download counts are still young).
 const tabs = [
-  { id: 'popular', label: 'Танымал', href: '/top', more: 'Толық рейтинг', fonts: popular.slice(0, PER_TAB) },
   { id: 'new', label: 'Жаңа қосылды', href: '/fonts', more: 'Барлық {n} қаріпті көру', fonts: fonts.slice(0, PER_TAB) },
   ...(ours.length ? [{ id: 'our', label: 'Qarip қаріптері', href: '/fonts?our=1', more: 'Барлық Qarip қаріптері', fonts: ours.slice(0, PER_TAB) }] : []),
+  { id: 'popular', label: 'Танымал', href: '/top', more: 'Толық рейтинг', fonts: popular.slice(0, PER_TAB) },
 ];
 // Each category is shown in its most popular font.
 const categoryCards = categories.map((c) => {
@@ -31,7 +33,7 @@ const categoryCards = categories.map((c) => {
   return { ...c, count: inCat.length, sample: inCat[0] };
 });
 const shown = [...new Map([...tabs.flatMap((x) => x.fonts), ...categoryCards.flatMap((c) => (c.sample ? [c.sample] : []))].map((f) => [f.slug, f])).values()];
-const posts = (await getCollection('journal', (p) => !p.data.draft)).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+const posts = (await getPosts()).slice(0, 3);
 ---
 
 <Base lang={lang} fullTitle={HOME.title[lang]} description={HOME.description[lang]} fontCss={primaryFaces(shown)} wide>
@@ -52,13 +54,9 @@ const posts = (await getCollection('journal', (p) => !p.data.draft)).sort((a, b)
     posts.length > 0 && (
       <section class="wrap section">
         <SectionHead title="Journal" href={localePath(lang, '/journal')} linkLabel={t('Барлық мақала')} />
-        <div class="grid gap-x-8 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-x-5 gap-y-8 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
           {posts.map((post) => (
-            <a href={localePath(lang, `/journal/${post.id}`)} class="hover-name flex flex-col gap-1.5 border-b border-line py-5">
-              <span class="meta">{[post.data.author, formatDate(lang, post.data.pubDate)].filter(Boolean).join(' · ')}</span>
-              <b class="font-name text-[17px] leading-snug whitespace-normal">{post.data.title}</b>
-              {post.data.excerpt && <span class="line-clamp-2 text-sm text-fg-3">{post.data.excerpt}</span>}
-            </a>
+            <ArticleCard post={post} lang={lang} />
           ))}
         </div>
       </section>

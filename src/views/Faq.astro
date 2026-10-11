@@ -24,7 +24,7 @@ const cats = FAQ_CATEGORIES.filter(([id]) => FAQ.some((f) => f.cat === id));
 
 <Base lang={lang} title={t('Жиі қойылатын сұрақтар')} description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
-  <div class="mx-auto max-w-[860px]">
+  <div>
     <PageHeader size="lg" title={t('Жиі қойылатын сұрақтар')} description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')} />
     <div role="tablist" aria-label={t('Тақырып')} class="no-scrollbar -mx-4 mb-[18px] flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0" data-faq-cats>
       <button type="button" role="tab" aria-selected="true" class="pill px-4" data-cat="">{t('Барлығы')}</button>

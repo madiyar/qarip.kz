@@ -1,9 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/common/PageHeader.astro';
-import Breadcrumbs from '../components/common/Breadcrumbs.astro';
-import FontBrowser from '../components/fonts/FontBrowser';
+import Catalog, { type CatalogSection } from '../components/fonts/Catalog';
 import { type Lang, localePath, useT } from '../i18n';
 import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
 import { CATALOG, CATEGORY, breadcrumbLd, categoryTitle, itemListLd } from '../lib/seo';
@@ -22,46 +20,43 @@ const purposes = (await getCollection('purposes')).map((x) => ({ id: x.id, name:
 const cat = categories.find((c) => c.id === category);
 const fonts = cat ? all.filter((f) => f.category.id === cat.id) : all;
 
-const catName = cat ? (CATEGORY[cat.id]?.name[lang] ?? cat.label) : '';
-const title = cat ? categoryTitle(lang, cat.id, cat.name) : CATALOG.title[lang];
-const catText = cat ? (CATEGORY[cat.id]?.description[lang] ?? t(cat.description)) : '';
+// Every section of the catalog, so the island can switch between them without a reload.
+const sections: CatalogSection[] = [
+  {
+    id: '',
+    label: t('Барлығы'),
+    href: localePath(lang, '/fonts'),
+    title: `${CATALOG.title[lang]} | Qarip`,
+    h1: t('Қаріптер'),
+    lead: t('Барлығы тегін жүктеледі, әрқайсысы қазақ әріптеріне тексерілген.'),
+  },
+  ...categories.map((c) => ({
+    id: c.id,
+    label: c.label,
+    href: localePath(lang, `/fonts/category/${c.id}`),
+    title: `${categoryTitle(lang, c.id, c.name)} | Qarip`,
+    h1: CATEGORY[c.id]?.name[lang] ?? c.label,
+    lead: CATEGORY[c.id]?.description[lang] ?? t(c.description),
+  })),
+];
+const section = sections.find((s) => s.id === (cat?.id ?? '')) ?? sections[0];
+
 const catOffer = { kk: `Қазақ әріптері бар ${fonts.length} шрифт — тегін жүктеу.`, ru: `Шрифтов с казахскими буквами: ${fonts.length} — скачать бесплатно.`, en: `${fonts.length} fonts with Kazakh letters — free download.` }[lang];
-const description = cat ? `${catText} ${catOffer}` : CATALOG.description[lang];
-const h1 = cat ? catName : t('Қаріптер');
-const lead = cat ? catText : t('Барлығы тегін жүктеледі, әрқайсысы қазақ әріптеріне тексерілген.');
-const countIn = (id: string) => all.filter((f) => f.category.id === id).length;
+const description = cat ? `${section.lead} ${catOffer}` : CATALOG.description[lang];
 
 const site = Astro.site!;
 const crumbs = [
   { name: 'Qarip', path: localePath(lang, '/') },
   { name: t('Қаріптер'), path: localePath(lang, '/fonts') },
-  ...(cat ? [{ name: catName, path: localePath(lang, `/fonts/category/${cat.id}`) }] : []),
+  ...(cat ? [{ name: section.h1, path: section.href }] : []),
 ];
 ---
 
-<Base lang={lang} fullTitle={`${title} | Qarip`} description={description} fontCss={primaryFaces(fonts)} noindex={Boolean(cat) && fonts.length === 0}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(itemListLd(site, lang, h1, fonts))} />
+<Base lang={lang} fullTitle={section.title} description={description} fontCss={primaryFaces(all)} noindex={Boolean(cat) && fonts.length === 0}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(itemListLd(site, lang, section.h1, fonts))} />
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbLd(site, crumbs))} />
 
-  {cat && <Breadcrumbs class="mb-2.5" label={t('Жол')} items={[{ label: t('Қаріптер'), href: localePath(lang, '/fonts') }, { label: cat.label }]} />}
-  <PageHeader title={h1} count={fonts.length} description={lead} class="!mb-5" />
-
-  <!-- Categories are static pages (for search engines), drawn as pills. -->
-  <nav class="no-scrollbar -mx-4 mb-3 flex gap-1 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0" aria-label={t('Категориялар')}>
-    <a href={localePath(lang, '/fonts')} class="pill" aria-current={!cat ? 'page' : undefined}>
-      {t('Барлығы')}
-    </a>
-    {
-      categories.map((c) => (
-        <a href={localePath(lang, `/fonts/category/${c.id}`)} class="pill" aria-current={cat?.id === c.id ? 'page' : undefined}>
-          {c.label}
-          <span class="text-xs opacity-60 tabular-nums">{countIn(c.id)}</span>
-        </a>
-      ))
-    }
-  </nav>
-
-  <FontBrowser client:load fonts={fonts} purposes={purposes} perPage={100} lang={lang} filters syncUrl prefKey="catalog" />
+  <Catalog client:load lang={lang} fonts={all} purposes={purposes} sections={sections} current={cat?.id ?? ''} />
 
   <p class="mt-10 text-sm text-fg-3">
     {t('Керек қаріп табылмады ма? Сүйікті қаріпіңізге немесе брендіңіздің қаріпіне қазақ әріптерін')}

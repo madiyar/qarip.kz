@@ -2,6 +2,10 @@
 # (and set SITE_URL in astro.config.mjs). Never redirect a host to itself — that loops.
 # https://qarip.netlify.app/* https://qarip.kz/:splat 301!
 
+# Build assets of an earlier deploy (asked for only by pages kept in a browser cache) get a
+# script that reloads the page from the server. Existing files are served as usual.
+/_astro/*                     /stale.js             200
+
 # v1 (legacy) URLs
 /qaripter                     /fonts                301
 /qaripter/bizdin              /fonts?our=1          301

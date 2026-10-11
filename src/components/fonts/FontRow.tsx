@@ -62,7 +62,7 @@ export function FontRow({ font, lang, preview, download = false }: Props) {
         href={href}
         aria-label={font.name}
         className="block truncate leading-tight text-fg"
-        style={{ fontFamily: family(font.slug), fontSize: preview.size, textTransform: caseStyle(preview.textCase) }}
+        style={{ fontFamily: family(font.slug), fontSize: 'var(--pv-list)', textTransform: caseStyle(preview.textCase) }}
       >
         {sample(font, preview)}
       </a>
@@ -78,10 +78,12 @@ interface CardProps extends Props {
   /** What the line under the name starts with. */
   meta?: 'designer' | 'category';
   favorite?: boolean;
+  /** Sample size (CSS value); the shared list size by default. */
+  size?: string;
 }
 
 /** Font card: the font speaks first (large sample on top), name and meta underneath. */
-export function FontCard({ font, lang, preview, text, lines = 3, meta = 'designer', favorite = true }: CardProps) {
+export function FontCard({ font, lang, preview, text, lines = 3, meta = 'designer', favorite = true, size = 'var(--pv-list)' }: CardProps) {
   const href = localePath(lang, `/fonts/${font.slug}`);
   const line = fontMeta(font, lang, meta);
   return (
@@ -90,7 +92,7 @@ export function FontCard({ font, lang, preview, text, lines = 3, meta = 'designe
         href={href}
         aria-label={font.name}
         className={`leading-[1.2] [overflow-wrap:anywhere] text-fg ${lines === 2 ? 'line-clamp-2 min-h-[2.4em]' : 'line-clamp-3 min-h-[3.6em]'}`}
-        style={{ fontFamily: family(font.slug), fontSize: text ? 30 : preview.size, textTransform: text ? undefined : caseStyle(preview.textCase) }}
+        style={{ fontFamily: family(font.slug), fontSize: text ? 30 : size, textTransform: text ? undefined : caseStyle(preview.textCase) }}
       >
         {text ?? sample(font, preview)}
       </a>

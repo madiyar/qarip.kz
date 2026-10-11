@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { type KeyboardEvent, useRef, useState } from 'react';
 import { FontCard } from './FontRow';
 import type { PreviewState } from './PreviewToolbar';
 import { type Lang, localePath, useT } from '../../i18n';
@@ -24,15 +24,10 @@ interface Props {
 export default function HomeFonts({ lang, tabs, total }: Props) {
   const t = useT(lang);
   const [current, setCurrent] = useState(0);
-  const [size, setSize] = useState(36);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const tab = tabs[current];
-  const preview: PreviewState = { text: '', size, textCase: 'none', view: 'grid' };
-
-  // Smaller samples on phones, where the cards stack in one column.
-  useEffect(() => {
-    if (window.innerWidth < 640) setSize(26);
-  }, []);
+  // Sample size comes from --pv-home (smaller on phones, where the cards stack in one column).
+  const preview: PreviewState = { text: '', size: 0, textCase: 'none', view: 'grid' };
 
   const onKey = (e: KeyboardEvent) => {
     const next = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: tabs.length - 1 }[e.key];
@@ -67,7 +62,7 @@ export default function HomeFonts({ lang, tabs, total }: Props) {
       </div>
       <div id="home-fonts" role="tabpanel" aria-labelledby={`home-tab-${tab.id}`} className="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
         {tab.fonts.map((font) => (
-          <FontCard key={font.slug} font={font} lang={lang} preview={preview} />
+          <FontCard key={font.slug} font={font} lang={lang} preview={preview} size="var(--pv-home)" />
         ))}
       </div>
       <div className="mt-7 flex justify-center">

@@ -70,12 +70,16 @@ export async function toSummaries(fonts: FontEntry[], lang: Lang = 'kk'): Promis
   });
 }
 
+// Previews use font-display: block — a sample in a fallback font misrepresents the font and
+// jumps when the real one arrives; the text stays invisible for the short time a file loads.
+// (The public CSS for other sites keeps "swap".)
+
 /** @font-face rules for the primary style of each font. */
 export function primaryFaces(fonts: FontSummary[]): string {
   return fonts
     .map(
       (f) =>
-        `@font-face{font-family:'${familyName(f.slug)}';src:url('${f.primary.url}');font-weight:100 900;font-style:normal;font-display:swap}`,
+        `@font-face{font-family:'${familyName(f.slug)}';src:url('${f.primary.url}');font-weight:100 900;font-style:normal;font-display:block}`,
     )
     .join('\n');
 }
@@ -85,7 +89,7 @@ export function styleFaces(font: FontEntry): string {
   return font.data.styles
     .map(
       (s) =>
-        `@font-face{font-family:'${familyName(font.id, s.slug)}';src:url('${s.web}');font-weight:100 900;font-style:normal;font-display:swap}`,
+        `@font-face{font-family:'${familyName(font.id, s.slug)}';src:url('${s.web}');font-weight:100 900;font-style:normal;font-display:block}`,
     )
     .join('\n');
 }

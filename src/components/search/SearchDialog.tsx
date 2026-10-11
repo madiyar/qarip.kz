@@ -1,6 +1,7 @@
 import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '../ui/Icon';
 import OwnBadge from '../ui/OwnBadge';
+import Skeleton from '../ui/Skeleton';
 import { type Lang, localePath, useT } from '../../i18n';
 import { TOOLS } from '../../lib/site';
 
@@ -148,7 +149,14 @@ export default function SearchDialog({ lang }: { lang: Lang }) {
         </div>
 
         <div id="search-results" role="listbox" aria-label={t('Нәтижелер')} className="flex flex-col gap-6 overflow-y-auto px-4 pt-3 pb-8 sm:px-3 sm:pb-4">
-          {!index && <p className="meta px-1">{t('Жүктелуде…')}</p>}
+          {!index && (
+            <div className="flex flex-col gap-2" aria-busy="true">
+              <Skeleton className="h-3 w-20 rounded" />
+              {Array.from({ length: 5 }, (_, i) => (
+                <Skeleton key={i} className="h-12 rounded-[14px]" />
+              ))}
+            </div>
+          )}
           {index && groups.length === 0 && (
             <p className="px-1 text-fg-3">
               {t('Ештеңе табылмады')}.{' '}

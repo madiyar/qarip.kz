@@ -101,14 +101,18 @@ Font previews are never set in UI fonts: they use `qf-<slug>` families (see CLAU
 
 ## Layout
 
-- `wrap` — 1200 px (catalog, home, tools, unicode). `wrap-md` — 1080 px (font page, keyboard).
-  `wrap-sm` — 880 px (converter). Content pages center their own column (720–1100 px).
-  Gutters: 16 px on phones, 24 px from `sm`.
+- **One frame for every page:** `wrap` — 1200 px, gutters 16 px on phones and 24 px from `sm`.
+  `Base` applies it; pages with `wide` apply it themselves. Content always starts at the frame's
+  left edge, in line with the logo — never a narrower centred container.
+- Long text keeps a readable line length inside the frame, left-aligned: `measure` (720 px) for
+  article/license text, `max-w-[680px]` for leads, `max-w-[800px]` for FAQ answers. Panels,
+  grids, tables and tool UIs use the full frame.
 - `section` — vertical rhythm between page sections (64 → 96 px).
 - `Base` wraps the slot in `wrap pt-7 sm:pt-11`; pages with their own width pass `wide`.
 - Breakpoints: `sm` 640 (phones → tablets: sheets, fixed font bar), `lg` 1024 (tab bar ↔ header nav).
 - **Mobile shell:** header with logo, Support and search; bottom tab bar (`MobileNav.astro`:
-  Home, Fonts, Tools, Favorites, More) under `lg`. Fixed bars sit above it with
+  Home, Fonts, Tools, Favorites, More) under `lg`; "More" opens a full-screen panel under the tab
+  bar (only its tab is highlighted while open). Fixed bars sit above it with
   `bottom: var(--tabbar-h)`. Pages with a fixed bar add a spacer at the end.
 - Grids: `grid sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]`. If cards contain truncated
   text, give the base grid `grid-cols-[minmax(0,1fr)]` or phones overflow horizontally.
@@ -170,7 +174,9 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | `font-card` | Font card (sample on top, name + meta below) |
 | `font-name` | Font/article/designer name; turns accent when its `.font-card` or `.hover-name` parent is hovered |
 | `hover-name` | Put on any link card so its `font-name` reacts |
-| `prose-q` | With `prose`: article and license text |
+| `prose-q` | With `prose`: article and license text (add `measure`) |
+| `measure` | Reading line length (720 px), left-aligned |
+| `skeleton` (`ui/Skeleton`) | Pulsing placeholder with the size of what is loading |
 | `no-scrollbar` | Horizontal scrollers (tabs, pills on phones) |
 
 ---
@@ -181,7 +187,7 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | Component | |
 | --- | --- |
 | `Header.astro` | Glass bar: logo, nav, tools menu, search, language, theme, favorites, Support |
-| `MobileNav.astro` | Tab bar + "More" sheet (sibling of the header — `backdrop-filter` traps fixed children) |
+| `MobileNav.astro` | Tab bar + full-screen "More" panel under it (sibling of the header — `backdrop-filter` traps fixed children) |
 | `Footer.astro` | Support / services CTAs, link columns, contacts |
 | `LangSwitch.astro` | KK · RU · EN segmented switch |
 | `layout/Logo.astro` | Mark + wordmark |
@@ -201,13 +207,14 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 
 ### UI (`ui/`)
 `Icon`, `Select` (listbox in a `.pop`), `Range` + `RangeField` (labelled slider with value),
-`Switch`, `CopyButton` + `CodeBlock` (code panel with a title bar), `OwnBadge`.
+`Switch`, `CopyButton` + `CodeBlock` (code panel with a title bar), `OwnBadge`, `Skeleton`.
 
 ### Fonts (`fonts/`)
 | Component | |
 | --- | --- |
 | `FontRow.tsx` | `FontCard`, `FontRow` and `fontMeta()` — every font list uses these |
 | `PreviewToolbar.tsx` | Text, pangram menu (3 pangrams), case, size, view; `usePreview` keeps the state |
+| `Catalog.tsx` | Catalog page: heading, category pills (switch without reload), `FontBrowser` |
 | `FontBrowser.tsx` | Catalog engine: search, filter sheet, sort, list/grid, paging |
 | `HomeFonts.tsx` | Home tabs (popular / new / Qarip), 6 cards each |
 | `FontActions.tsx` | Font page actions + fixed mobile bar + thank-you note after download |
@@ -225,22 +232,36 @@ controls in `panel`s, results in `panel`/`CodeBlock`, actions in a row of `btn-r
 
 ## Page patterns
 
-- **List page** (catalog, category, top): `PageHeader` → category pills → `FontBrowser`.
+- **List page** (catalog, category): `Catalog` island — breadcrumb, heading with a fixed-height
+  lead, category pills, `FontBrowser`. Top: `PageHeader` → ranked cards and rows.
 - **Font page:** breadcrumb → specimen title (84–112 px in the font itself) + meta row → actions
   right → `#dl-thanks` slot → tabs → plain-text download summary (SEO) → similar fonts.
 - **Tool page:** `ToolHeader` → tool → `OtherTools`.
 - **Content page:** centred column, `PageHeader size="lg"`, panels/rows, a `note` CTA at the end.
 - **Empty state:** one grey sentence + one secondary button, centred, no illustration.
-- **Loading:** `meta` text "Жүктелуде…"; never a spinner over content.
+- **Loading:** a `Skeleton` with the size and shape of the content (rows, tiles, panels), so
+  nothing moves when it arrives — never a "Loading…" line or a spinner. Islands render on the
+  server (`client:load`/`client:visible`) whenever their first state does not depend on the
+  browser; `client:only` is only for browser-only data (the profile) and then gets a
+  `slot="fallback"` skeleton.
 
 ## Behaviour
 
 - **Tabs:** `role="tablist"`, ←/→/Home/End move, the font page keeps the tab in `#hash`.
 - **Popovers:** close on outside click and Esc; on phones they are bottom sheets with a handle and
-  a dimmed scrim. A popover opened from a `position: fixed` + `backdrop-filter` bar must be
-  portalled to `<body>` (see `FontActions` → `CatalogMenu`).
+  a dimmed scrim. Never give an ancestor of a `.pop` a `z-index` (or `transform`, `filter`,
+  `backdrop-filter`): it creates a stacking context and the sheet ends up under the tab bar.
+  A popover opened from such an element must be portalled to `<body>` (see `FontActions` →
+  `CatalogMenu`). As a safety net the tab bar hides while a `.pop-scrim` is on the page.
 - **Inputs on phones** are 16 px (no zoom). Touch targets ≥ 44 px in sheets and bars.
 - **Motion:** colour transitions 150 ms; cards may lift 2 px on desktop only; nothing else moves.
+- **No layout shift.** Font previews take their size from CSS variables (`--pv-list`,
+  `--pv-detail`, `--pv-home`: phone / ≥ 768 px defaults in `global.css`); an inline script in
+  `Base` writes the visitor's saved sizes into them before the first paint, so the server markup
+  already has the final size. Lists that saved text, case or view will change carry
+  `data-pv="<key>"` and stay hidden until `usePreview` applies the prefs. Preview `@font-face`
+  rules use `font-display: block` (no fallback-font flash). Catalog categories switch in place
+  (`fonts/Catalog.tsx`, `history.pushState`) while every category keeps its static page.
 - **Focus:** 2 px accent outline (`:focus-visible`) everywhere; don't remove it.
 - **Personal data** (favorites, history, collections, preview text and size) lives in
   `localStorage` (`src/lib/store.ts`); say so where it is shown.

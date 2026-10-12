@@ -5,7 +5,7 @@ commercial: false
 modification: false
 distribution: true
 attribution: false
-visible: true
+visible: false
 prices:
   - title: Тегін лицензия
     price: $0

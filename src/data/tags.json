@@ -1,12 +1,6 @@
 {
   "items": [
     {
-      "id": "cyrillic",
-      "name": "Кирилл",
-      "nameRu": "Кириллица",
-      "nameEn": "Cyrillic"
-    },
-    {
       "id": "latin",
       "name": "Латын",
       "nameRu": "Латиница",
@@ -19,16 +13,40 @@
       "nameEn": "Free"
     },
     {
-      "id": "commercial",
-      "name": "Коммерциялық",
-      "nameRu": "Коммерческий",
-      "nameEn": "Commercial"
-    },
-    {
       "id": "variable",
       "name": "Вариатив",
       "nameRu": "Вариативный",
       "nameEn": "Variable"
+    },
+    {
+      "id": "script",
+      "name": "Жазба",
+      "nameRu": "Письмо",
+      "nameEn": "Script"
+    },
+    {
+      "id": "pixel",
+      "name": "Пиксіл",
+      "nameRu": "Пиксельный",
+      "nameEn": "Pixel"
+    },
+    {
+      "id": "3d",
+      "name": "3D",
+      "nameRu": "3D",
+      "nameEn": "3D"
+    },
+    {
+      "id": "distorted",
+      "name": "Бұзылған",
+      "nameRu": "Искажённый",
+      "nameEn": "Distorted"
+    },
+    {
+      "id": "horror",
+      "name": "Қорқынышты",
+      "nameRu": "Устрашающий",
+      "nameEn": "Horror"
     }
   ]
 }

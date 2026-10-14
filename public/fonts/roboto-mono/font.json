@@ -1,5 +1,6 @@
 {
   "name": "Roboto Mono",
+  "archive": "Roboto_Mono .zip",
   "files": [
     "RobotoMono-Bold.ttf",
     "RobotoMono-VariableFont_wght.ttf",
@@ -18,11 +19,10 @@
     "RobotoMono-Thin.ttf",
     "RobotoMono-ThinItalic.ttf"
   ],
-  "archive": "Roboto_Mono .zip",
   "designers": [
     "christian-robertson"
   ],
-  "category": "monospace",
+  "category": "monospaced",
   "license": "ofl",
   "tags": [
     "free",

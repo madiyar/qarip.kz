@@ -31,6 +31,8 @@ export interface StyleInfo {
   weight: number;
   italic: boolean;
   variable: boolean;
+  /** Variation axes (variable styles). */
+  axes?: { tag: string; name: string; min: number; max: number; default: number }[];
 }
 
 export interface CategoryInfo {

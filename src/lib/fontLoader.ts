@@ -5,8 +5,8 @@
  * the CMS: name, designers, license… and the list of uploaded files) next to the font
  * files themselves. Everything technical is derived here, at build time:
  *
- *  - style name, weight, italic, variable, glyph count and supported alphabets are
- *    read from each font binary;
+ *  - style name, weight, italic, variable axes, glyph count, supported alphabets and
+ *    languages (src/data/languages.json) are read from each font binary;
  *  - a compressed WOFF2 copy for previews goes to `public/fonts-web/<slug>/`;
  *  - the list of files inside the uploaded ZIP archive is read for the font page;
  *    a ZIP is built from the font files only when no archive was uploaded;
@@ -20,6 +20,7 @@ import path from 'node:path';
 import type { Loader, LoaderContext } from 'astro/loaders';
 import opentype from 'opentype.js';
 import { unzipSync, zipSync } from 'fflate';
+import LANGUAGES from '../data/languages.json';
 
 const FONT_EXT = /\.(ttf|otf|woff2?)$/i;
 
@@ -47,6 +48,15 @@ const ALPHABETS: Record<string, string> = {
   'kazakh-latin': 'ÄäĞğİıÑñÖöŞşŪūÜü',
 };
 
+/** A variation axis of a variable font (fvar). */
+export interface Axis {
+  tag: string;
+  name: string;
+  min: number;
+  max: number;
+  default: number;
+}
+
 interface FileMeta {
   /** Full font name, e.g. "PT Sans Narrow Bold". */
   full: string;
@@ -59,8 +69,11 @@ interface FileMeta {
   width: number;
   italic: boolean;
   variable: boolean;
+  axes: Axis[];
   glyphs: number;
   scripts: string[];
+  /** Languages whose whole alphabet the file has (ids from src/data/languages.json). */
+  languages: string[];
 }
 
 const slugify = (s: string) =>
@@ -89,6 +102,8 @@ async function inspect(buf: Buffer, ext: string): Promise<FileMeta> {
   const family = pick('preferredFamily') || pick('fontFamily') || '';
   const subfamily = pick('preferredSubfamily') || pick('fontSubfamily') || 'Regular';
   const os2 = font.tables.os2 ?? {};
+  const has = (c: string) => font.charToGlyphIndex(c) > 0;
+  type FvarAxis = { tag: string; name?: Record<string, string>; minValue: number; maxValue: number; defaultValue: number };
   return {
     full: pick('fullName') || `${family} ${subfamily}`.trim(),
     family,
@@ -97,10 +112,18 @@ async function inspect(buf: Buffer, ext: string): Promise<FileMeta> {
     width: os2.usWidthClass || 5,
     italic: Boolean((os2.fsSelection ?? 0) & 1) || /italic|oblique/i.test(subfamily),
     variable: Boolean(font.tables.fvar),
+    axes: ((font.tables.fvar?.axes ?? []) as FvarAxis[]).map((a) => ({
+      tag: a.tag,
+      name: a.name?.en ?? Object.values(a.name ?? {})[0] ?? a.tag,
+      min: a.minValue,
+      max: a.maxValue,
+      default: a.defaultValue,
+    })),
     glyphs: font.numGlyphs,
     scripts: Object.entries(ALPHABETS)
-      .filter(([, chars]) => [...chars].every((c) => font.charToGlyphIndex(c) > 0))
+      .filter(([, chars]) => [...chars].every(has))
       .map(([k]) => k),
+    languages: LANGUAGES.filter((l) => [...l.chars].every(has)).map((l) => l.id),
   };
 }
 
@@ -215,7 +238,7 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
   const names = styleNames(read, fontName);
   const styles: {
     name: string; slug: string; file: string; web: string; format: string; size: number; weight: number; width: number;
-    italic: boolean; variable: boolean; glyphs: number; scripts: string[]; fileName: string;
+    italic: boolean; variable: boolean; axes?: Axis[]; glyphs: number; scripts: string[]; fileName: string;
   }[] = [];
   for (const [i, m] of read.entries()) {
     const name = names[i];
@@ -249,6 +272,7 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       width: m.width,
       italic: m.italic,
       variable: m.variable,
+      ...(m.variable && m.axes.length ? { axes: m.axes } : {}),
       glyphs: m.glyphs,
       scripts: m.scripts,
       fileName: m.fileName,
@@ -318,11 +342,13 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
     downloads: downloads[slug] ?? 0,
     primary,
     scripts: [...new Set(styles.flatMap((s) => s.scripts))],
+    languages: [...new Set(read.flatMap((m) => m.languages))].sort(),
     zip,
     zipName,
     zipSize,
     zipFiles,
-    styles: styles.map(({ fileName: _f, width: _w, ...s }) => s),
+    // Variable styles are told apart from the static ones by name: "Regular" → "VariableRegular".
+    styles: styles.map(({ fileName: _f, width: _w, ...s }) => (s.variable ? { ...s, name: `Variable${s.name.replace(/\s+/g, '')}` } : s)),
   };
 }
 

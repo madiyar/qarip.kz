@@ -43,12 +43,13 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `astro.config.mjs` | `SITE_URL` — the single place for the domain (or `SITE_URL` env var) |
 | `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary |
 | `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `designers` (list) + `files` (uploaded TTF/OTF) + `archive` (ZIP, required in the CMS) |
-| `src/lib/fontLoader.ts` | Content loader: derives style names, weights, glyphs, alphabets, WOFF2 previews and the ZIP's file list from the files; fetches download counts |
+| `src/lib/fontLoader.ts` | Content loader: derives style names, weights, variable axes, glyphs, alphabets, languages, WOFF2 previews and the ZIP's file list from the files; fetches download counts |
 | `public/fonts-web/<slug>/` | Build output (gitignored): WOFF2 previews, and a ZIP only for fonts without an uploaded one |
 | `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
 | `src/content/{designers,licenses,journal}/` | Designers (JSON, bio in kk/ru/en), licenses (MD frontmatter, `visible` switch, optional pricing + body), articles (MD) |
 | `src/content/glossary.json`, `src/data/{categories,tags,purposes,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; tags and purposes carry their own `nameRu` / `nameEn` |
 | `src/data/{faq,unicode}.ts` | FAQ (per language), Unicode reference sections |
+| `src/data/languages.json` | Letters of 248 Latin/Cyrillic languages (CLDR exemplars + Kazakh Latin), for the "Тіл" count; rebuilt by `scripts/languages.mjs` |
 | `src/views/*.astro` | Page logic, each takes `lang` |
 | `src/pages/**`, `src/pages/ru/**`, `src/pages/en/**` | Thin wrappers: `<View lang="kk|ru|en" />` |
 | `DESIGN.md` | The design system: tokens, type, classes, components, page patterns, decisions |
@@ -117,7 +118,10 @@ preview text and size) is browser-only via `src/lib/store.ts`.
 read from the font binaries by `src/lib/fontLoader.ts` at build time — never stored by hand
 and never guessed from file names. A style's name is what its full name (nameID 4) adds to
 the font's name ("PT Sans Narrow Bold" − "PT Sans" → "Narrow Bold"); the sub-family alone
-would turn Narrow/Caption/Condensed files into duplicate "Regular"s. The primary style is the
+would turn Narrow/Caption/Condensed files into duplicate "Regular"s. Variable styles get
+"Variable" in front, without spaces ("VariableRegular", "VariableItalic"), and carry their `axes`
+(fvar); the font page shows them first in the preview, with a slider per axis. A font's
+`languages` are those whose every letter (both cases) is in one of its files. The primary style is the
 editor's `primaryStyle`, else the most regular one (upright, static, 400, normal width).
 `public/fonts-web/` (WOFF2 previews, generated ZIPs; URLs carry `?v=<hash>`) is build output
 and is gitignored; a font with no usable files is skipped with a warning.

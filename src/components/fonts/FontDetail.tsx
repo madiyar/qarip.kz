@@ -4,7 +4,7 @@ import Select from '../ui/Select';
 import { CodeBlock } from '../ui/CopyButton';
 import GlyphGrid from './GlyphGrid';
 import FontInfo from './FontInfo';
-import VariableTab from './VariableTab';
+import VariableStyle from './VariableStyle';
 import PreviewToolbar, { caseStyle } from './PreviewToolbar';
 import { usePreview } from './usePreview';
 import { useDownloads } from './useDownloads';
@@ -44,14 +44,16 @@ interface Props {
   cssBlocks: string[];
   cssUrl: string;
   info: { label: string; value: string }[];
+  /** Numbers on the Info tab, labels already in `lang`. */
   stats: { label: string; value: string }[];
   /** Build-time download count; the live one replaces it after load. */
   downloads: number;
   /** Contents of the ZIP archive. */
   files: FileInfo[];
   zipName: string;
-  /** Catalog links: tags and purposes. */
+  /** Catalog links. */
   tags: { label: string; href: string }[];
+  purposes: { label: string; href: string }[];
   designers: { name: string; href: string; fonts: number }[];
 }
 
@@ -61,7 +63,6 @@ const TABS = [
   ['glyphs', 'Глифтер'],
   ['license', 'Лицензия'],
   ['css', 'CSS'],
-  ['variable', 'Вариативтілік'],
   ['info', 'Инфо'],
 ] as const;
 type Tab = (typeof TABS)[number][0];
@@ -91,14 +92,15 @@ export default function FontDetail(props: Props) {
   const [styleIdx, setStyleIdx] = useState(props.primary);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const downloads = useDownloads(props.slug, props.downloads);
-  const variable = styles.find((s) => s.variable);
-  const tabs = TABS.filter(([id]) => id !== 'variable' || variable);
   const css = props.cssBlocks.filter((_, i) => cssSelected.includes(i)).join('\n\n');
-  const stats = [...props.stats, { label: 'Жүктеулер', value: String(downloads) }];
+  const allSelected = cssSelected.length === styles.length;
+  const stats = [...props.stats, { label: t('рет жүктеп алынған'), value: String(downloads) }];
+  // Variable styles open the preview (with their axes), static ones follow.
+  const previewOrder = [...styles.keys()].sort((a, b) => Number(styles[b].variable) - Number(styles[a].variable));
 
   useEffect(() => {
     const fromHash = window.location.hash.slice(1) as Tab;
-    if (tabs.some(([id]) => id === fromHash)) setTab(fromHash);
+    if (TABS.some(([id]) => id === fromHash)) setTab(fromHash);
     if (window.innerWidth < 640) setLetterSize(24);
   }, []);
   const select = (id: Tab) => {
@@ -106,12 +108,12 @@ export default function FontDetail(props: Props) {
     history.replaceState(null, '', id === 'preview' ? window.location.pathname : `#${id}`);
   };
   const onKey = (e: KeyboardEvent) => {
-    const i = tabs.findIndex(([id]) => id === tab);
-    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    const i = TABS.findIndex(([id]) => id === tab);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
     if (next === undefined) return;
     e.preventDefault();
-    const n = (next + tabs.length) % tabs.length;
-    select(tabs[n][0]);
+    const n = (next + TABS.length) % TABS.length;
+    select(TABS[n][0]);
     buttons.current[n]?.focus();
   };
 
@@ -128,7 +130,7 @@ export default function FontDetail(props: Props) {
         label={t('Стиль')}
         value={styleIdx}
         onChange={setStyleIdx}
-        options={styles.map((s, i) => ({ value: i, text: s.name, label: s.variable ? `${s.name} (${t('Вариатив')})` : s.name }))}
+        options={styles.map((s, i) => ({ value: i, label: s.name }))}
       />
     ) : null;
 
@@ -144,7 +146,7 @@ export default function FontDetail(props: Props) {
   return (
     <div>
       <div className="tabs" role="tablist" aria-label={t('Қаріп бөлімдері')} onKeyDown={onKey}>
-        {tabs.map(([id, label], i) => (
+        {TABS.map(([id, label], i) => (
           <button
             key={id}
             ref={(el) => {
@@ -169,32 +171,37 @@ export default function FontDetail(props: Props) {
           <div className="pt-5">
             <PreviewToolbar t={t} state={preview} onChange={(n) => (setPreview(n), 'text' in n && setOverrides({}))} showView={false} max={160} />
             <div className="mt-2 rows" data-pv="detail">
-              {styles.map((s, i) => (
-                <div key={s.slug + i} className="pt-6 pb-7">
-                  <p className="mb-2.5 text-[13px] text-fg-3">
-                    <b className="font-semibold text-fg-2">{props.name}</b> {s.name}
-                    <span className="ml-2 font-mono text-xs">
-                      {s.variable ? '100–900' : s.weight}
-                      {s.italic ? ' italic' : ''}
-                    </span>
-                  </p>
-                  <div
-                    contentEditable
-                    suppressContentEditableWarning
-                    spellCheck={false}
-                    title={t('Мәтінді өзгерту үшін превьюге басыңыз — әр стиль үшін жеке.')}
-                    className="line-clamp-3 cursor-text leading-[1.15] text-fg [overflow-wrap:anywhere] outline-none focus:line-clamp-none"
-                    style={{ fontFamily: `'${s.family}', system-ui`, fontSize: 'var(--pv-detail)', textTransform: tt }}
-                    onBlur={(e) => {
-                      // Read now: the updater runs later, when the event's currentTarget is already null.
-                      const value = e.currentTarget.textContent ?? '';
-                      setOverrides((o) => ({ ...o, [i]: value }));
-                    }}
-                  >
-                    {overrides[i] ?? text}
+              {previewOrder.map((i) => {
+                const s = styles[i];
+                // Callers read the text on blur, before the update: by the time the updater runs, the event's currentTarget is null.
+                const edit = (value: string) => setOverrides((o) => ({ ...o, [i]: value }));
+                return s.variable ? (
+                  <div key={s.slug + i} className="py-4">
+                    <VariableStyle t={t} fontName={props.name} style={s} text={overrides[i] ?? text} textTransform={tt} onEdit={edit} />
                   </div>
-                </div>
-              ))}
+                ) : (
+                  <div key={s.slug + i} className="pt-6 pb-7">
+                    <p className="mb-2.5 text-[13px] text-fg-3">
+                      <b className="font-semibold text-fg-2">{props.name}</b> {s.name}
+                      <span className="ml-2 font-mono text-xs">
+                        {s.weight}
+                        {s.italic ? ' italic' : ''}
+                      </span>
+                    </p>
+                    <div
+                      contentEditable
+                      suppressContentEditableWarning
+                      spellCheck={false}
+                      title={t('Мәтінді өзгерту үшін превьюге басыңыз — әр стиль үшін жеке.')}
+                      className="line-clamp-3 cursor-text leading-[1.15] text-fg [overflow-wrap:anywhere] outline-none focus:line-clamp-none"
+                      style={{ fontFamily: `'${s.family}', system-ui`, fontSize: 'var(--pv-detail)', textTransform: tt }}
+                      onBlur={(e) => edit(e.currentTarget.textContent ?? '')}
+                    >
+                      {overrides[i] ?? text}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <h2 className="mt-12 mb-1 text-[15px] font-semibold text-fg-2">{t('Өлшем бойынша')}</h2>
             <div className="rows">
@@ -296,6 +303,9 @@ export default function FontDetail(props: Props) {
           <div className="flex max-w-[720px] flex-col gap-4 pt-6">
             {styles.length > 1 && (
               <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('Қаріп түрлері')}>
+                <button type="button" className="chip font-semibold text-fg" onClick={() => setCssSelected(allSelected ? [] : styles.map((_, i) => i))}>
+                  {allSelected ? t('Таңдауды алып тастау') : t('Барлығын таңдау')}
+                </button>
                 {styles.map((s, i) => (
                   <button
                     key={s.slug + i}
@@ -328,19 +338,13 @@ export default function FontDetail(props: Props) {
           </div>
         )}
 
-        {tab === 'variable' && variable && (
-          <div className="pt-6">
-            <VariableTab name={props.name} family={variable.family} url={variable.file} t={t} />
-          </div>
-        )}
-
         {tab === 'info' && (
           <div className="flex flex-col gap-8 pt-6">
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               {stats.map((s) => (
                 <div key={s.label} className="card px-[18px] py-4">
                   <b className="block text-2xl font-[650] tracking-[-0.02em] tabular-nums">{s.value}</b>
-                  <span className="meta">{t(s.label)}</span>
+                  <span className="meta">{s.label}</span>
                 </div>
               ))}
             </div>
@@ -380,17 +384,25 @@ export default function FontDetail(props: Props) {
                     })}
                   </ul>
                 </div>
-                {props.tags.length > 0 && (
-                  <div>
-                    <h2 className="mb-2.5 text-[15px] font-semibold text-fg-2">{t('Тегтер')}</h2>
-                    <div className="flex flex-wrap gap-1.5">
-                      {props.tags.map((tag) => (
-                        <a key={tag.href} href={tag.href} className="inline-flex h-[30px] items-center rounded-full bg-fill px-3 text-[13px] text-fg-2 transition-colors hover:bg-fill-2 hover:text-fg">
-                          {tag.label}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
+                {(
+                  [
+                    ['Тегтер', props.tags],
+                    ['Мақсаты', props.purposes],
+                  ] as const
+                ).map(
+                  ([heading, links]) =>
+                    links.length > 0 && (
+                      <div key={heading}>
+                        <h2 className="mb-2.5 text-[15px] font-semibold text-fg-2">{t(heading)}</h2>
+                        <div className="flex flex-wrap gap-1.5">
+                          {links.map((x) => (
+                            <a key={x.href} href={x.href} className="inline-flex h-[30px] items-center rounded-full bg-fill px-3 text-[13px] text-fg-2 transition-colors hover:bg-fill-2 hover:text-fg">
+                              {x.label}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ),
                 )}
                 {props.designers.map((d) => (
                   <a key={d.href} href={d.href} className="hover-name flex items-center gap-3">

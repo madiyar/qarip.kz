@@ -222,8 +222,8 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | `FontBrowser.tsx` | Catalog engine: search, filter sheet, sort, list/grid, paging |
 | `HomeFonts.tsx` | Home tabs (new / popular / Qarip), 6 cards each |
 | `FontActions.tsx` | Font page actions + fixed mobile bar + thank-you note after download |
-| `FontDetail.tsx` | Font page tabs: preview, letters, glyphs, license, CSS, variable, info |
-| `GlyphGrid.tsx`, `FontInfo.tsx`, `VariableTab.tsx` | Glyph inspector, technical data, axes |
+| `FontDetail.tsx` | Font page tabs: preview (variable styles first, as `VariableStyle` panels with axis sliders), letters, glyphs, license, CSS, info |
+| `GlyphGrid.tsx`, `FontInfo.tsx`, `VariableStyle.tsx` | Glyph inspector, technical data, a variable style with its axes |
 | `FavoriteButton.tsx` | `variant="round"` in cards, `"square"` on the font page |
 | `QualityIndicator.tsx` | Bar + score: green ≥ 8, amber ≥ 5, red below |
 

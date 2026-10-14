@@ -15,6 +15,8 @@ const style = z.object({
   weight: z.number().min(100).max(900).default(400),
   italic: z.boolean().default(false),
   variable: z.boolean().default(false),
+  /** Variation axes of a variable file. */
+  axes: z.array(z.object({ tag: z.string(), name: z.string(), min: z.number(), max: z.number(), default: z.number() })).optional(),
   glyphs: z.number().optional(),
   scripts: z.array(z.string()).default([]),
 });
@@ -45,6 +47,8 @@ const fonts = defineCollection({
     downloads: z.number().default(0),
     primary: z.number().default(0),
     scripts: z.array(z.string()).default([]),
+    /** Languages whose whole alphabet the font has (src/data/languages.json, from CLDR). */
+    languages: z.array(z.string()).default([]),
     zip: z.string(),
     zipName: z.string().optional(),
     zipSize: z.number().default(0),

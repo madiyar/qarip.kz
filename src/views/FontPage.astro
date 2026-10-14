@@ -45,23 +45,23 @@ const info = [
   { label: 'Форматтар', value: formats },
   { label: 'Лицензия', value: license?.data.name ?? '' },
   { label: 'Әліпбилер', value: d.scripts.map((s) => t(SCRIPT_LABELS[s] ?? s)).join(', ') },
-  ...(purposes.length ? [{ label: 'Мақсаты', value: purposes.map((p) => termName(lang, p!.data)).join(', ') }] : []),
   { label: 'Қосылған күні', value: formatDate(lang, d.addedDate) },
   ...(d.releaseDate ? [{ label: 'Шыққан күні', value: d.releaseDate }] : []),
   ...(d.updatedDate ? [{ label: 'Жаңартылған', value: d.updatedDate }] : []),
 ];
+// Numbers on the Info tab (labels under the number, so not the shared t() strings).
+// "Тіл" counts the languages whose whole alphabet the font has.
 const stats = [
-  { label: 'Стиль саны', value: String(d.styles.length) },
-  { label: 'Глиф саны', value: glyphs ? String(glyphs) : '—' },
-  { label: 'Әліпбилер', value: String(d.scripts.length) },
+  { label: { kk: 'Стиль', ru: 'Стили', en: 'Styles' }[lang], value: String(d.styles.length) },
+  { label: { kk: 'Глиф', ru: 'Глифы', en: 'Glyphs' }[lang], value: glyphs ? String(glyphs) : '—' },
+  { label: { kk: 'Тіл', ru: 'Языки', en: 'Languages' }[lang], value: d.languages.length ? String(d.languages.length) : '—' },
 ];
 // Catalog links: on the Info tab and in the summary at the bottom.
 const purposeLinks = purposes.flatMap((p) => (p ? [{ label: termName(lang, p.data), href: localePath(lang, `/fonts?purpose=${p.id}`) }] : []));
-const tagOnlyLinks = tags.flatMap((tag) => (tag ? [{ label: termName(lang, tag.data), href: localePath(lang, `/fonts?tag=${tag.id}`) }] : []));
-const tagLinks = [...purposeLinks, ...tagOnlyLinks];
+const tagLinks = tags.flatMap((tag) => (tag ? [{ label: termName(lang, tag.data), href: localePath(lang, `/fonts?tag=${tag.id}`) }] : []));
 const summaryLinks = [
   { label: 'Мақсаттар', links: purposeLinks },
-  { label: 'Тегтер', links: tagOnlyLinks },
+  { label: 'Тегтер', links: tagLinks },
 ].filter((group) => group.links.length > 0);
 const designerLinks = designers.map((x) => ({ name: x.data.name, href: localePath(lang, `/designers/${x.id}`), fonts: byDesigner(all, x.id).length }));
 const catLabel = categoryLabel(lang, d.category.id, category?.data.name ?? d.category.id);
@@ -218,6 +218,7 @@ const h1Size = d.name.length > 9 ? 'text-[48px] sm:text-[84px]' : 'text-[60px] s
       files={files}
       zipName={d.zipName ?? `${font.id}.zip`}
       tags={tagLinks}
+      purposes={purposeLinks}
       designers={designerLinks}
     />
 

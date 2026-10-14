@@ -316,7 +316,7 @@ export default function Tester({ lang }: { lang: Lang }) {
             </div>
           </div>
         ) : (
-          <p className="panel p-8 text-center text-fg-3">{t('Бұл файлда вариативті ось жоқ. Вариативті қаріп жүктесеңіз, әр ось үшін жүгірткі осында пайда болады.')}</p>
+          <p className="panel p-8 text-center text-fg-3">{t('Бұл файлда вариатив ось жоқ. Вариатив қаріп жүктесеңіз, әр ось үшін жүгірткі осында пайда болады.')}</p>
         ))}
 
       {tab === 'glyphs' && <GlyphGrid key={active.id} buffer={active.sfnt} t={t} />}

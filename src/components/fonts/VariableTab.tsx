@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CodeBlock } from '../ui/CopyButton';
 import Range from '../ui/Range';
+import SizeSelect from '../ui/SizeSelect';
 import { DEFAULT_PREVIEW } from '../../lib/site';
 import type { T } from '../../i18n';
 import Skeleton from '../ui/Skeleton';
@@ -60,11 +61,11 @@ export default function VariableTab({ name, family, url, t }: { name: string; fa
       <section className="panel p-5 sm:p-6">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
           <h2 className="title-sm">{t('Вариативтік осьтер')}</h2>
-          <label className="flex items-center gap-2 text-sm text-fg-3">
+          <div className="flex items-center gap-2 text-sm text-fg-3">
             {t('Өлшемі')}
             <Range min={12} max={160} value={size} onChange={setSize} className="w-28" label={t('Өлшемі')} />
-            <span className="w-12 tabular-nums">{size}px</span>
-          </label>
+            <SizeSelect min={12} max={160} value={size} onChange={setSize} label={t('Жылдам өлшемдер')} />
+          </div>
         </div>
         <div className="space-y-5">
           {axes.map((a) => (

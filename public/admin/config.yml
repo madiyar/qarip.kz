@@ -71,7 +71,7 @@ collections:
         min: 1
         accept: .ttf,.otf,.woff,.woff2
         choose_url: false
-        hint: Барлық стильдің файлын (TTF, OTF, вариативті қаріптерді де) бірден сүйреп әкеліңіз. Стиль атауы, салмағы, глиф саны файлдан өзі оқылады.
+        hint: Барлық стильдің файлын (TTF, OTF, вариатив қаріптерді де) бірден сүйреп әкеліңіз. Стиль атауы, салмағы, глиф саны файлдан өзі оқылады.
       - name: archive
         label: ZIP архив
         widget: file
@@ -105,29 +105,31 @@ collections:
         display_fields: [name]
         search_fields: [name]
         dropdown_threshold: 0
+      # Options come from Анықтамалықтар → Тегтер / Мақсаты (src/data/tags.json, purposes.json).
       - name: tags
         label: Тегтер
-        widget: select
+        widget: relation
+        collection: settings
+        file: tags
+        value_field: items.*.id
+        display_fields: ['items.*.name']
+        search_fields: ['items.*.name']
         multiple: true
         required: false
-        options:
-          - { label: Тегін, value: free }
-          - { label: Коммерциялық, value: commercial }
-          - { label: Кирилл, value: cyrillic }
-          - { label: Латын, value: latin }
-          - { label: Вариативті, value: variable }
-        hint: «Тегін» — коммерциялық мақсатта да тегін қолдануға болатын қаріп.
+        dropdown_threshold: 20
+        hint: «Тегін» — коммерциялық мақсатта да тегін қолдануға болатын қаріп. Жаңа тегті «Анықтамалықтар → Тегтер» бөліміне қосыңыз.
       - name: purposes
         label: Мақсаты
-        widget: select
+        widget: relation
+        collection: settings
+        file: purposes
+        value_field: items.*.id
+        display_fields: ['items.*.name']
+        search_fields: ['items.*.name']
         multiple: true
         required: false
-        options:
-          - { label: Бас жазу (тақырып), value: headings }
-          - { label: Дене мәтін, value: body }
-          - { label: Логотип, value: logo }
-          - { label: Экран, value: screen }
-          - { label: Баспа, value: print }
+        dropdown_threshold: 20
+        hint: Жаңа мақсатты «Анықтамалықтар → Мақсаты» бөліміне қосыңыз.
       - { name: our, label: Біздің қаріп, widget: boolean, default: false, required: false }
       - name: quality
         label: Сапа (1–10)
@@ -327,6 +329,48 @@ collections:
               - { name: name, label: Атауы, widget: string }
               - { name: description, label: Сипаттамасы, widget: string }
               - { name: color, label: Түсі, widget: color }
+      - name: tags
+        label: Тегтер
+        icon: sell
+        file: /src/data/tags.json
+        format: json
+        fields:
+          - name: items
+            label: Тегтер
+            label_singular: тег
+            widget: list
+            collapsed: true
+            summary: '{{name}} · {{nameRu}} · {{nameEn}}'
+            fields:
+              - name: id
+                label: ID (латынша)
+                widget: string
+                pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).']
+                hint: 'Сілтемеде қолданылады: /fonts/?tag=<id>. Барын өзгертпеңіз — қаріптер тегке осы ID арқылы байланған. free, commercial, cyrillic, latin, variable тегтерін сайттың сүзгілері қолданады, өшірмеңіз.'
+              - { name: name, label: Атауы (қазақша), widget: string }
+              - { name: nameRu, label: Атауы (орысша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+              - { name: nameEn, label: Атауы (ағылшынша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+      - name: purposes
+        label: Мақсаты
+        icon: flag
+        file: /src/data/purposes.json
+        format: json
+        fields:
+          - name: items
+            label: Мақсаттар
+            label_singular: мақсат
+            widget: list
+            collapsed: true
+            summary: '{{name}} · {{nameRu}} · {{nameEn}}'
+            fields:
+              - name: id
+                label: ID (латынша)
+                widget: string
+                pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).']
+                hint: 'Сілтемеде қолданылады: /fonts/?purpose=<id>. Барын өзгертпеңіз — қаріптер мақсатқа осы ID арқылы байланған.'
+              - { name: name, label: Атауы (қазақша), widget: string }
+              - { name: nameRu, label: Атауы (орысша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+              - { name: nameEn, label: Атауы (ағылшынша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
       - name: donators
         label: Донаторлар
         icon: volunteer_activism

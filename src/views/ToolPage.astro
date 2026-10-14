@@ -26,7 +26,7 @@ const needsCatalog = tool === 'pairing' || tool === 'proofing';
 const fonts = needsCatalog ? await toSummaries(entries, lang) : [];
 const catalog = tool === 'freezer' ? entries.map((f) => ({ name: f.data.name, styles: f.data.styles.map((s) => ({ name: s.name, file: s.file })) })) : [];
 const intro: Record<ToolId, string> = {
-  tester: 'Қаріп файлын тастаңыз — қазақ әріптерін, глифтерді, OpenType мүмкіндіктерін және вариативті осьтерді тексереміз.',
+  tester: 'Қаріп файлын тастаңыз — қазақ әріптерін, глифтерді, OpenType мүмкіндіктерін және вариатив осьтерді тексереміз.',
   converter: 'TTF, OTF, WOFF және WOFF2 арасында түрлендіру. Сайтқа әдетте WOFF2 жеткілікті.',
   pairing: 'Сайттағы қаріптерден автоматты үйлесім жасаңыз',
   proofing: 'Қаріпті түрлі өлшемде және мәтінде тексеріп, басып шығарыңыз',

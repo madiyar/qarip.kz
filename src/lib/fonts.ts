@@ -23,6 +23,16 @@ export async function getCategories(lang: Lang = 'kk'): Promise<CategoryInfo[]> 
     .sort((a, b) => rank(a.id) - rank(b.id));
 }
 
+/** Name of a tag or purpose in `lang`; Kazakh when there is no translation. */
+export function termName(lang: Lang, term: { name: string; nameRu?: string; nameEn?: string }): string {
+  return (lang === 'ru' ? term.nameRu : lang === 'en' ? term.nameEn : undefined) || term.name;
+}
+
+/** Tags or purposes as `{ id, name }` in `lang`. */
+export async function getTerms(kind: 'tags' | 'purposes', lang: Lang = 'kk') {
+  return (await getCollection(kind)).map((x) => ({ id: x.id, name: termName(lang, x.data) }));
+}
+
 export function primaryStyle(font: FontEntry): Style {
   return font.data.styles[font.data.primary] ?? font.data.styles[0];
 }

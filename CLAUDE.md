@@ -47,8 +47,8 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `public/fonts-web/<slug>/` | Build output (gitignored): WOFF2 previews, and a ZIP only for fonts without an uploaded one |
 | `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
 | `src/content/{designers,licenses,journal}/` | Designers (JSON, bio in kk/ru/en), licenses (MD frontmatter, `visible` switch, optional pricing + body), articles (MD) |
-| `src/content/glossary.json`, `src/data/{categories,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }` |
-| `src/data/{tags,purposes}.json`, `faq.ts`, `unicode.ts` | Taxonomies, FAQ (per language), Unicode reference sections |
+| `src/content/glossary.json`, `src/data/{categories,tags,purposes,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; tags and purposes carry their own `nameRu` / `nameEn` |
+| `src/data/{faq,unicode}.ts` | FAQ (per language), Unicode reference sections |
 | `src/views/*.astro` | Page logic, each takes `lang` |
 | `src/pages/**`, `src/pages/ru/**`, `src/pages/en/**` | Thin wrappers: `<View lang="kk|ru|en" />` |
 | `DESIGN.md` | The design system: tokens, type, classes, components, page patterns, decisions |
@@ -74,7 +74,9 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 **i18n.** Three locales: `kk` (default, no prefix), `ru` (`/ru/`), `en` (`/en/`).
 UI strings are written in Kazakh and used as keys: `t('Қаріптер')`. Translations live in
 `src/i18n/ru.json` and `en.json`; a missing key falls back to Kazakh. When adding a string,
-add it to **both** JSON files. Placeholders: `t('{n} стиль', { n })`.
+add it to **both** JSON files. Placeholders: `t('{n} стиль', { n })`. Tag and purpose names are
+translated in their data (`nameRu` / `nameEn`, edited in the CMS), read with `termName()` /
+`getTerms()` from `src/lib/fonts.ts` — not with `t()`.
 A new page needs a view plus three wrappers (`src/pages/x.astro`, `ru/x.astro`, `en/x.astro`).
 
 **Links.** Always build internal links with `localePath(lang, '/path')`. It adds the locale
@@ -130,9 +132,9 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
 
 - **opentype.js `toPathData()` is broken** — it can glue coordinates ("42.4 0" → "42.40")
   and cut outlines short. Use `pathData()` from `src/lib/glyphPath.ts` instead.
-- `glossary.json`, `categories.json`, `donators.json` are wrapped in an object
-  (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`. Keep that shape —
-  the CMS config and the category relation field (`items.*.id`) depend on it.
+- `glossary.json`, `categories.json`, `tags.json`, `purposes.json`, `donators.json` are wrapped in
+  an object (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`. Keep that
+  shape — the CMS config and the relation fields of the font form (`items.*.id`) depend on it.
 - The CMS config can be validated against Sveltia's JSON schema
   (`https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json`) with ajv + js-yaml.
 - **Restart `astro dev` after changing `content.config.ts` or the shape of a data file** —
@@ -172,6 +174,9 @@ Fonts have several `designers` (relation, `multiple`), a required ZIP `archive`,
 as a float with step 0.5; there is no "featured" flag and no hand-edited download count.
 Designers have `bio` (Kazakh, required, fallback) + `bioRu` / `bioEn`. Licenses have a
 `visible` switch: only visible ones are listed on `/licenses` and get their own page.
+Tags and purposes are edited under Анықтамалықтар («Тегтер», «Мақсаты»: id + Kazakh name +
+`nameRu` / `nameEn`); the font form picks them through relation fields (checkboxes). The tag ids
+`free`, `commercial`, `cyrillic`, `latin`, `variable` are used by the catalog filters — keep them.
 
 `/admin` runs Sveltia CMS with the GitHub backend: editors sign in with a GitHub account that
 has write access to `madiyar/qarip.kz`. Saving commits straight to `main` (no editorial

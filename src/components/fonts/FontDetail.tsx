@@ -128,7 +128,7 @@ export default function FontDetail(props: Props) {
         label={t('Стиль')}
         value={styleIdx}
         onChange={setStyleIdx}
-        options={styles.map((s, i) => ({ value: i, text: s.name, label: s.variable ? `${s.name} (${t('Вариативті')})` : s.name }))}
+        options={styles.map((s, i) => ({ value: i, text: s.name, label: s.variable ? `${s.name} (${t('Вариатив')})` : s.name }))}
       />
     ) : null;
 

@@ -122,7 +122,7 @@ export default function FontInfo({ url, t }: { url: string; t: T }) {
     ['Кернинг жұптары', rich.kerningPairs ? rich.kerningPairs.toLocaleString() : t('Жоқ')],
     ['Тіл жүйелері', String(rich.langs || '—')],
     ['Units per Em', String(rich.unitsPerEm)],
-    ['Вариативті осьтер', rich.axes.length ? rich.axes.join(', ') : t('Жоқ')],
+    ['Вариатив осьтер', rich.axes.length ? rich.axes.join(', ') : t('Жоқ')],
   ];
   return (
     <div className="grid gap-x-14 gap-y-8 md:grid-cols-2">

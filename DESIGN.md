@@ -210,7 +210,8 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 
 ### UI (`ui/`)
 `Icon`, `Select` (listbox in a `.pop`), `Range` + `RangeField` (labelled slider with value),
-`Switch`, `CopyButton` + `CodeBlock` (code panel with a title bar), `OwnBadge`, `Skeleton`.
+`SizeSelect` (the "24 px" next to a size slider: opens ready sizes), `Switch`, `CopyButton` +
+`CodeBlock` (code panel with a title bar), `OwnBadge`, `Skeleton`.
 
 ### Fonts (`fonts/`)
 | Component | |

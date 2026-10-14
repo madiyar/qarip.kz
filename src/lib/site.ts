@@ -43,7 +43,7 @@ export const MORE_NAV = [
  * `group` sorts them on the tools page.
  */
 export const TOOLS = [
-  { href: '/tools/tester', label: 'Тестер', title: 'Қаріп тестері', description: 'Файлдағы қазақ әріптерін тексеру', long: 'Файлды тастаңыз: қазақ әріптері, глифтер, OpenType, вариативті осьтер.', glyph: 'Әа', glyphFont: 'serif', group: 'check' },
+  { href: '/tools/tester', label: 'Тестер', title: 'Қаріп тестері', description: 'Файлдағы қазақ әріптерін тексеру', long: 'Файлды тастаңыз: қазақ әріптері, глифтер, OpenType, вариатив осьтер.', glyph: 'Әа', glyphFont: 'serif', group: 'check' },
   { href: '/tools/proofing', label: 'Баспа тексті', title: 'Баспа тексті', description: 'Сарқырама, тақырып, мәтін', long: 'Сарқырама, тақырыптар, мәтін, алфавит, кернинг — басып шығаруға дайын.', glyph: '¶', glyphFont: 'serif', group: 'check' },
   { href: '/tools/kerning', label: 'Кернинг жұптары', title: 'Кернинг жұптары', description: 'Жұптар мен үштіктер генераторы', long: 'Кернинг тексеруге арналған жұптар мен үштіктер, қазақ әріптерімен.', glyph: 'ҚА', glyphFont: 'sans', group: 'check' },
   { href: '/tools/converter', label: 'Конвертер', title: 'Веб-қаріп конвертері', description: 'TTF, OTF, WOFF, WOFF2', long: 'TTF, OTF, WOFF, WOFF2 арасында бірнеше файлды бірден түрлендіру.', glyph: '⇄', glyphFont: 'sans', group: 'convert' },

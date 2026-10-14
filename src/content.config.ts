@@ -110,14 +110,17 @@ const categories = defineCollection({
   schema: z.object({ name: z.string(), description: z.string(), color: z.string() }),
 });
 
+// Tags and purposes: edited in the CMS with their translations, wrapped like categories.
+const term = z.object({ name: z.string(), nameRu: z.string().optional(), nameEn: z.string().optional() });
+
 const tags = defineCollection({
-  loader: file('src/data/tags.json'),
-  schema: z.object({ name: z.string() }),
+  loader: file('src/data/tags.json', { parser: (text) => JSON.parse(text).items }),
+  schema: term,
 });
 
 const purposes = defineCollection({
-  loader: file('src/data/purposes.json'),
-  schema: z.object({ name: z.string() }),
+  loader: file('src/data/purposes.json', { parser: (text) => JSON.parse(text).items }),
+  schema: term,
 });
 
 const journal = defineCollection({

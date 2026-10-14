@@ -32,7 +32,9 @@ interface Option {
 interface Props {
   fonts: FontSummary[];
   lang: Lang;
+  /** Filter options, names already in `lang`. */
   purposes?: Option[];
+  tags?: Option[];
   /** Fonts per page (catalog). */
   perPage?: number;
   /** Search, filters and sorting (catalog and category pages). */
@@ -88,6 +90,7 @@ export default function FontBrowser({
   fonts,
   lang,
   purposes = [],
+  tags = [],
   perPage = 0,
   filters: showFilters = false,
   syncUrl = false,
@@ -158,10 +161,10 @@ export default function FontBrowser({
   // Active filters as removable chips (search and sort are not filters).
   const chips: { label: string; clear: () => void }[] = [];
   if (f.license !== 'all') chips.push({ label: t(f.license === 'free' ? '100% тегін' : 'Жеке жобаға'), clear: () => update({ license: 'all' }) });
-  f.purposes.forEach((id) => chips.push({ label: t(purposes.find((p) => p.id === id)?.name ?? id), clear: () => toggleIn('purposes', id) }));
+  f.purposes.forEach((id) => chips.push({ label: purposes.find((p) => p.id === id)?.name ?? id, clear: () => toggleIn('purposes', id) }));
   if (f.our) chips.push({ label: t('Qarip қаріптері'), clear: () => update({ our: false }) });
-  if (f.variable) chips.push({ label: t('Вариативті'), clear: () => update({ variable: false }) });
-  if (f.tag) chips.push({ label: f.tag, clear: () => update({ tag: '' }) });
+  if (f.variable) chips.push({ label: t('Вариатив'), clear: () => update({ variable: false }) });
+  if (f.tag) chips.push({ label: tags.find((x) => x.id === f.tag)?.name ?? f.tag, clear: () => update({ tag: '' }) });
   const clearAll = () => update({ ...DEFAULT, sort: f.sort });
   const countFor = (license: License) => fonts.filter((x) => match(x, { ...f, license })).length;
 
@@ -172,7 +175,7 @@ export default function FontBrowser({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   const pages = [...new Set([1, page - 1, page, page + 1, totalPages])].filter((n) => n >= 1 && n <= totalPages).sort((a, b) => a - b);
-  const sortLabels: Record<Sort, string> = { new: t('Жаңалары'), popular: t('Танымалдары'), alpha: t('Алфавит бойынша') };
+  const sortLabels: Record<Sort, string> = { new: t('Жаңасы'), popular: t('Танымалы'), alpha: t('Атауынша') };
 
   return (
     <div>
@@ -190,7 +193,7 @@ export default function FontBrowser({
               <span className="sr-only">{t('Қаріп немесе дизайнер іздеу')}</span>
               <input type="search" className="!text-sm" value={f.q} onChange={(e) => update({ q: e.target.value })} placeholder={t('Қаріп іздеу')} />
               {f.q && (
-                <button type="button" className="-mr-1 text-fg-3 hover:text-fg" onClick={() => update({ q: '' })} aria-label={t('Тазалау')}>
+                <button type="button" className="-mr-1 text-fg-3 hover:text-fg" onClick={() => update({ q: '' })} aria-label={t('Тазарту')}>
                   <Icon name="x" size={15} />
                 </button>
               )}
@@ -199,16 +202,16 @@ export default function FontBrowser({
             <div ref={panelRef} className="relative">
               <button type="button" className="chip text-fg" aria-haspopup="dialog" aria-expanded={panel} onClick={() => setPanel((o) => !o)}>
                 <Icon name="sliders" size={15} />
-                {t('Сүзгілер')}
+                {t('Іріктеу')}
                 {chips.length > 0 && <span className="inline-flex size-[18px] items-center justify-center rounded-full bg-accent text-[11px] font-bold text-on-accent">{chips.length}</span>}
               </button>
               {panel && (
                 <>
                   <div className="pop-scrim fixed inset-0 z-[68]" onClick={() => setPanel(false)} aria-hidden="true" />
-                  <div role="dialog" aria-label={t('Сүзгілер')} className="pop absolute top-[calc(100%+10px)] left-0 z-[70] flex w-[340px] flex-col gap-[22px] !p-[18px] sm:left-auto sm:right-auto">
-                    <b className="-mb-1.5 text-lg font-[650] tracking-[-0.02em] sm:hidden">{t('Сүзгілер')}</b>
+                  <div role="dialog" aria-label={t('Іріктеу')} className="pop absolute top-[calc(100%+10px)] left-0 z-[70] flex w-[340px] flex-col gap-[22px] !p-[18px] sm:left-auto sm:right-auto">
+                    <b className="-mb-1.5 text-lg font-[650] tracking-[-0.02em] sm:hidden">{t('Іріктеу')}</b>
                     <fieldset>
-                      <legend className="mb-1.5 text-[13px] font-semibold text-fg-3">{t('Қай жобаға')}</legend>
+                      <legend className="mb-1.5 text-[13px] font-semibold text-fg-3">{t('Қандай жобаға')}</legend>
                       {(
                         [
                           ['all', 'Барлық лицензия'],
@@ -243,7 +246,7 @@ export default function FontBrowser({
                           {purposes.map((p) => (
                             <button key={p.id} type="button" className="chip" aria-pressed={f.purposes.includes(p.id)} onClick={() => toggleIn('purposes', p.id)}>
                               {f.purposes.includes(p.id) && <Icon name="check" size={12} strokeWidth={3} />}
-                              {t(p.name)}
+                              {p.name}
                             </button>
                           ))}
                         </div>
@@ -257,16 +260,16 @@ export default function FontBrowser({
                         <Switch checked={f.our} onChange={(our) => update({ our })} labelledBy="flt-our" />
                       </div>
                       <div className="flex min-h-11 items-center justify-between gap-3">
-                        <span id="flt-var">{t('Вариативті')}</span>
+                        <span id="flt-var">{t('Вариатив')}</span>
                         <Switch checked={f.variable} onChange={(variable) => update({ variable })} labelledBy="flt-var" />
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button type="button" className="btn-secondary btn-rect" onClick={clearAll}>
-                        {t('Тазалау')}
+                        {t('Тазарту')}
                       </button>
                       <button type="button" className="btn-primary btn-rect flex-1" onClick={() => setPanel(false)}>
-                        {t('{n} қаріпті көрсету', { n: results.length })}
+                        {t('{n} қаріп көру', { n: results.length })}
                       </button>
                     </div>
                   </div>
@@ -295,7 +298,7 @@ export default function FontBrowser({
                 </button>
               ))}
               <button type="button" className="h-[30px] px-2 text-[13px] text-fg-3 hover:text-fg" onClick={clearAll}>
-                {t('Тазалау')}
+                {t('Тазарту')}
               </button>
             </div>
           )}

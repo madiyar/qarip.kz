@@ -1,6 +1,7 @@
 import { type RefObject, useEffect, useId, useRef, useState } from 'react';
 import Icon from '../ui/Icon';
 import Range from '../ui/Range';
+import SizeSelect from '../ui/SizeSelect';
 import { PANGRAMS } from '../../lib/site';
 import type { T } from '../../i18n';
 
@@ -141,10 +142,10 @@ export default function PreviewToolbar({ t, state, onChange, showView = true, mi
       </button>
 
       <Divider />
-      {/* Size: a slider on larger screens, a popover on phones. */}
-      <div className="hidden w-[210px] shrink-0 items-center gap-3 pr-2.5 pl-2 sm:flex">
-        <Range min={min} max={max} value={state.size} onChange={(size) => onChange({ size })} className="flex-1" label={t('Қаріп өлшемі')} />
-        <span className="min-w-11 text-right text-sm font-medium text-fg-2 tabular-nums">{state.size} px</span>
+      {/* Size: a slider and a list of ready sizes on larger screens, a popover on phones. */}
+      <div className="hidden w-[232px] shrink-0 items-center gap-2 pr-1 pl-2 sm:flex">
+        <Range min={min} max={max} value={state.size} onChange={(size) => onChange({ size })} className="min-w-0 flex-1" label={t('Қаріп өлшемі')} />
+        <SizeSelect min={min} max={max} value={state.size} onChange={(size) => onChange({ size })} label={t('Жылдам өлшемдер')} />
       </div>
       <div ref={sizeRef} className="relative shrink-0 sm:hidden">
         <button type="button" className={`${ctl} min-w-12 font-semibold text-fg tabular-nums`} aria-haspopup="dialog" aria-expanded={menu === 'size'} aria-label={`${t('Қаріп өлшемі')}: ${state.size}px`} onClick={() => setMenu((m) => (m === 'size' ? null : 'size'))}>

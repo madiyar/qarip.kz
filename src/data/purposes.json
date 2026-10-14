@@ -2,19 +2,19 @@
   "items": [
     {
       "id": "headings",
-      "name": "Бас жазу",
+      "name": "Маңдайша",
       "nameRu": "Заголовки",
       "nameEn": "Headings"
     },
     {
       "id": "body",
-      "name": "Дене мәтін",
+      "name": "Ұзын мәтін",
       "nameRu": "Основной текст",
       "nameEn": "Body text"
     },
     {
       "id": "logo",
-      "name": "Логотип",
+      "name": "Лого",
       "nameRu": "Логотип",
       "nameEn": "Logo"
     },
@@ -29,6 +29,12 @@
       "name": "Баспа",
       "nameRu": "Печать",
       "nameEn": "Print"
+    },
+    {
+      "id": "comic",
+      "name": "Комикс",
+      "nameRu": "Комикс",
+      "nameEn": "Comic"
     }
   ]
 }

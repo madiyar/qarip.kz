@@ -1,14 +1,15 @@
 import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon';
 import Select from '../ui/Select';
+import Skeleton from '../ui/Skeleton';
 import { CodeBlock } from '../ui/CopyButton';
 import GlyphGrid from './GlyphGrid';
-import FontInfo from './FontInfo';
+import { FontMeta, FontTech, useFontFile } from './FontInfo';
 import VariableStyle from './VariableStyle';
 import PreviewToolbar, { caseStyle } from './PreviewToolbar';
 import { usePreview } from './usePreview';
 import { useDownloads } from './useDownloads';
-import { CHARSETS, DEFAULT_PREVIEW } from '../../lib/site';
+import { CHARSETS, DEFAULT_PREVIEW, KAZAKH_LETTERS } from '../../lib/site';
 import { type Lang, localePath, useT } from '../../i18n';
 import type { StyleInfo } from '../../lib/types';
 
@@ -46,6 +47,8 @@ interface Props {
   info: { label: string; value: string }[];
   /** Numbers on the Info tab, labels already in `lang`. */
   stats: { label: string; value: string }[];
+  /** Languages the font supports, counted like the Hyperglot checker. */
+  languages: number;
   /** Build-time download count; the live one replaces it after load. */
   downloads: number;
   /** Contents of the ZIP archive. */
@@ -59,16 +62,15 @@ interface Props {
 
 const TABS = [
   ['preview', 'Превью'],
-  ['letters', 'Әріптер'],
-  ['glyphs', 'Глифтер'],
+  ['letters', 'Әріп'],
+  ['glyphs', 'Глиф'],
   ['license', 'Лицензия'],
   ['css', 'CSS'],
   ['info', 'Инфо'],
 ] as const;
 type Tab = (typeof TABS)[number][0];
 
-/** Kazakh-specific letters (Cyrillic and Latin), highlighted on the Letters tab. */
-const KAZAKH = new Set('ӘәҒғҚқҢңӨөҰұҮүҺһІіÄäĞğİıÑñÖöŞşŪūÜü');
+const KAZAKH = new Set(KAZAKH_LETTERS);
 const WATERFALL = [48, 32, 24, 18, 14];
 const initials = (name: string) =>
   name
@@ -123,6 +125,9 @@ export default function FontDetail(props: Props) {
   const isSource = (s: StyleInfo) => /\.(ttf|otf|woff)$/i.test(s.file);
   const glyphSource = styles.find((s) => isSource(s) && s.slug === current.slug) ?? styles.find(isSource);
   const tt = caseStyle(preview.textCase);
+  // The Info tab reads the file only once it is opened.
+  const rich = useFontFile(tab === 'info' ? glyphSource?.file : undefined);
+  const axes = [...new Set(styles.flatMap((s) => s.axes?.map((a) => a.tag) ?? []))];
 
   const stylePicker =
     styles.length > 1 ? (
@@ -348,19 +353,34 @@ export default function FontDetail(props: Props) {
                 </div>
               ))}
             </div>
-            <div className="grid gap-x-14 gap-y-8 md:grid-cols-2">
-              <div>
-                <H>{t('Жалпы ақпарат')}</H>
-                <dl className="rows text-sm">
-                  {props.info.map((row) => (
-                    <div key={row.label} className="flex justify-between gap-4 py-[11px]">
-                      <dt className="text-fg-3">{t(row.label)}</dt>
-                      <dd className="text-right">{row.value}</dd>
-                    </div>
-                  ))}
-                </dl>
+            {/* Two independent columns: a long block on one side leaves no gap on the other. */}
+            <div className="grid items-start gap-x-14 gap-y-8 md:grid-cols-2">
+              <div className="flex flex-col gap-8">
+                <div>
+                  <H>{t('Жалпы ақпарат')}</H>
+                  <dl className="rows text-sm">
+                    {props.info.map((row) => (
+                      <div key={row.label} className="flex justify-between gap-4 py-[11px]">
+                        <dt className="text-fg-3">{t(row.label)}</dt>
+                        <dd className="text-right">{row.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+                {glyphSource && <FontTech rich={rich} t={t} languages={props.languages} axes={axes} />}
+                {props.designers.map((d) => (
+                  <a key={d.href} href={d.href} className="hover-name flex items-center gap-3">
+                    <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent-ink">
+                      {initials(d.name)}
+                    </span>
+                    <span className="min-w-0">
+                      <b className="font-name">{d.name}</b>
+                      <span className="meta">{t('{n} қаріп', { n: d.fonts })}</span>
+                    </span>
+                  </a>
+                ))}
               </div>
-              <div className="flex flex-col gap-7">
+              <div className="flex flex-col gap-8">
                 <div>
                   <H>
                     {t('Архивтегі файлдар')} · {props.files.length}
@@ -404,20 +424,19 @@ export default function FontDetail(props: Props) {
                       </div>
                     ),
                 )}
-                {props.designers.map((d) => (
-                  <a key={d.href} href={d.href} className="hover-name flex items-center gap-3">
-                    <span aria-hidden="true" className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent-ink">
-                      {initials(d.name)}
-                    </span>
-                    <span className="min-w-0">
-                      <b className="font-name">{d.name}</b>
-                      <span className="meta">{t('{n} қаріп', { n: d.fonts })}</span>
-                    </span>
-                  </a>
-                ))}
+                {glyphSource &&
+                  (rich ? (
+                    <FontMeta meta={rich.meta} t={t} />
+                  ) : (
+                    <div className="flex flex-col gap-3" aria-busy="true">
+                      <Skeleton className="h-5 w-40 rounded-md" />
+                      {Array.from({ length: 7 }, (_, i) => (
+                        <Skeleton key={i} className="h-[22px] rounded-md" />
+                      ))}
+                    </div>
+                  ))}
               </div>
             </div>
-            {glyphSource && <FontInfo url={glyphSource.file} t={t} />}
           </div>
         )}
       </div>

@@ -223,7 +223,7 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | `HomeFonts.tsx` | Home tabs (new / popular / Qarip), 6 cards each |
 | `FontActions.tsx` | Font page actions + fixed mobile bar + thank-you note after download |
 | `FontDetail.tsx` | Font page tabs: preview (variable styles first, as `VariableStyle` panels with axis sliders), letters, glyphs, license, CSS, info |
-| `GlyphGrid.tsx`, `FontInfo.tsx`, `VariableStyle.tsx` | Glyph inspector, technical data, a variable style with its axes |
+| `GlyphGrid.tsx`, `FontInfo.tsx`, `VariableStyle.tsx` | Glyph grid (letters in the Letters tab's order, Kazakh ones in accent) with an inspector — a sidebar on desktop, full screen on phones; technical data and metadata of the Info tab (two independent columns); a variable style with its axes |
 | `FavoriteButton.tsx` | `variant="round"` in cards, `"square"` on the font page |
 | `QualityIndicator.tsx` | Bar + score: green ≥ 8, amber ≥ 5, red below |
 

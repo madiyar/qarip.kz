@@ -312,6 +312,35 @@ collections:
                   - { label: Дизайн, value: design }
                   - { label: Басқа, value: other }
               - { name: example, label: Мысал, widget: string, required: false }
+      - name: faq
+        label: F.A.Q.
+        icon: quiz
+        file: /src/content/faq.json
+        format: json
+        fields:
+          - name: items
+            label: Сұрақтар
+            label_singular: сұрақ
+            widget: list
+            collapsed: true
+            summary: '{{question}}'
+            hint: Сайтта осы ретпен шығады — ретін сүйреп өзгертуге болады. Орысша мен ағылшынша бос қалса, қазақшасы көрсетіледі.
+            fields:
+              - name: category
+                label: Бөлім
+                widget: select
+                default: site
+                options:
+                  - { label: Орнату, value: install }
+                  - { label: Лицензия, value: license }
+                  - { label: Қаріптер, value: fonts }
+                  - { label: Сайт, value: site }
+              - { name: question, label: Сұрақ (қазақша), widget: string }
+              - { name: answer, label: Жауап (қазақша), widget: markdown, buttons: [bold, italic, code, link, bulleted-list, numbered-list], editor_components: [] }
+              - { name: questionRu, label: Сұрақ (орысша), widget: string, required: false }
+              - { name: answerRu, label: Жауап (орысша), widget: markdown, required: false, buttons: [bold, italic, code, link, bulleted-list, numbered-list], editor_components: [] }
+              - { name: questionEn, label: Сұрақ (ағылшынша), widget: string, required: false }
+              - { name: answerEn, label: Жауап (ағылшынша), widget: markdown, required: false, buttons: [bold, italic, code, link, bulleted-list, numbered-list], editor_components: [] }
       - name: categories
         label: Қаріп категориялары
         icon: category

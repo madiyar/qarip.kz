@@ -61,6 +61,7 @@ npm run font:add -- --name "Font Name" --designer abay-emes[,other] --category s
 | `src/content/licenses/*.md` | Licenses (Markdown body + pricing is optional) |
 | `src/content/journal/*.md` | Journal articles |
 | `src/content/glossary.json` | Typography glossary |
+| `src/content/faq.json` | F.A.Q. (questions and Markdown answers in three languages) |
 | `src/data/*.json` | Categories, tags, purposes |
 | `src/i18n/en.json` | English UI strings (Kazakh text is the key) |
 | `src/lib/sfnt.ts` | Font binary toolkit: WOFF/WOFF2, cmap, name table |

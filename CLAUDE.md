@@ -24,7 +24,7 @@ The download counter was later rebuilt as a Netlify Function (see Download count
 ## Stack and commands
 
 Astro 7 (static output, Content Layer) · React 19 islands · Tailwind CSS 4 · TypeScript ·
-opentype.js 2 · fflate · woff2-encoder (WASM) · sharp · one Netlify Function with Netlify Blobs. Node 22.
+opentype.js 2 · fflate · woff2-encoder (WASM) · sharp · marked (FAQ answers) · one Netlify Function with Netlify Blobs. Node 22.
 
 ```sh
 npm run dev      # http://localhost:4321
@@ -48,8 +48,9 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
 | `src/content/{designers,licenses,journal}/` | Designers (JSON, bio in kk/ru/en), licenses (MD frontmatter, `visible` switch, optional pricing + body), articles (MD) |
 | `src/content/glossary.json`, `src/data/{categories,tags,purposes,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; tags and purposes carry their own `nameRu` / `nameEn` |
-| `src/data/{faq,unicode}.ts` | FAQ (per language), Unicode reference sections |
-| `src/data/languages.json` | Letters of 248 Latin/Cyrillic languages (CLDR exemplars + Kazakh Latin), for the "Тіл" count; rebuilt by `scripts/languages.mjs` |
+| `src/content/faq.json` | F.A.Q. (`{ "items": [...] }`, edited in the CMS): category, question/answer in kk + optional ru/en, answers in Markdown |
+| `src/data/unicode.ts` | Unicode reference sections |
+| `src/data/languages.json` | Hyperglot orthographies (`{ id, script, chars }`) for the language count; rebuilt with `pip install hyperglot && python3 scripts/languages.py` |
 | `src/views/*.astro` | Page logic, each takes `lang` |
 | `src/pages/**`, `src/pages/ru/**`, `src/pages/en/**` | Thin wrappers: `<View lang="kk|ru|en" />` |
 | `DESIGN.md` | The design system: tokens, type, classes, components, page patterns, decisions |
@@ -121,7 +122,9 @@ the font's name ("PT Sans Narrow Bold" − "PT Sans" → "Narrow Bold"); the sub
 would turn Narrow/Caption/Condensed files into duplicate "Regular"s. Variable styles get
 "Variable" in front, without spaces ("VariableRegular", "VariableItalic"), and carry their `axes`
 (fvar); the font page shows them first in the preview, with a slider per axis. A font's
-`languages` are those whose every letter (both cases) is in one of its files. The primary style is the
+`languages` are counted on its primary style the way the Hyperglot checker does by default (living and
+constructed languages, primary orthographies, base characters; no shaping checks) — "iso-Script"
+pairs, shown as «Тіл» and «Тіл жүйесі» on the Info tab. The primary style is the
 editor's `primaryStyle`, else the most regular one (upright, static, 400, normal width).
 `public/fonts-web/` (WOFF2 previews, generated ZIPs; URLs carry `?v=<hash>`) is build output
 and is gitignored; a font with no usable files is skipped with a warning.
@@ -136,9 +139,10 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
 
 - **opentype.js `toPathData()` is broken** — it can glue coordinates ("42.4 0" → "42.40")
   and cut outlines short. Use `pathData()` from `src/lib/glyphPath.ts` instead.
-- `glossary.json`, `categories.json`, `tags.json`, `purposes.json`, `donators.json` are wrapped in
-  an object (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`. Keep that
-  shape — the CMS config and the relation fields of the font form (`items.*.id`) depend on it.
+- `glossary.json`, `faq.json`, `categories.json`, `tags.json`, `purposes.json`, `donators.json` are
+  wrapped in an object (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`.
+  Keep that shape — the CMS config and the relation fields of the font form (`items.*.id`) depend
+  on it. FAQ items have no ids: the parser numbers them, so the CMS list order is the page order.
 - The CMS config can be validated against Sveltia's JSON schema
   (`https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json`) with ajv + js-yaml.
 - **Restart `astro dev` after changing `content.config.ts` or the shape of a data file** —
@@ -181,6 +185,7 @@ Designers have `bio` (Kazakh, required, fallback) + `bioRu` / `bioEn`. Licenses 
 Tags and purposes are edited under Анықтамалықтар («Тегтер», «Мақсаты»: id + Kazakh name +
 `nameRu` / `nameEn`); the font form picks them through relation fields (checkboxes). The tag ids
 `free`, `commercial`, `cyrillic`, `latin`, `variable` are used by the catalog filters — keep them.
+The F.A.Q. is edited there too (one list; drag to reorder; answers in Markdown).
 
 `/admin` runs Sveltia CMS with the GitHub backend: editors sign in with a GitHub account that
 has write access to `madiyar/qarip.kz`. Saving commits straight to `main` (no editorial

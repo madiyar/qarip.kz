@@ -34,7 +34,7 @@ export const MORE_NAV = [
   { href: '/typography', label: 'Типография' },
   { href: '/services', label: 'Қызмет' },
   { href: '/licenses', label: 'Лицензия түрлері' },
-  { href: '/faq', label: 'Жиі сұрақтар' },
+  { href: '/faq', label: 'F.A.Q.' },
   { href: '/about', label: 'Біз туралы' },
 ];
 
@@ -74,3 +74,11 @@ export const CHARSETS = [
   { label: 'Кіші әріптер (латын)', chars: 'aäbcdefgğhıijklmnñoöpqrsştuūüvwxyz' },
   { label: 'Сандар және белгілер', chars: '0123456789 .,:;!?¡¿…·•—–-_()[]{}«»‹›""\'\'/\\|@#$€₸₽%&*+=<>~^' },
 ];
+
+/** Alphabet order of the Letters tab (Kazakh Cyrillic, then Kazakh Latin); the Glyphs tab sorts letters by it. */
+export const ALPHABET_ORDER = CHARSETS.slice(0, 4)
+  .map((s) => s.chars)
+  .join('');
+
+/** Kazakh letters that Russian and English lack, highlighted on the Letters and Glyphs tabs. */
+export const KAZAKH_LETTERS = 'ӘәҒғҚқҢңӨөҰұҮүҺһІіÄäĞğİıÑñÖöŞşŪūÜü';

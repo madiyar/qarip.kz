@@ -48,6 +48,9 @@ const ALPHABETS: Record<string, string> = {
   'kazakh-latin': 'ÄäĞğİıÑñÖöŞşŪūÜü',
 };
 
+/** Hyperglot orthographies as "iso-Script" + the characters they need (scripts/languages.py). */
+const ORTHOGRAPHIES = LANGUAGES.map((l) => ({ key: `${l.id}-${l.script}`, chars: [...l.chars] }));
+
 /** A variation axis of a variable font (fvar). */
 export interface Axis {
   tag: string;
@@ -72,7 +75,7 @@ interface FileMeta {
   axes: Axis[];
   glyphs: number;
   scripts: string[];
-  /** Languages whose whole alphabet the file has (ids from src/data/languages.json). */
+  /** Languages the file supports, as "iso-Script" (Hyperglot data, src/data/languages.json). */
   languages: string[];
 }
 
@@ -123,7 +126,8 @@ async function inspect(buf: Buffer, ext: string): Promise<FileMeta> {
     scripts: Object.entries(ALPHABETS)
       .filter(([, chars]) => [...chars].every(has))
       .map(([k]) => k),
-    languages: LANGUAGES.filter((l) => [...l.chars].every(has)).map((l) => l.id),
+    // As the Hyperglot checker: a language counts in a script when one of its orthographies is complete.
+    languages: [...new Set(ORTHOGRAPHIES.filter((o) => o.chars.every(has)).map((o) => o.key))],
   };
 }
 
@@ -238,7 +242,7 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
   const names = styleNames(read, fontName);
   const styles: {
     name: string; slug: string; file: string; web: string; format: string; size: number; weight: number; width: number;
-    italic: boolean; variable: boolean; axes?: Axis[]; glyphs: number; scripts: string[]; fileName: string;
+    italic: boolean; variable: boolean; axes?: Axis[]; glyphs: number; scripts: string[]; languages: string[]; fileName: string;
   }[] = [];
   for (const [i, m] of read.entries()) {
     const name = names[i];
@@ -275,6 +279,7 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       ...(m.variable && m.axes.length ? { axes: m.axes } : {}),
       glyphs: m.glyphs,
       scripts: m.scripts,
+      languages: m.languages,
       fileName: m.fileName,
     });
   }
@@ -342,13 +347,14 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
     downloads: downloads[slug] ?? 0,
     primary,
     scripts: [...new Set(styles.flatMap((s) => s.scripts))],
-    languages: [...new Set(read.flatMap((m) => m.languages))].sort(),
+    // Counted on the primary style: the file one would check in Hyperglot.
+    languages: styles[primary].languages,
     zip,
     zipName,
     zipSize,
     zipFiles,
     // Variable styles are told apart from the static ones by name: "Regular" → "VariableRegular".
-    styles: styles.map(({ fileName: _f, width: _w, ...s }) => (s.variable ? { ...s, name: `Variable${s.name.replace(/\s+/g, '')}` } : s)),
+    styles: styles.map(({ fileName: _f, width: _w, languages: _l, ...s }) => (s.variable ? { ...s, name: `Variable${s.name.replace(/\s+/g, '')}` } : s)),
   };
 }
 

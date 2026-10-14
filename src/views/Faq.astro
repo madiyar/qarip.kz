@@ -1,10 +1,11 @@
 ---
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/common/PageHeader.astro';
 import Accordion from '../components/common/Accordion.astro';
 import Icon from '../components/ui/Icon';
 import { type Lang, localePath, useT } from '../i18n';
-import { FAQ, FAQ_CATEGORIES } from '../data/faq';
 import { SITE } from '../lib/site';
 
 interface Props {
@@ -12,20 +13,37 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
+
+/** Groups of questions (`category` in src/content/faq.json, a select in the CMS). */
+const CATEGORIES = [
+  ['install', 'Орнату'],
+  ['license', 'Лицензия'],
+  ['fonts', 'Қаріптер'],
+  ['site', 'Сайт'],
+] as const;
+
+// Internal links inside answers must follow the current locale.
+const localize = (html: string) => html.replace(/href="(\/[^"]*)"/g, (_, p) => `href="${localePath(lang, p)}"`);
+// Edited in the CMS (Анықтамалықтар → F.A.Q.); a missing translation falls back to Kazakh.
+const faq = (await getCollection('faq'))
+  .sort((a, b) => a.id.localeCompare(b.id))
+  .map(({ data: d }) => ({
+    cat: d.category,
+    q: { kk: d.question, ru: d.questionRu, en: d.questionEn }[lang] || d.question,
+    html: localize(marked.parse({ kk: d.answer, ru: d.answerRu, en: d.answerEn }[lang] || d.answer, { async: false })),
+  }));
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f[lang].q, acceptedAnswer: { '@type': 'Answer', text: f[lang].a } })),
+  mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.html } })),
 };
-// Internal links inside answers must follow the current locale.
-const localize = (html: string) => html.replace(/href="(\/[^"]*)"/g, (_, p) => `href="${localePath(lang, p)}"`);
-const cats = FAQ_CATEGORIES.filter(([id]) => FAQ.some((f) => f.cat === id));
+const cats = CATEGORIES.filter(([id]) => faq.some((f) => f.cat === id));
 ---
 
-<Base lang={lang} title={t('Жиі қойылатын сұрақтар')} description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')}>
+<Base lang={lang} title={`F.A.Q. — ${t('Жиі қойылатын сұрақтар')}`} description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <div>
-    <PageHeader size="lg" title={t('Жиі қойылатын сұрақтар')} description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')} />
+    <PageHeader size="lg" title="F.A.Q." description={t('Жүктеу, орнату, лицензия және қазақ әріптері туралы.')} />
     <div role="tablist" aria-label={t('Тақырып')} class="no-scrollbar -mx-4 mb-[18px] flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0" data-faq-cats>
       <button type="button" role="tab" aria-selected="true" class="pill px-4" data-cat="">{t('Барлығы')}</button>
       {
@@ -37,7 +55,7 @@ const cats = FAQ_CATEGORIES.filter(([id]) => FAQ.some((f) => f.cat === id));
       }
     </div>
     <div data-faq-list>
-      <Accordion items={FAQ.map((f) => ({ title: f[lang].q, html: localize(f[lang].a), group: f.cat }))} />
+      <Accordion items={faq.map((f) => ({ title: f.q, html: f.html, group: f.cat }))} />
     </div>
 
     <div class="note mt-7 flex flex-wrap items-center justify-between gap-3.5 px-6 py-[22px]">

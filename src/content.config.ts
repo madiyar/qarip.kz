@@ -47,7 +47,7 @@ const fonts = defineCollection({
     downloads: z.number().default(0),
     primary: z.number().default(0),
     scripts: z.array(z.string()).default([]),
-    /** Languages whose whole alphabet the font has (src/data/languages.json, from CLDR). */
+    /** Languages the primary style supports, "iso-Script" (Hyperglot data in src/data/languages.json). */
     languages: z.array(z.string()).default([]),
     zip: z.string(),
     zipName: z.string().optional(),
@@ -151,4 +151,21 @@ const glossary = defineCollection({
   }),
 });
 
-export const collections = { fonts, designers, licenses, categories, tags, purposes, journal, glossary };
+// Questions in the order the editors keep them in the CMS (ids are positions: 001, 002…).
+// Answers are Markdown; ru/en fall back to Kazakh.
+const faq = defineCollection({
+  loader: file('src/content/faq.json', {
+    parser: (text) => JSON.parse(text).items.map((item: object, i: number) => ({ ...item, id: String(i + 1).padStart(3, '0') })),
+  }),
+  schema: z.object({
+    category: z.enum(['install', 'license', 'fonts', 'site']),
+    question: z.string(),
+    answer: z.string(),
+    questionRu: z.string().optional(),
+    answerRu: z.string().optional(),
+    questionEn: z.string().optional(),
+    answerEn: z.string().optional(),
+  }),
+});
+
+export const collections = { fonts, designers, licenses, categories, tags, purposes, journal, glossary, faq };

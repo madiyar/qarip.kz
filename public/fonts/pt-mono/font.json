@@ -1,14 +1,14 @@
 {
   "name": "PT Mono",
+  "archive": "PT-Mono.zip",
   "files": [
     "pt-mono_bold.ttf",
     "pt-mono_regular.ttf"
   ],
-  "archive": "PT-Mono.zip",
   "designers": [
     "paratype"
   ],
-  "category": "monospace",
+  "category": "monospaced",
   "license": "ofl",
   "tags": [
     "free",

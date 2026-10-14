@@ -7,7 +7,7 @@ import { type Lang, localePath, useT } from '../i18n';
 import { getPosts } from '../lib/journal';
 import { byPopularity } from '../lib/downloads';
 import { familyName, getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
-import { CATEGORY, HOME, websiteLd } from '../lib/seo';
+import { HOME, websiteLd } from '../lib/seo';
 
 interface Props {
   lang: Lang;
@@ -75,7 +75,7 @@ const posts = (await getPosts()).slice(0, 3);
             <span>
               <b class="font-name">{c.label}</b>
               <span class="meta">
-                <span class="cat-ink font-medium" style={`--cat:${c.color}`}>{c.name}</span> · {c.count}
+                <span class="cat-ink font-medium" style={`--cat:${c.color}`}>{c.term}</span> · {c.count}
               </span>
             </span>
           </a>
@@ -95,7 +95,7 @@ const posts = (await getPosts()).slice(0, 3);
             <>
               {i > 0 && ', '}
               <a class="link-quiet" href={localePath(lang, `/fonts/category/${c.id}`)}>
-                {CATEGORY[c.id]?.name[lang] ?? c.label}
+                {c.title}
               </a>
             </>
           ))

@@ -110,8 +110,24 @@ const licenses = defineCollection({
 
 const categories = defineCollection({
   // Wrapped in an object ({ items: [...] }): the CMS edits it as a list field and relation fields point at items.*.id.
+  // Every text is edited in the CMS in three languages; ru/en fall back to Kazakh.
   loader: file('src/data/categories.json', { parser: (text) => JSON.parse(text).items }),
-  schema: z.object({ name: z.string(), description: z.string(), color: z.string() }),
+  schema: z.object({
+    /** International name in Latin letters (Sans, Serif…), coloured on the home page. */
+    term: z.string(),
+    /** Short name: pills, cards, breadcrumbs. */
+    name: z.string(),
+    nameRu: z.string().optional(),
+    nameEn: z.string().optional(),
+    /** Full name: the category page heading and search titles. */
+    title: z.string(),
+    titleRu: z.string().optional(),
+    titleEn: z.string().optional(),
+    description: z.string(),
+    descriptionRu: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    color: z.string(),
+  }),
 });
 
 // Tags and purposes: edited in the CMS with their translations, wrapped like categories.

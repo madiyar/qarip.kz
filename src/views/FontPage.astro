@@ -9,10 +9,10 @@ import { FontCard } from '../components/fonts/FontRow';
 import QualityIndicator from '../components/fonts/QualityIndicator';
 import OwnBadge from '../components/ui/OwnBadge';
 import Icon from '../components/ui/Icon';
-import { CATEGORY, breadcrumbLd, categoryLabel, fontSummary, fontTitle } from '../lib/seo';
+import { breadcrumbLd, fontSummary, fontTitle } from '../lib/seo';
 import { type Lang, formatDate, localePath, useT } from '../i18n';
 import { hasLicensePage } from '../lib/licenses';
-import { type FontEntry, byDesigner, familyName, formatBytes, getFonts, primaryFaces, publicCssBlocks, similarFonts, styleFaces, termName, toSummaries } from '../lib/fonts';
+import { type FontEntry, byDesigner, categoryInfo, familyName, formatBytes, getFonts, primaryFaces, publicCssBlocks, similarFonts, styleFaces, termName, toSummaries } from '../lib/fonts';
 
 interface Props {
   lang: Lang;
@@ -30,6 +30,10 @@ const purposes = await Promise.all(d.purposes.map((x) => getEntry(x)));
 const similar = await toSummaries(await similarFonts(font, all, 3), lang);
 const licenseShown = Boolean(license?.data.visible);
 const description = { kk: d.description, ru: d.descriptionRu ?? d.description, en: d.descriptionEn ?? d.description }[lang];
+// Category texts as edited in the CMS: short name (breadcrumb, Info) and full name (summary, structured data).
+const cat = category ? categoryInfo(lang, category) : undefined;
+const catLabel = cat?.label ?? d.category.id;
+const catName = cat?.title ?? d.category.id;
 
 const SCRIPT_LABELS: Record<string, string> = { kazakh: 'Қазақ кирилл', 'kazakh-latin': 'Қазақ латын', cyrillic: 'Кирилл', latin: 'Латын' };
 const glyphs = Math.max(0, ...d.styles.map((s) => s.glyphs ?? 0));
@@ -39,7 +43,7 @@ const styles = d.styles.map((s) => ({ ...s, family: familyName(font.id, s.slug) 
 const cssUrl = new URL(`/fonts/${font.id}.css`, Astro.site).toString();
 const info = [
   { label: 'Қаріп атауы', value: d.name },
-  { label: 'Категория', value: categoryLabel(lang, d.category.id, category?.data.name ?? '') },
+  { label: 'Категория', value: catLabel },
   { label: designers.length > 1 ? 'Дизайнерлер' : 'Дизайнер', value: designerNames.join(', ') },
   { label: 'Стиль саны', value: String(d.styles.length) },
   { label: 'Форматтар', value: formats },
@@ -64,7 +68,6 @@ const summaryLinks = [
   { label: 'Тегтер', links: tagLinks },
 ].filter((group) => group.links.length > 0);
 const designerLinks = designers.map((x) => ({ name: x.data.name, href: localePath(lang, `/designers/${x.id}`), fonts: byDesigner(all, x.id).length }));
-const catLabel = categoryLabel(lang, d.category.id, category?.data.name ?? d.category.id);
 const commercial = Boolean(license?.data.commercial);
 const primaryFamily = styles[d.primary]?.family ?? styles[0].family;
 // The Files block lists what the visitor gets: the contents of the ZIP.
@@ -77,7 +80,7 @@ const ogImage = `/og/${font.id}.png`;
 const summary = fontSummary(lang, {
   name: d.name,
   designers: designerNames,
-  category: d.category.id,
+  category: catName,
   styles: d.styles.length,
   glyphs,
   scripts: d.scripts,
@@ -85,7 +88,6 @@ const summary = fontSummary(lang, {
   commercial: Boolean(license?.data.commercial),
   formats,
 });
-const catName = CATEGORY[d.category.id]?.name[lang] ?? category?.data.name ?? '';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',

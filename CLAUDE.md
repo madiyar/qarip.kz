@@ -41,13 +41,13 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | Path | What |
 | --- | --- |
 | `astro.config.mjs` | `SITE_URL` — the single place for the domain (or `SITE_URL` env var) |
-| `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary |
+| `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary, faq |
 | `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `designers` (list) + `files` (uploaded TTF/OTF) + `archive` (ZIP, required in the CMS) |
 | `src/lib/fontLoader.ts` | Content loader: derives style names, weights, variable axes, glyphs, alphabets, languages, WOFF2 previews and the ZIP's file list from the files; fetches download counts |
 | `public/fonts-web/<slug>/` | Build output (gitignored): WOFF2 previews, and a ZIP only for fonts without an uploaded one |
 | `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
 | `src/content/{designers,licenses,journal}/` | Designers (JSON, bio in kk/ru/en), licenses (MD frontmatter, `visible` switch, optional pricing + body), articles (MD) |
-| `src/content/glossary.json`, `src/data/{categories,tags,purposes,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; tags and purposes carry their own `nameRu` / `nameEn` |
+| `src/content/glossary.json`, `src/data/{categories,tags,purposes,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; categories, tags and purposes carry their own ru/en texts (`nameRu`, `titleEn`…) |
 | `src/content/faq.json` | F.A.Q. (`{ "items": [...] }`, edited in the CMS): category, question/answer in kk + optional ru/en, answers in Markdown |
 | `src/data/unicode.ts` | Unicode reference sections |
 | `src/data/languages.json` | Hyperglot orthographies (`{ id, script, chars }`) for the language count; rebuilt with `pip install hyperglot && python3 scripts/languages.py` |
@@ -86,9 +86,11 @@ prefix and a trailing slash — Netlify serves pages only with a trailing slash 
 301 → `/fonts/`), so links and canonicals must use that form.
 
 **SEO copy.** "Шрифт" is searched far more than "қаріп", and Russian queries dominate
-("казахские шрифты скачать"). Titles/descriptions for home, catalog, categories and font
-pages come from `src/lib/seo.ts`, not from `t()`. Kazakh copy uses both words.
-Categories are static pages (`/fonts/category/<id>/`), not query filters.
+("казахские шрифты скачать"). Titles/descriptions for home, catalog and font pages come from
+`src/lib/seo.ts`, not from `t()`. Kazakh copy uses both words. Categories are static pages
+(`/fonts/category/<id>/`), not query filters; their names, full names (page heading + search
+title, e.g. "Шрифты без засечек (sans serif)") and descriptions are edited in the CMS in three
+languages (`categories.json`, read with `categoryInfo()` / `getCategories()`).
 
 **Styling.** Read `DESIGN.md` first. Tailwind 4; tokens are CSS variables in
 `src/styles/global.css` exposed as `bg-bg`, `bg-elev`, `bg-fill`, `text-fg`/`fg-2`/`fg-3`,
@@ -185,7 +187,10 @@ Designers have `bio` (Kazakh, required, fallback) + `bioRu` / `bioEn`. Licenses 
 Tags and purposes are edited under Анықтамалықтар («Тегтер», «Мақсаты»: id + Kazakh name +
 `nameRu` / `nameEn`); the font form picks them through relation fields (checkboxes). The tag ids
 `free`, `commercial`, `cyrillic`, `latin`, `variable` are used by the catalog filters — keep them.
-The F.A.Q. is edited there too (one list; drag to reorder; answers in Markdown).
+The F.A.Q. is edited there too (one list; drag to reorder; answers in Markdown). Categories have
+a short name, a full name and a description, each in kk/ru/en (all required in the CMS), plus the
+Latin `term` (Sans, Serif…) and the colour shown on the home page. CMS hints must not contain
+`<…>`: Sveltia renders them as HTML and drops the text.
 
 `/admin` runs Sveltia CMS with the GitHub backend: editors sign in with a GitHub account that
 has write access to `madiyar/qarip.kz`. Saving commits straight to `main` (no editorial

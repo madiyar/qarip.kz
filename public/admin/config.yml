@@ -94,8 +94,8 @@ collections:
         collection: settings
         file: categories
         value_field: items.*.id
-        display_fields: ['items.*.name', 'items.*.description']
-        search_fields: ['items.*.name']
+        display_fields: ['items.*.title']
+        search_fields: ['items.*.name', 'items.*.title']
         dropdown_threshold: 0
       - name: license
         label: Лицензия
@@ -352,12 +352,21 @@ collections:
             label_singular: категория
             widget: list
             collapsed: true
-            summary: '{{name}} — {{description}}'
+            summary: '{{name}} · {{term}}'
+            hint: Атауы, толық атауы мен сипаттамасы сайтта дәл осылай шығады — үш тілде де толтырыңыз.
             fields:
-              - { name: id, label: ID (латынша), widget: string, hint: 'Сілтемеде қолданылады: /fonts/category/<id>/. Барын өзгертпеңіз.' }
-              - { name: name, label: Атауы, widget: string }
-              - { name: description, label: Сипаттамасы, widget: string }
-              - { name: color, label: Түсі, widget: color }
+              - { name: id, label: ID (латынша), widget: string, pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).'], hint: 'Сілтемеде қолданылады, мысалы sans → /fonts/category/sans/. Барын өзгертпеңіз.' }
+              - { name: name, label: Атауы (қазақша), widget: string, hint: 'Батырмалар мен карточкаларда. Мысалы: Кесілген' }
+              - { name: nameRu, label: Атауы (орысша), widget: string, hint: 'Мысалы: Без засечек' }
+              - { name: nameEn, label: Атауы (ағылшынша), widget: string, hint: 'Мысалы: Sans serif' }
+              - { name: title, label: Толық атауы (қазақша), widget: string, hint: 'Категория бетінің тақырыбы, іздеу жүйелері де осыны көреді. Мысалы: Кесілген қаріптер (sans serif)' }
+              - { name: titleRu, label: Толық атауы (орысша), widget: string, hint: 'Мысалы: Шрифты без засечек (sans serif)' }
+              - { name: titleEn, label: Толық атауы (ағылшынша), widget: string, hint: 'Мысалы: Sans serif fonts' }
+              - { name: description, label: Сипаттамасы (қазақша), widget: text, hint: Категория бетінде тақырыптың астында. }
+              - { name: descriptionRu, label: Сипаттамасы (орысша), widget: text }
+              - { name: descriptionEn, label: Сипаттамасы (ағылшынша), widget: text }
+              - { name: term, label: Халықаралық атауы, widget: string, hint: 'Басты беттегі түрлі-түсті жазу. Мысалы: Sans' }
+              - { name: color, label: Түсі, widget: color, hint: Халықаралық атауының түсі (басты бет). }
       - name: tags
         label: Тегтер
         icon: sell
@@ -375,7 +384,7 @@ collections:
                 label: ID (латынша)
                 widget: string
                 pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).']
-                hint: 'Сілтемеде қолданылады: /fonts/?tag=<id>. Барын өзгертпеңіз — қаріптер тегке осы ID арқылы байланған. free, commercial, cyrillic, latin, variable тегтерін сайттың сүзгілері қолданады, өшірмеңіз.'
+                hint: 'Сілтемеде қолданылады, мысалы free → /fonts/?tag=free. Барын өзгертпеңіз — қаріптер тегке осы ID арқылы байланған. free, commercial, cyrillic, latin, variable тегтерін сайттың сүзгілері қолданады, өшірмеңіз.'
               - { name: name, label: Атауы (қазақша), widget: string }
               - { name: nameRu, label: Атауы (орысша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
               - { name: nameEn, label: Атауы (ағылшынша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
@@ -396,7 +405,7 @@ collections:
                 label: ID (латынша)
                 widget: string
                 pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).']
-                hint: 'Сілтемеде қолданылады: /fonts/?purpose=<id>. Барын өзгертпеңіз — қаріптер мақсатқа осы ID арқылы байланған.'
+                hint: 'Сілтемеде қолданылады, мысалы logo → /fonts/?purpose=logo. Барын өзгертпеңіз — қаріптер мақсатқа осы ID арқылы байланған.'
               - { name: name, label: Атауы (қазақша), widget: string }
               - { name: nameRu, label: Атауы (орысша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
               - { name: nameEn, label: Атауы (ағылшынша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }

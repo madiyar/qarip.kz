@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Catalog, { type CatalogSection } from '../components/fonts/Catalog';
 import { type Lang, localePath, useT } from '../i18n';
 import { getCategories, getFonts, getTerms, primaryFaces, toSummaries } from '../lib/fonts';
-import { CATALOG, CATEGORY, breadcrumbLd, categoryTitle, itemListLd } from '../lib/seo';
+import { CATALOG, breadcrumbLd, categoryTitle, itemListLd } from '../lib/seo';
 
 interface Props {
   lang: Lang;
@@ -33,9 +33,9 @@ const sections: CatalogSection[] = [
     id: c.id,
     label: c.label,
     href: localePath(lang, `/fonts/category/${c.id}`),
-    title: `${categoryTitle(lang, c.id, c.name)} | Qarip`,
-    h1: CATEGORY[c.id]?.name[lang] ?? c.label,
-    lead: CATEGORY[c.id]?.description[lang] ?? t(c.description),
+    title: `${categoryTitle(lang, c.title)} | Qarip`,
+    h1: c.title,
+    lead: c.description,
   })),
 ];
 const section = sections.find((s) => s.id === (cat?.id ?? '')) ?? sections[0];
@@ -58,7 +58,7 @@ const crumbs = [
   <Catalog client:load lang={lang} fonts={all} purposes={purposes} tags={tags} sections={sections} current={cat?.id ?? ''} />
 
   <p class="mt-10 text-sm text-fg-3">
-    {t('Керек қаріп табылмады ма? Сүйікті қаріпіңізге немесе брендіңіздің қаріпіне қазақ әріптерін')}
+    {t('Керек қаріп табылмады ма? Сүйікті қаріпіңізге немесе брендіңіздің қаріпіне қазақ әріптерін')}{' '}
     <a class="link-quiet" href={localePath(lang, '/services')}>{t('қосып береміз')}</a>.
   </p>
 </Base>

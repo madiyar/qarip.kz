@@ -1,7 +1,6 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import type { CategoryInfo, FontSummary } from './types';
-import type { Lang } from '../i18n';
-import { categoryLabel } from './seo';
+import { type Lang, pick } from '../i18n';
 
 export type FontEntry = CollectionEntry<'fonts'>;
 export type Style = FontEntry['data']['styles'][number];
@@ -15,12 +14,25 @@ export async function getFonts(): Promise<FontEntry[]> {
 
 const CATEGORY_ORDER = ['sans', 'serif', 'display', 'slab', 'handwritten', 'monospace'];
 
-/** Categories in a fixed order; `label` is the short name in `lang`. */
+type CategoryEntry = CollectionEntry<'categories'>;
+
+/** A category's texts in `lang` (Kazakh when a translation is missing). */
+export function categoryInfo(lang: Lang, c: CategoryEntry): CategoryInfo {
+  const d = c.data;
+  return {
+    id: c.id,
+    label: pick(lang, { kk: d.name, ru: d.nameRu, en: d.nameEn }),
+    title: pick(lang, { kk: d.title, ru: d.titleRu, en: d.titleEn }),
+    description: pick(lang, { kk: d.description, ru: d.descriptionRu, en: d.descriptionEn }),
+    term: d.term,
+    color: d.color,
+  };
+}
+
+/** Categories in a fixed order, texts in `lang`. */
 export async function getCategories(lang: Lang = 'kk'): Promise<CategoryInfo[]> {
   const rank = (id: string) => CATEGORY_ORDER.indexOf(id) + 1 || 99;
-  return (await getCollection('categories'))
-    .map((c) => ({ id: c.id, ...c.data, label: categoryLabel(lang, c.id, c.data.name) }))
-    .sort((a, b) => rank(a.id) - rank(b.id));
+  return (await getCollection('categories')).map((c) => categoryInfo(lang, c)).sort((a, b) => rank(a.id) - rank(b.id));
 }
 
 /** Name of a tag or purpose in `lang`; Kazakh when there is no translation. */
@@ -61,7 +73,7 @@ export async function toSummaries(fonts: FontEntry[], lang: Lang = 'kk'): Promis
       slug: f.id,
       name: f.data.name,
       designers: f.data.designers.map((x) => ({ slug: x.id, name: d[x.id]?.data.name ?? x.id })),
-      category: { id: f.data.category.id, name: categoryLabel(lang, f.data.category.id, cat?.data.name ?? f.data.category.id), color: cat?.data.color ?? '#71717a' },
+      category: { id: f.data.category.id, name: cat ? categoryInfo(lang, cat).label : f.data.category.id, color: cat?.data.color ?? '#71717a' },
       tags: f.data.tags.map((t) => t.id),
       purposes: f.data.purposes.map((t) => t.id),
       quality: f.data.quality,

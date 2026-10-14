@@ -5,7 +5,6 @@ import Skeleton from '../ui/Skeleton';
 
 interface Rich {
   features: string[];
-  langs: number;
   kerningPairs: number;
   unitsPerEm: number;
   axes: string[];
@@ -40,14 +39,7 @@ export async function inspectFontFile(source: string | ArrayBuffer): Promise<Ric
     return typeof v === 'string' ? v : (v?.en ?? Object.values(v ?? {})[0]);
   };
   const features = new Set<string>();
-  const langs = new Set<string>();
-  for (const table of [font.tables.gsub, font.tables.gpos]) {
-    for (const f of table?.features ?? []) features.add(f.tag);
-    for (const s of table?.scripts ?? []) {
-      if (s.script?.defaultLangSys) langs.add(`${s.tag}_dflt`);
-      for (const l of s.script?.langSysRecords ?? []) langs.add(`${s.tag}_${l.tag}`);
-    }
-  }
+  for (const table of [font.tables.gsub, font.tables.gpos]) for (const f of table?.features ?? []) features.add(f.tag);
   let kerningPairs = 0;
   for (const lookup of font.tables.gpos?.lookups ?? []) {
     if (lookup.lookupType !== 2) continue;
@@ -59,7 +51,6 @@ export async function inspectFontFile(source: string | ArrayBuffer): Promise<Ric
   if (!kerningPairs && font.kerningPairs) kerningPairs = Object.keys(font.kerningPairs).length;
   return {
     features: [...features].sort(),
-    langs: langs.size,
     kerningPairs,
     unitsPerEm: font.unitsPerEm,
     axes: (font.tables.fvar?.axes ?? []).map((a: { tag: string }) => a.tag),
@@ -71,8 +62,8 @@ export function FontMeta({ meta, t }: { meta: [string, string][]; t: T }) {
   if (!meta.length) return null;
   return (
     <section>
-      <h2 className="text-[15px] font-semibold text-fg-2">{t('Метадеректер')}</h2>
-      <p className="meta mb-1.5">{t('Қаріп файлынан оқылған мәліметтер')}</p>
+      <h2 className="text-[15px] font-semibold text-fg-2">{t('Метадерек')}</h2>
+      <p className="meta mb-1.5">{t('Қаріп файлынан оқылған мәлімет')}</p>
       <dl className="rows text-sm">
         {meta.map(([label, value]) => (
           <div key={label} className="flex items-start justify-between gap-4 py-[11px]">
@@ -93,67 +84,76 @@ export function FontMeta({ meta, t }: { meta: [string, string][]; t: T }) {
   );
 }
 
-/** Technical details block for the font page "Info" tab. */
-export default function FontInfo({ url, t }: { url: string; t: T }) {
-  const [rich, setRich] = useState<Rich | null>(null);
+/** Parses a font file for the Info tab; null while loading or while there is no `url`. Keeps the result for the same file. */
+export function useFontFile(url?: string): Rich | null {
+  const [state, setState] = useState<{ url: string; rich: Rich } | null>(null);
   useEffect(() => {
+    if (!url || state?.url === url) return;
     let off = false;
     inspectFontFile(url)
-      .then((r) => !off && setRich(r))
+      .then((rich) => !off && setState({ url, rich }))
       .catch(() => {});
     return () => {
       off = true;
     };
   }, [url]);
+  return url && state?.url === url ? state.rich : null;
+}
+
+interface TechProps {
+  rich: Rich | null;
+  t: T;
+  /** Languages counted at build time like the Hyperglot checker (the font's primary style). */
+  languages: number;
+  /** Axis tags of the font's variable styles; the parsed file may be a static one. */
+  axes: string[];
+}
+
+/** "Техникалық мәлімет" and the OpenType features of the font page "Info" tab. */
+export function FontTech({ rich, t, languages, axes }: TechProps) {
   if (!rich)
     return (
-      <div className="grid gap-x-14 gap-y-8 md:grid-cols-2" aria-busy="true">
-        {[4, 7].map((n, col) => (
-          <div key={col} className="flex flex-col gap-3">
-            <Skeleton className="h-5 w-48 rounded-md" />
-            {Array.from({ length: n }, (_, i) => (
-              <Skeleton key={i} className="h-[22px] rounded-md" />
-            ))}
-          </div>
+      <div className="flex flex-col gap-3" aria-busy="true">
+        <Skeleton className="h-5 w-48 rounded-md" />
+        {Array.from({ length: 4 }, (_, i) => (
+          <Skeleton key={i} className="h-[22px] rounded-md" />
         ))}
       </div>
     );
+  const allAxes = axes.length ? axes : rich.axes;
   const rows: [string, string][] = [
-    ['Кернинг жұптары', rich.kerningPairs ? rich.kerningPairs.toLocaleString() : t('Жоқ')],
-    ['Тіл жүйелері', String(rich.langs || '—')],
+    ['Керниң жұптары', rich.kerningPairs ? rich.kerningPairs.toLocaleString() : t('Жоқ')],
+    ['Тіл жүйесі', languages ? String(languages) : '—'],
     ['Units per Em', String(rich.unitsPerEm)],
-    ['Вариативті осьтер', rich.axes.length ? rich.axes.join(', ') : t('Жоқ')],
+    ['Вариатив өс', allAxes.length ? allAxes.join(', ') : t('Жоқ')],
   ];
   return (
-    <div className="grid gap-x-14 gap-y-8 md:grid-cols-2">
-      <div className="flex flex-col gap-7">
-        <section>
-          <h2 className="mb-1.5 text-[15px] font-semibold text-fg-2">{t('Техникалық мәліметтер')}</h2>
-          <dl className="rows text-sm">
-            {rows.map(([label, value]) => (
-              <div key={label} className="flex justify-between gap-4 py-[11px]">
-                <dt className="text-fg-3">{t(label)}</dt>
-                <dd className="text-right font-mono">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-        {rich.features.length > 0 && (
-          <section>
-            <h2 className="mb-2.5 text-[15px] font-semibold text-fg-2">
-              {t('OpenType мүмкіндіктері')} · {rich.features.length}
-            </h2>
-            <div className="flex flex-wrap gap-1.5">
-              {rich.features.map((f) => (
-                <span key={f} className="tag font-mono font-medium" title={featureName(f)}>
-                  {f}
-                </span>
-              ))}
+    <>
+      <section>
+        <h2 className="mb-1.5 text-[15px] font-semibold text-fg-2">{t('Техникалық мәлімет')}</h2>
+        <dl className="rows text-sm">
+          {rows.map(([label, value]) => (
+            <div key={label} className="flex justify-between gap-4 py-[11px]">
+              <dt className="text-fg-3">{t(label)}</dt>
+              <dd className="text-right font-mono">{value}</dd>
             </div>
-          </section>
-        )}
-      </div>
-      <FontMeta meta={rich.meta} t={t} />
-    </div>
+          ))}
+        </dl>
+      </section>
+      {rich.features.length > 0 && (
+        <section>
+          <h2 className="mb-2.5 text-[15px] font-semibold text-fg-2">
+            {t('OpenType мүмкіндіктері')} · {rich.features.length}
+          </h2>
+          <div className="flex flex-wrap gap-1.5">
+            {rich.features.map((f) => (
+              <span key={f} className="tag font-mono font-medium" title={featureName(f)}>
+                {f}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+    </>
   );
 }

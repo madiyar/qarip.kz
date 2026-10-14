@@ -25,3 +25,6 @@ pnpm-debug.log*
 public/fonts-web/
 # (older location of the same files)
 public/fonts/*/web/
+
+# Hyperglot cache (scripts/languages.py)
+.hyperglot-cache

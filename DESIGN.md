@@ -1,6 +1,6 @@
 # Qarip design system
 
-The look of qarip.netlify.app: tokens, type, the reusable classes and components, and the rules
+The look of qarip.app: tokens, type, the reusable classes and components, and the rules
 for building new pages. Everything here is implemented in `src/styles/global.css` (tokens and
 classes) and `src/components/` (components). The reference is the redesign canvas
 (claude.ai artifact "Qarip redesign"); where the site deliberately differs from it, the reason is
@@ -18,7 +18,8 @@ second copy of the same utilities. Before writing markup, look for it here.
 2. **Surfaces, not borders.** Depth comes from background steps (`bg` → `elev` → `pop`) and soft
    shadows. Hairlines (`line`) only separate rows inside one surface.
 3. **One accent.** Blue (`accent`) marks the single primary action of an area, the current
-   selection, links and Qarip's own fonts. Everything else is greyscale.
+   selection, links and Qarip's own fonts. Everything else is greyscale — except the category
+   names on the home page's style cards, which carry their category's colour (`cat-ink`).
 4. **One floating surface.** Menus, popovers, the search panel and dialogs all use `.pop`; on
    phones every `.pop` becomes a bottom sheet over a dimmed page.
 5. **Honest content.** No placeholder numbers, prices, goals or names. If data does not exist
@@ -57,6 +58,7 @@ names come from `@theme inline`, so `bg-elev`, `text-fg-3`, `border-line` etc. w
 | `--warn`, `--warn-soft` | `text-warn`, `bg-warn-soft` | amber | amber | Quality 5–7.5, missing letters |
 | `--heart`, `--heart-soft` | `text-heart` | red | red | Favorites, errors, quality < 5 |
 | `--bad-soft` | `bg-bad-soft` | 14% red | 18% red | Missing glyph tiles |
+| `--cat-l` | — | `0.52` | `0.8` | OKLCH lightness of category-coloured text (`cat-ink`) |
 | `--sh-1` / `--sh-2` / `--sh-pop` | `shadow-1/2/pop` | | | Panel outline / lifted card / floating surface |
 | `--board`, `--key`, `--key-sh` | — | | | Virtual keyboard only |
 | `--header-h` | — | `3.5rem` | | Sticky offset under the header |
@@ -174,6 +176,7 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | `font-card` | Font card (sample on top, name + meta below) |
 | `font-name` | Font/article/designer name; turns accent when its `.font-card` or `.hover-name` parent is hovered |
 | `hover-name` | Put on any link card so its `font-name` reacts |
+| `cat-ink` | Text in a category's colour: set `--cat` (from `categories.json`, editable in the CMS); lightness comes from `--cat-l` so every hue reads on both themes |
 | `prose-q` | With `prose`: article and license text (add `measure`) |
 | `measure` | Reading line length (720 px), left-aligned |
 | `skeleton` (`ui/Skeleton`) | Pulsing placeholder with the size of what is loading |
@@ -207,7 +210,8 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 
 ### UI (`ui/`)
 `Icon`, `Select` (listbox in a `.pop`), `Range` + `RangeField` (labelled slider with value),
-`Switch`, `CopyButton` + `CodeBlock` (code panel with a title bar), `OwnBadge`, `Skeleton`.
+`SizeSelect` (the "24 px" next to a size slider: opens ready sizes), `Switch`, `CopyButton` +
+`CodeBlock` (code panel with a title bar), `OwnBadge`, `Skeleton`.
 
 ### Fonts (`fonts/`)
 | Component | |
@@ -216,10 +220,10 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | `PreviewToolbar.tsx` | Text, pangram menu (3 pangrams), case, size, view; `usePreview` keeps the state |
 | `Catalog.tsx` | Catalog page: heading, category pills (switch without reload), `FontBrowser` |
 | `FontBrowser.tsx` | Catalog engine: search, filter sheet, sort, list/grid, paging |
-| `HomeFonts.tsx` | Home tabs (popular / new / Qarip), 6 cards each |
+| `HomeFonts.tsx` | Home tabs (new / popular / Qarip), 6 cards each |
 | `FontActions.tsx` | Font page actions + fixed mobile bar + thank-you note after download |
-| `FontDetail.tsx` | Font page tabs: preview, letters, glyphs, license, CSS, variable, info |
-| `GlyphGrid.tsx`, `FontInfo.tsx`, `VariableTab.tsx` | Glyph inspector, technical data, axes |
+| `FontDetail.tsx` | Font page tabs: preview (variable styles first, as `VariableStyle` panels with axis sliders), letters, glyphs, license, CSS, info |
+| `GlyphGrid.tsx`, `FontInfo.tsx`, `VariableStyle.tsx` | Glyph grid (letters in the Letters tab's order, Kazakh ones in accent) with an inspector — a sidebar on desktop, full screen on phones; technical data and metadata of the Info tab (two independent columns); a variable style with its axes |
 | `FavoriteButton.tsx` | `variant="round"` in cards, `"square"` on the font page |
 | `QualityIndicator.tsx` | Bar + score: green ≥ 8, amber ≥ 5, red below |
 
@@ -234,8 +238,11 @@ controls in `panel`s, results in `panel`/`CodeBlock`, actions in a row of `btn-r
 
 - **List page** (catalog, category): `Catalog` island — breadcrumb, heading with a fixed-height
   lead, category pills, `FontBrowser`. Top: `PageHeader` → ranked cards and rows.
-- **Font page:** breadcrumb → specimen title (84–112 px in the font itself) + meta row → actions
-  right → `#dl-thanks` slot → tabs → plain-text download summary (SEO) → similar fonts.
+- **Font page:** breadcrumb → specimen title (84–112 px in the font itself) with the actions on
+  its right (desktop; aligned to the title's bottom, so the description expanding and collapsing
+  under it never moves them) → description (3 lines, "More"/"Less") → meta row → `#dl-thanks`
+  slot → tabs → plain-text download summary with category, license, purposes and tags (SEO) →
+  similar fonts.
 - **Tool page:** `ToolHeader` → tool → `OtherTools`.
 - **Content page:** centred column, `PageHeader size="lg"`, panels/rows, a `note` CTA at the end.
 - **Empty state:** one grey sentence + one secondary button, centred, no illustration.
@@ -281,7 +288,7 @@ What was changed or left out, and why:
 | Pangram menu with 7 presets | 3 pangrams (KK 1, KK 2, EN) | Owner's requirement; alphabets stay as chips in the tester |
 | Categories as filters | Static category pages drawn as pills | Category pages rank in search (`/fonts/category/<id>/`) |
 | Sidebar navigation mode | Removed | One navigation model; the tab bar covers phones |
-| Card number, donation goal and progress, donors, prices, `@sozderfonts`, `info@qarip.kz` | Real data from `SITE` / `donators.json`; blocks hidden when empty | No fake data on a live site |
+| Card number, donation goal and progress, donors, prices, `@sozderfonts`, `info@qarip.kz` | Cards from `donation.json` and donors from `donators.json` (both edited in the CMS; several cards → bank tabs); no goal or progress; blocks hidden when empty | No fake data on a live site |
 | "Тапсырыс қабылдайды" badge, "one person counted once" | Not shown | No data behind them |
 | Favorites: share link / download all | Share works per collection; no "download all" | Zipping many archives in the browser is heavy; collections already share |
 | Journal tags | Search instead | Articles have no tags yet |
@@ -290,3 +297,4 @@ What was changed or left out, and why:
 | Font page summary only in tabs | Plain-text download summary kept | Answers "download <font>" queries |
 | Google Fonts | Self-hosted fonts | Privacy (no third-party requests) and speed |
 | "Каталог" for personal lists | "Жинақ" (collection) | "Каталог" already means the font catalog |
+| Grey category names on the home style cards | Each English name in its category's colour (Sans blue, Serif yellow, Display red, Slab orange, Handwritten purple, Monospace green) | Owner's request: a colour is remembered faster than a word |

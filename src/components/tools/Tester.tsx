@@ -228,7 +228,10 @@ export default function Tester({ lang }: { lang: Lang }) {
               spellCheck={false}
               className="panel min-h-40 px-5 py-6 break-words text-fg outline-none sm:px-7"
               style={{ ...style, fontSize: preview.size }}
-              onBlur={(e) => setPreview((p) => ({ ...p, text: e.currentTarget.textContent ?? '' }))}
+              onBlur={(e) => {
+                const text = e.currentTarget.textContent ?? '';
+                setPreview((p) => ({ ...p, text }));
+              }}
             >
               {runs.map((r, i) =>
                 missing.has(r) ? (
@@ -313,7 +316,7 @@ export default function Tester({ lang }: { lang: Lang }) {
             </div>
           </div>
         ) : (
-          <p className="panel p-8 text-center text-fg-3">{t('Бұл файлда вариативті ось жоқ. Вариативті қаріп жүктесеңіз, әр ось үшін жүгірткі осында пайда болады.')}</p>
+          <p className="panel p-8 text-center text-fg-3">{t('Бұл файлда вариатив ось жоқ. Вариатив қаріп жүктесеңіз, әр ось үшін жүгірткі осында пайда болады.')}</p>
         ))}
 
       {tab === 'glyphs' && <GlyphGrid key={active.id} buffer={active.sfnt} t={t} />}

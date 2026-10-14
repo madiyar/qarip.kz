@@ -79,78 +79,12 @@ export const TOP: { title: L; description: L } = {
   },
 };
 
-/**
- * Category names and copy for the static category pages.
- * `short` is the label on pills and cards; `name` is the full, search-facing one.
- */
-export const CATEGORY: Record<string, { short: L; name: L; description: L }> = {
-  sans: {
-    short: { kk: 'Кесілген', ru: 'Без засечек', en: 'Sans serif' },
-    name: { kk: 'Кесілген қаріптер (sans serif)', ru: 'Шрифты без засечек (sans serif)', en: 'Sans serif fonts' },
-    description: {
-      kk: 'Кертігі жоқ, таза әрі заманауи шрифттер. Сайтқа, интерфейске, презентацияға жақсы жарасады.',
-      ru: 'Чистые и современные шрифты без засечек. Хорошо подходят для сайтов, интерфейсов и презентаций.',
-      en: 'Clean, modern typefaces without serifs. A good fit for websites, interfaces and presentations.',
-    },
-  },
-  serif: {
-    short: { kk: 'Кертілген', ru: 'С засечками', en: 'Serif' },
-    name: { kk: 'Кертілген қаріптер (serif)', ru: 'Шрифты с засечками (serif)', en: 'Serif fonts' },
-    description: {
-      kk: 'Классикалық кертілген шрифттер. Кітап, газет-журнал және ұзақ мәтінге ыңғайлы.',
-      ru: 'Классические шрифты с засечками. Удобны для книг, прессы и длинных текстов.',
-      en: 'Classic typefaces with serifs. Comfortable for books, press and long reading.',
-    },
-  },
-  display: {
-    short: { kk: 'Көрнекі', ru: 'Акцидентные', en: 'Display' },
-    name: { kk: 'Көрнекі қаріптер (display)', ru: 'Акцидентные и декоративные шрифты', en: 'Display fonts' },
-    description: {
-      kk: 'Тақырыпқа, логотипке, афишаға, комикске арналған мінезі бар көрнекі шрифттер.',
-      ru: 'Характерные шрифты для заголовков, логотипов, афиш и комиксов.',
-      en: 'Expressive typefaces for headings, logos, posters and comics.',
-    },
-  },
-  slab: {
-    short: { kk: 'Қырлы', ru: 'Брусковые', en: 'Slab serif' },
-    name: { kk: 'Қырлы қаріптер (slab serif)', ru: 'Брусковые шрифты (slab serif)', en: 'Slab serif fonts' },
-    description: {
-      kk: 'Төртбұрыш кертігі бар салмақты шрифттер. Тақырып пен жарнамаға сай.',
-      ru: 'Уверенные шрифты с прямоугольными засечками. Для заголовков и рекламы.',
-      en: 'Sturdy typefaces with block serifs. For headings and advertising.',
-    },
-  },
-  handwritten: {
-    short: { kk: 'Қолжазба', ru: 'Рукописные', en: 'Handwritten' },
-    name: { kk: 'Қолжазба қаріптер', ru: 'Рукописные шрифты', en: 'Handwritten fonts' },
-    description: {
-      kk: 'Қолмен жазғандай көрінетін шрифттер: шақыру қағазына, открыткаға, комикске.',
-      ru: 'Шрифты, имитирующие письмо от руки: для приглашений, открыток и комиксов.',
-      en: 'Typefaces that imitate handwriting: for invitations, cards and comics.',
-    },
-  },
-  monospace: {
-    short: { kk: 'Бірке', ru: 'Моноширинные', en: 'Monospace' },
-    name: { kk: 'Бірке қаріптер (monospace)', ru: 'Моноширинные шрифты', en: 'Monospace fonts' },
-    description: {
-      kk: 'Әр таңбасының ені бірдей шрифттер. Кодқа және кестеге арналған.',
-      ru: 'Шрифты с одинаковой шириной всех знаков. Для кода и таблиц.',
-      en: 'Typefaces where every character has the same width. For code and tables.',
-    },
-  },
-};
-
-/** Short category label for pills and cards; a category added in the CMS falls back to its own name. */
-export function categoryLabel(lang: Lang, id: string, fallback: string): string {
-  return CATEGORY[id]?.short[lang] ?? fallback;
-}
-
-export function categoryTitle(lang: Lang, id: string, fallback: string): string {
-  const name = CATEGORY[id]?.name[lang] ?? fallback;
+/** Search title of a category page; `title` is the category's full name in `lang` (from the CMS). */
+export function categoryTitle(lang: Lang, title: string): string {
   return {
-    kk: `${name} — қазақша шрифттерді тегін жүктеу`,
-    ru: `${name} с казахскими буквами — скачать бесплатно`,
-    en: `${name} with Kazakh letters — free download`,
+    kk: `${title} — қазақша шрифттерді тегін жүктеу`,
+    ru: `${title} с казахскими буквами — скачать бесплатно`,
+    en: `${title} with Kazakh letters — free download`,
   }[lang];
 }
 
@@ -164,6 +98,7 @@ const SCRIPT_NAMES: Record<string, L> = {
 export interface FontSeoInput {
   name: string;
   designers: string[];
+  /** The category's full name in `lang`. */
   category: string;
   styles: number;
   glyphs: number;
@@ -185,7 +120,7 @@ export function fontTitle(lang: Lang, name: string): string {
 export function fontSummary(lang: Lang, f: FontSeoInput): string {
   const scripts = f.scripts.map((s) => SCRIPT_NAMES[s]?.[lang] ?? s).join(', ');
   const hasKazakh = f.scripts.includes('kazakh');
-  const cat = CATEGORY[f.category]?.name[lang] ?? f.category;
+  const cat = f.category;
   const many = f.designers.length > 1;
   const by = f.designers.join(', ');
   if (lang === 'ru') {

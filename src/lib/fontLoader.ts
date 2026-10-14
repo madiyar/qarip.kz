@@ -5,8 +5,9 @@
  * the CMS: name, designers, license… and the list of uploaded files) next to the font
  * files themselves. Everything technical is derived here, at build time:
  *
- *  - style name, weight, italic, variable, glyph count and supported alphabets are
- *    read from each font binary;
+ *  - the font files are the uploaded ones or, when none were uploaded, those inside the ZIP;
+ *  - style name, weight, italic, variable axes, glyph count, supported alphabets and
+ *    languages (src/data/languages.json) are read from each font binary;
  *  - a compressed WOFF2 copy for previews goes to `public/fonts-web/<slug>/`;
  *  - the list of files inside the uploaded ZIP archive is read for the font page;
  *    a ZIP is built from the font files only when no archive was uploaded;
@@ -20,8 +21,14 @@ import path from 'node:path';
 import type { Loader, LoaderContext } from 'astro/loaders';
 import opentype from 'opentype.js';
 import { unzipSync, zipSync } from 'fflate';
+import LANGUAGES from '../data/languages.json';
 
 const FONT_EXT = /\.(ttf|otf|woff2?)$/i;
+/** One file per style from an archive: source formats before web ones. */
+const FORMAT_RANK: Record<string, number> = { ttf: 0, otf: 1, woff2: 2, woff: 3 };
+/** Above this many static styles in an archive with variable fonts, only the variable ones are shown
+ *  (Google Fonts ZIPs of optical-size families hold 80+ statics; the variable files cover them). */
+const MAX_STATIC_FROM_ZIP = 40;
 
 const WEIGHT_WORDS: [RegExp, number][] = [
   [/hairline|thin/i, 100],
@@ -47,6 +54,18 @@ const ALPHABETS: Record<string, string> = {
   'kazakh-latin': 'ÄäĞğİıÑñÖöŞşŪūÜü',
 };
 
+/** Hyperglot orthographies as "iso-Script" + the characters they need (scripts/languages.py). */
+const ORTHOGRAPHIES = LANGUAGES.map((l) => ({ key: `${l.id}-${l.script}`, chars: [...l.chars] }));
+
+/** A variation axis of a variable font (fvar). */
+export interface Axis {
+  tag: string;
+  name: string;
+  min: number;
+  max: number;
+  default: number;
+}
+
 interface FileMeta {
   /** Full font name, e.g. "PT Sans Narrow Bold". */
   full: string;
@@ -59,8 +78,11 @@ interface FileMeta {
   width: number;
   italic: boolean;
   variable: boolean;
+  axes: Axis[];
   glyphs: number;
   scripts: string[];
+  /** Languages the file supports, as "iso-Script" (Hyperglot data, src/data/languages.json). */
+  languages: string[];
 }
 
 const slugify = (s: string) =>
@@ -89,6 +111,8 @@ async function inspect(buf: Buffer, ext: string): Promise<FileMeta> {
   const family = pick('preferredFamily') || pick('fontFamily') || '';
   const subfamily = pick('preferredSubfamily') || pick('fontSubfamily') || 'Regular';
   const os2 = font.tables.os2 ?? {};
+  const has = (c: string) => font.charToGlyphIndex(c) > 0;
+  type FvarAxis = { tag: string; name?: Record<string, string>; minValue: number; maxValue: number; defaultValue: number };
   return {
     full: pick('fullName') || `${family} ${subfamily}`.trim(),
     family,
@@ -97,10 +121,19 @@ async function inspect(buf: Buffer, ext: string): Promise<FileMeta> {
     width: os2.usWidthClass || 5,
     italic: Boolean((os2.fsSelection ?? 0) & 1) || /italic|oblique/i.test(subfamily),
     variable: Boolean(font.tables.fvar),
+    axes: ((font.tables.fvar?.axes ?? []) as FvarAxis[]).map((a) => ({
+      tag: a.tag,
+      name: a.name?.en ?? Object.values(a.name ?? {})[0] ?? a.tag,
+      min: a.minValue,
+      max: a.maxValue,
+      default: a.defaultValue,
+    })),
     glyphs: font.numGlyphs,
     scripts: Object.entries(ALPHABETS)
-      .filter(([, chars]) => [...chars].every((c) => font.charToGlyphIndex(c) > 0))
+      .filter(([, chars]) => [...chars].every(has))
       .map(([k]) => k),
+    // As the Hyperglot checker: a language counts in a script when one of its orthographies is complete.
+    languages: [...new Set(ORTHOGRAPHIES.filter((o) => o.chars.every(has)).map((o) => o.key))],
   };
 }
 
@@ -189,7 +222,7 @@ interface Ctx {
 async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Record<string, any>) {
   const fontName = String(raw.name ?? slug);
   const files = [...new Set(asList(raw.files).map(baseName).filter((f) => FONT_EXT.test(f)))];
-  const read: (FileMeta & { fileName: string; ext: string; buf: Buffer; srcTime: number })[] = [];
+  const read: (FileMeta & { fileName: string; ext: string; buf: Buffer; srcTime: number; fromZip?: boolean })[] = [];
 
   for (const fileName of files) {
     const src = path.join(dir, fileName);
@@ -207,23 +240,75 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       warn(`${slug}: cannot read "${fileName}" as a font (${(e as Error).message}) — skipped`);
     }
   }
+
+  // No font files uploaded: the styles come from inside the ZIP.
+  const archive = baseName(raw.archive);
+  const archivePath = path.join(dir, archive);
+  const archiveBuf = archive ? await fs.readFile(archivePath).catch(() => null) : null;
+  if (!files.length && archiveBuf?.length) {
+    let inZip: Record<string, Uint8Array> = {};
+    try {
+      inZip = unzipSync(archiveBuf, { filter: (f) => FONT_EXT.test(f.name) && !/(^|\/)(__MACOSX\/|\._)/.test(f.name) });
+    } catch (e) {
+      warn(`${slug}: cannot open archive "${archive}" (${(e as Error).message})`);
+    }
+    const srcTime = await mtime(archivePath);
+    const found: typeof read = [];
+    for (const [fileName, data] of Object.entries(inZip)) {
+      const buf = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+      const ext = path.extname(fileName).slice(1).toLowerCase();
+      try {
+        found.push({ ...(await inspect(buf, ext)), fileName, ext, buf, srcTime, fromZip: true });
+      } catch (e) {
+        warn(`${slug}: cannot read "${fileName}" in the archive as a font (${(e as Error).message}) — skipped`);
+      }
+    }
+    // The same style in several formats (OTF + WOFF2, TTF/ and OTF/ folders) counts once.
+    const byStyle = new Map<string, (typeof found)[number]>();
+    found.sort((a, b) => FORMAT_RANK[a.ext] - FORMAT_RANK[b.ext] || a.fileName.localeCompare(b.fileName));
+    for (const m of found) {
+      const key = `${m.full.toLowerCase()}|${m.italic}|${m.variable}`;
+      if (!byStyle.has(key)) byStyle.set(key, m);
+    }
+    let picked = [...byStyle.values()];
+    const statics = picked.filter((m) => !m.variable).length;
+    if (statics > MAX_STATIC_FROM_ZIP && picked.some((m) => m.variable)) {
+      warn(`${slug}: the archive has ${statics} static styles — only its variable fonts are shown (upload font files to pick others)`);
+      picked = picked.filter((m) => m.variable);
+    }
+    read.push(...picked);
+  }
+
   if (!read.length) {
-    warn(`${slug}: no usable font files — the font is hidden until files are uploaded`);
+    warn(`${slug}: no usable font files — the font is hidden until a ZIP with fonts (or font files) is uploaded`);
     return null;
   }
 
   const names = styleNames(read, fontName);
   const styles: {
     name: string; slug: string; file: string; web: string; format: string; size: number; weight: number; width: number;
-    italic: boolean; variable: boolean; glyphs: number; scripts: string[]; fileName: string;
+    italic: boolean; variable: boolean; axes?: Axis[]; glyphs: number; scripts: string[]; languages: string[]; fileName: string;
   }[] = [];
   for (const [i, m] of read.entries()) {
     const name = names[i];
-    const file = `/fonts/${slug}/${encodeURIComponent(m.fileName)}`;
+    // Generated names: the file's path without the extension ("static/Font-Bold" → "static-font-bold").
+    const stem = slugify(m.fileName.replace(/\.[^./]+$/, '')) || 'font';
+    let file = `/fonts/${slug}/${encodeURIComponent(m.fileName)}`;
+    if (m.fromZip) {
+      // A font taken from the archive gets its own copy (the Glyphs and Info tabs read it); the hash in the
+      // name keeps the long-cached /fonts-web/ copies fresh.
+      const copyName = `${stem}.${hash(m.buf)}.${m.ext}`;
+      const out = path.join(outDir, copyName);
+      if (!(await mtime(out))) {
+        await fs.mkdir(outDir, { recursive: true });
+        await fs.writeFile(out, m.buf);
+      }
+      file = `/fonts-web/${slug}/${copyName}`;
+    }
     // Preview file: TTF/OTF are compressed to WOFF2; the version query busts browser caches when the file changes.
     let web = file;
     if (m.ext === 'ttf' || m.ext === 'otf') {
-      const webName = `${slugify(path.basename(m.fileName, path.extname(m.fileName))) || 'font'}.woff2`;
+      const webName = `${stem}.woff2`;
       const out = path.join(outDir, webName);
       try {
         if ((await mtime(out)) < m.srcTime) {
@@ -249,8 +334,10 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       width: m.width,
       italic: m.italic,
       variable: m.variable,
+      ...(m.variable && m.axes.length ? { axes: m.axes } : {}),
       glyphs: m.glyphs,
       scripts: m.scripts,
+      languages: m.languages,
       fileName: m.fileName,
     });
   }
@@ -271,8 +358,6 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
   let zipName: string;
   let zipSize: number;
   let zipFiles: ZipEntry[];
-  const archive = baseName(raw.archive);
-  const archiveBuf = archive ? await fs.readFile(path.join(dir, archive)).catch(() => null) : null;
   if (archiveBuf?.length) {
     zip = `/fonts/${slug}/${encodeURIComponent(archive)}`;
     zipName = archive;
@@ -318,11 +403,14 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
     downloads: downloads[slug] ?? 0,
     primary,
     scripts: [...new Set(styles.flatMap((s) => s.scripts))],
+    // Counted on the primary style: the file one would check in Hyperglot.
+    languages: styles[primary].languages,
     zip,
     zipName,
     zipSize,
     zipFiles,
-    styles: styles.map(({ fileName: _f, width: _w, ...s }) => s),
+    // Variable styles are told apart from the static ones by name: "Regular" → "VariableRegular".
+    styles: styles.map(({ fileName: _f, width: _w, languages: _l, ...s }) => (s.variable ? { ...s, name: `Variable${s.name.replace(/\s+/g, '')}` } : s)),
   };
 }
 

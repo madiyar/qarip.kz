@@ -15,6 +15,8 @@ const style = z.object({
   weight: z.number().min(100).max(900).default(400),
   italic: z.boolean().default(false),
   variable: z.boolean().default(false),
+  /** Variation axes of a variable file. */
+  axes: z.array(z.object({ tag: z.string(), name: z.string(), min: z.number(), max: z.number(), default: z.number() })).optional(),
   glyphs: z.number().optional(),
   scripts: z.array(z.string()).default([]),
 });
@@ -45,6 +47,8 @@ const fonts = defineCollection({
     downloads: z.number().default(0),
     primary: z.number().default(0),
     scripts: z.array(z.string()).default([]),
+    /** Languages the primary style supports, "iso-Script" (Hyperglot data in src/data/languages.json). */
+    languages: z.array(z.string()).default([]),
     zip: z.string(),
     zipName: z.string().optional(),
     zipSize: z.number().default(0),
@@ -106,18 +110,37 @@ const licenses = defineCollection({
 
 const categories = defineCollection({
   // Wrapped in an object ({ items: [...] }): the CMS edits it as a list field and relation fields point at items.*.id.
+  // Every text is edited in the CMS in three languages; ru/en fall back to Kazakh.
   loader: file('src/data/categories.json', { parser: (text) => JSON.parse(text).items }),
-  schema: z.object({ name: z.string(), description: z.string(), color: z.string() }),
+  schema: z.object({
+    /** International name in Latin letters (Sans, Serif…), coloured on the home page. */
+    term: z.string(),
+    /** Short name: pills, cards, breadcrumbs. */
+    name: z.string(),
+    nameRu: z.string().optional(),
+    nameEn: z.string().optional(),
+    /** Full name: the category page heading and search titles. */
+    title: z.string(),
+    titleRu: z.string().optional(),
+    titleEn: z.string().optional(),
+    description: z.string(),
+    descriptionRu: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    color: z.string(),
+  }),
 });
 
+// Tags and purposes: edited in the CMS with their translations, wrapped like categories.
+const term = z.object({ name: z.string(), nameRu: z.string().optional(), nameEn: z.string().optional() });
+
 const tags = defineCollection({
-  loader: file('src/data/tags.json'),
-  schema: z.object({ name: z.string() }),
+  loader: file('src/data/tags.json', { parser: (text) => JSON.parse(text).items }),
+  schema: term,
 });
 
 const purposes = defineCollection({
-  loader: file('src/data/purposes.json'),
-  schema: z.object({ name: z.string() }),
+  loader: file('src/data/purposes.json', { parser: (text) => JSON.parse(text).items }),
+  schema: term,
 });
 
 const journal = defineCollection({
@@ -144,4 +167,21 @@ const glossary = defineCollection({
   }),
 });
 
-export const collections = { fonts, designers, licenses, categories, tags, purposes, journal, glossary };
+// Questions in the order the editors keep them in the CMS (ids are positions: 001, 002…).
+// Answers are Markdown; ru/en fall back to Kazakh.
+const faq = defineCollection({
+  loader: file('src/content/faq.json', {
+    parser: (text) => JSON.parse(text).items.map((item: object, i: number) => ({ ...item, id: String(i + 1).padStart(3, '0') })),
+  }),
+  schema: z.object({
+    category: z.enum(['install', 'license', 'fonts', 'site']),
+    question: z.string(),
+    answer: z.string(),
+    questionRu: z.string().optional(),
+    answerRu: z.string().optional(),
+    questionEn: z.string().optional(),
+    answerEn: z.string().optional(),
+  }),
+});
+
+export const collections = { fonts, designers, licenses, categories, tags, purposes, journal, glossary, faq };

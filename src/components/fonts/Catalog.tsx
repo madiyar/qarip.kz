@@ -19,7 +19,9 @@ interface Props {
   lang: Lang;
   /** Every font; the section filters them. */
   fonts: FontSummary[];
+  /** Names in the page's language. */
   purposes: { id: string; name: string }[];
+  tags: { id: string; name: string }[];
   /** The whole catalog first, then the categories. */
   sections: CatalogSection[];
   /** Section of the page that was requested. */
@@ -31,7 +33,7 @@ interface Props {
  * Every category has its own static page (search engines index them), but in the browser a
  * pill only swaps the list and the URL — no reload, so nothing on the page jumps.
  */
-export default function Catalog({ lang, fonts, purposes, sections, current }: Props) {
+export default function Catalog({ lang, fonts, purposes, tags, sections, current }: Props) {
   const t = useT(lang);
   const [id, setId] = useState(current);
   const section = sections.find((s) => s.id === id) ?? sections[0];
@@ -93,7 +95,7 @@ export default function Catalog({ lang, fonts, purposes, sections, current }: Pr
         ))}
       </nav>
 
-      <FontBrowser fonts={list} purposes={purposes} perPage={100} lang={lang} filters syncUrl prefKey="catalog" />
+      <FontBrowser fonts={list} purposes={purposes} tags={tags} perPage={100} lang={lang} filters syncUrl prefKey="catalog" />
     </>
   );
 }

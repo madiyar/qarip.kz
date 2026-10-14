@@ -4,13 +4,14 @@
  * in the CMS at /admin:
  *
  *   npm run font:add -- --name "Balpaq" --designer abay-emes --category display \
- *     --license ofl --tags free,cyrillic --our --archive Balpaq.zip path/to/*.ttf
+ *     --license ofl --tags free,cyrillic --our --archive Balpaq.zip [path/to/*.ttf]
  *
  * Several designers: --designer paratype,abay-emes.
  * It copies the files to public/fonts/<slug>/ and writes public/fonts/<slug>/font.json.
  * Styles, weights, glyph counts, alphabets, WOFF2 previews and the list of files in the
  * archive are derived at build time (src/lib/fontLoader.ts), so nothing else is needed.
- * Without --archive a ZIP is built from the font files.
+ * With only --archive the fonts are taken from inside the ZIP; without --archive a ZIP is built
+ * from the font files.
  * Re-running on an existing slug keeps fields that are not passed again.
  */
 import fs from 'node:fs/promises';
@@ -52,8 +53,8 @@ const list = (v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : und
 const safeName = (file) => path.basename(file).replace(/\s+/g, '-');
 
 async function main() {
-  if (!args.name || !files.length) {
-    console.error('Usage: npm run font:add -- --name "Font" --designer slug --category sans --license ofl [options] files…');
+  if (!args.name || (!files.length && !args.archive)) {
+    console.error('Usage: npm run font:add -- --name "Font" --designer slug --category sans --license ofl [options] --archive font.zip [files…]');
     process.exit(1);
   }
   const slug = args.slug || slugify(args.name);
@@ -89,7 +90,7 @@ async function main() {
   };
   if (!entry.designers?.length) throw new Error('--designer is required for a new font');
   await fs.writeFile(jsonPath, JSON.stringify(entry, null, 2) + '\n');
-  console.log(`✓ ${args.name} → public/fonts/${slug}/font.json (${entry.files.length} file(s))`);
+  console.log(`✓ ${args.name} → public/fonts/${slug}/font.json (${entry.files.length ? `${entry.files.length} file(s)` : 'fonts from the archive'})`);
 }
 
 main().catch((e) => {

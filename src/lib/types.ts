@@ -31,13 +31,19 @@ export interface StyleInfo {
   weight: number;
   italic: boolean;
   variable: boolean;
+  /** Variation axes (variable styles). */
+  axes?: { tag: string; name: string; min: number; max: number; default: number }[];
 }
 
+/** A category with its texts in the page's language (edited in the CMS). */
 export interface CategoryInfo {
   id: string;
-  name: string;
-  /** Short name in the page's language (Кесілген, Без засечек, Sans serif…). */
+  /** Short name (Кесілген, Без засечек, Sans serif…). */
   label: string;
+  /** Full name: page heading and search titles. */
+  title: string;
   description: string;
+  /** International name (Sans, Serif…). */
+  term: string;
   color: string;
 }

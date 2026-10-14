@@ -1,10 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Catalog, { type CatalogSection } from '../components/fonts/Catalog';
 import { type Lang, localePath, useT } from '../i18n';
-import { getCategories, getFonts, primaryFaces, toSummaries } from '../lib/fonts';
-import { CATALOG, CATEGORY, breadcrumbLd, categoryTitle, itemListLd } from '../lib/seo';
+import { getCategories, getFonts, getTerms, primaryFaces, toSummaries } from '../lib/fonts';
+import { CATALOG, breadcrumbLd, categoryTitle, itemListLd } from '../lib/seo';
 
 interface Props {
   lang: Lang;
@@ -15,7 +14,7 @@ const { lang, category } = Astro.props;
 const t = useT(lang);
 const all = await toSummaries(await getFonts(), lang);
 const categories = await getCategories(lang);
-const purposes = (await getCollection('purposes')).map((x) => ({ id: x.id, name: x.data.name }));
+const [purposes, tags] = await Promise.all([getTerms('purposes', lang), getTerms('tags', lang)]);
 
 const cat = categories.find((c) => c.id === category);
 const fonts = cat ? all.filter((f) => f.category.id === cat.id) : all;
@@ -34,9 +33,9 @@ const sections: CatalogSection[] = [
     id: c.id,
     label: c.label,
     href: localePath(lang, `/fonts/category/${c.id}`),
-    title: `${categoryTitle(lang, c.id, c.name)} | Qarip`,
-    h1: CATEGORY[c.id]?.name[lang] ?? c.label,
-    lead: CATEGORY[c.id]?.description[lang] ?? t(c.description),
+    title: `${categoryTitle(lang, c.title)} | Qarip`,
+    h1: c.title,
+    lead: c.description,
   })),
 ];
 const section = sections.find((s) => s.id === (cat?.id ?? '')) ?? sections[0];
@@ -56,10 +55,10 @@ const crumbs = [
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(itemListLd(site, lang, section.h1, fonts))} />
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbLd(site, crumbs))} />
 
-  <Catalog client:load lang={lang} fonts={all} purposes={purposes} sections={sections} current={cat?.id ?? ''} />
+  <Catalog client:load lang={lang} fonts={all} purposes={purposes} tags={tags} sections={sections} current={cat?.id ?? ''} />
 
   <p class="mt-10 text-sm text-fg-3">
-    {t('Керек қаріп табылмады ма? Сүйікті қаріпіңізге немесе брендіңіздің қаріпіне қазақ әріптерін')}
+    {t('Керек қаріп табылмады ма? Сүйікті қаріпіңізге немесе брендіңіздің қаріпіне қазақ әріптерін')}{' '}
     <a class="link-quiet" href={localePath(lang, '/services')}>{t('қосып береміз')}</a>.
   </p>
 </Base>

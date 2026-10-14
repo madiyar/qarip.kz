@@ -1,6 +1,6 @@
 # Qarip
 
-Қазақ тілін қолдайтын қаріптер қоры — [qarip.netlify.app](https://qarip.netlify.app).
+Қазақ тілін қолдайтын қаріптер қоры — [qarip.app](https://qarip.app).
 
 Static site on [Astro](https://astro.build) + React islands + Tailwind CSS 4, deployed to Netlify.
 Content is edited in Git (or via Sveltia CMS at `/admin`).
@@ -9,8 +9,9 @@ Content is edited in Git (or via Sveltia CMS at `/admin`).
 
 The public URL is set in one place: `SITE_URL` in `astro.config.mjs` (or the `SITE_URL`
 environment variable on Netlify). Canonical links, sitemap, hosted CSS and the site name
-in the UI all derive from it. When moving to a custom domain also update `site_url` in
-`public/admin/config.yml` and uncomment the redirect at the top of `public/_redirects`.
+in the UI all derive from it. The site lives at `https://qarip.app`; when the domain changes,
+also update `site_url` / `display_url` in `public/admin/config.yml` and the redirect at the
+top of `public/_redirects`.
 
 ## SEO
 
@@ -36,10 +37,12 @@ npm run check    # type check
 ## Adding content
 
 Editors use the admin at `/admin` (Sveltia CMS, sign in with GitHub). To add a font there:
-enter its name, drop the TTF/OTF files and the ZIP archive, pick the designers, category and
-license, save. Each font is a folder — `public/fonts/<slug>/font.json` plus the uploaded files.
-Style names, weights, glyph counts, supported alphabets, WOFF2 previews and the list of files
-inside the ZIP are derived from the files when the site is built (`src/lib/fontLoader.ts`).
+enter its name, drop the ZIP archive (up to 10 MB), pick the designers, category and license,
+save. The fonts are taken from inside the ZIP; uploading font files separately is optional (only
+to show a subset). Each font is a folder — `public/fonts/<slug>/font.json` plus the uploaded files.
+Style names, weights, variable axes, glyph counts, supported alphabets and languages, WOFF2
+previews and the list of files inside the ZIP are derived from the files when the site is built
+(`src/lib/fontLoader.ts`).
 
 The same from the command line:
 
@@ -59,6 +62,7 @@ npm run font:add -- --name "Font Name" --designer abay-emes[,other] --category s
 | `src/content/licenses/*.md` | Licenses (Markdown body + pricing is optional) |
 | `src/content/journal/*.md` | Journal articles |
 | `src/content/glossary.json` | Typography glossary |
+| `src/content/faq.json` | F.A.Q. (questions and Markdown answers in three languages) |
 | `src/data/*.json` | Categories, tags, purposes |
 | `src/i18n/en.json` | English UI strings (Kazakh text is the key) |
 | `src/lib/sfnt.ts` | Font binary toolkit: WOFF/WOFF2, cmap, name table |

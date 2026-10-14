@@ -131,7 +131,10 @@ export default function Pairing({ fonts, lang }: { fonts: FontSummary[]; lang: L
               contentEditable
               suppressContentEditableWarning
               spellCheck={false}
-              onBlur={(e) => setTexts((x) => ({ ...x, [s.id]: e.currentTarget.textContent ?? '' }))}
+              onBlur={(e) => {
+                const value = e.currentTarget.textContent ?? '';
+                setTexts((x) => ({ ...x, [s.id]: value }));
+              }}
               className={`${s.size} break-words outline-none`}
               style={{ fontFamily: `'qf-${pair[s.id]}', system-ui` }}
             >

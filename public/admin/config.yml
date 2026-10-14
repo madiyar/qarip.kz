@@ -18,8 +18,8 @@ backend:
     deleteMedia: 'content: delete “{{path}}”'
 
 app_title: Qarip — админка
-site_url: https://qarip.netlify.app # keep in sync with SITE_URL in astro.config.mjs
-display_url: https://qarip.netlify.app
+site_url: https://qarip.app # keep in sync with SITE_URL in astro.config.mjs
+display_url: https://qarip.app
 
 # Images used across the site (article covers and so on).
 media_folder: /public/images
@@ -44,7 +44,7 @@ collections:
   - name: fonts
     label: Қаріптер
     label_singular: Қаріп
-    description: Қаріп қосу үшін атауын жазып, файлдары мен ZIP архивін жүктеңіз. Стильдер мен салмақтар файлдан автоматты түрде оқылады.
+    description: Қаріп қосу үшін атауын жазып, ZIP архивін жүктеңіз — қаріптер архивтің ішінен алынады. Стильдер, салмақтар, глифтер мен тілдер файлдан автоматты түрде оқылады.
     icon: font_download
     folder: /public/fonts
     path: '{{slug}}/font'
@@ -64,20 +64,23 @@ collections:
         label: Қаріп атауы
         widget: string
         hint: 'Мысалы: Hiykaya. Сайттағы сілтеме осы атаудан жасалады.'
-      - name: files
-        label: Қаріп файлдары
-        widget: file
-        multiple: true
-        min: 1
-        accept: .ttf,.otf,.woff,.woff2
-        choose_url: false
-        hint: Барлық стильдің файлын (TTF, OTF, вариативті қаріптерді де) бірден сүйреп әкеліңіз. Стиль атауы, салмағы, глиф саны файлдан өзі оқылады.
+      # Files above 10 MB are refused here: GitHub drops such saves half-way ("Failed to fetch").
       - name: archive
         label: ZIP архив
         widget: file
         accept: .zip
         choose_url: false
-        hint: Сайттан жүктелетін архив (қаріп файлдары, лицензия, readme). Қаріп бетіндегі «Файлдар» тізімі осы архивтен алынады.
+        media_libraries: { default: { config: { max_file_size: 10485760 } } }
+        hint: Сайттан жүктелетін архив (қаріп файлдары, лицензия, readme). Ішіндегі TTF/OTF қаріптер сайтқа өзі шығады — бөлек жүктеудің керегі жоқ. Архив 10 МБ-тан аспасын. Google Fonts архиві үлкен болса, ішінен static бумасын алып тастаңыз — вариатив файл барлық салмақты қамтиды.
+      - name: files
+        label: Қаріп файлдары
+        widget: file
+        multiple: true
+        required: false
+        accept: .ttf,.otf,.woff,.woff2
+        choose_url: false
+        media_libraries: { default: { config: { max_file_size: 10485760 } } }
+        hint: Міндетті емес. Бос қалса, қаріптер ZIP архивтің ішінен алынады. Сайтта архивтегінің бәрі емес, тек кейбір стильдер көрінсін десеңіз ғана, сол файлдарды осында жүктеңіз.
       - name: designers
         label: Дизайнерлер
         widget: relation
@@ -94,8 +97,8 @@ collections:
         collection: settings
         file: categories
         value_field: items.*.id
-        display_fields: ['items.*.name', 'items.*.description']
-        search_fields: ['items.*.name']
+        display_fields: ['items.*.title']
+        search_fields: ['items.*.name', 'items.*.title']
         dropdown_threshold: 0
       - name: license
         label: Лицензия
@@ -105,29 +108,31 @@ collections:
         display_fields: [name]
         search_fields: [name]
         dropdown_threshold: 0
+      # Options come from Анықтамалықтар → Тегтер / Мақсаты (src/data/tags.json, purposes.json).
       - name: tags
         label: Тегтер
-        widget: select
+        widget: relation
+        collection: settings
+        file: tags
+        value_field: items.*.id
+        display_fields: ['items.*.name']
+        search_fields: ['items.*.name']
         multiple: true
         required: false
-        options:
-          - { label: Тегін, value: free }
-          - { label: Коммерциялық, value: commercial }
-          - { label: Кирилл, value: cyrillic }
-          - { label: Латын, value: latin }
-          - { label: Вариативті, value: variable }
-        hint: «Тегін» — коммерциялық мақсатта да тегін қолдануға болатын қаріп.
+        dropdown_threshold: 20
+        hint: «Тегін» — коммерциялық мақсатта да тегін қолдануға болатын қаріп. Жаңа тегті «Анықтамалықтар → Тегтер» бөліміне қосыңыз.
       - name: purposes
         label: Мақсаты
-        widget: select
+        widget: relation
+        collection: settings
+        file: purposes
+        value_field: items.*.id
+        display_fields: ['items.*.name']
+        search_fields: ['items.*.name']
         multiple: true
         required: false
-        options:
-          - { label: Бас жазу (тақырып), value: headings }
-          - { label: Дене мәтін, value: body }
-          - { label: Логотип, value: logo }
-          - { label: Экран, value: screen }
-          - { label: Баспа, value: print }
+        dropdown_threshold: 20
+        hint: Жаңа мақсатты «Анықтамалықтар → Мақсаты» бөліміне қосыңыз.
       - { name: our, label: Біздің қаріп, widget: boolean, default: false, required: false }
       - name: quality
         label: Сапа (1–10)
@@ -310,6 +315,35 @@ collections:
                   - { label: Дизайн, value: design }
                   - { label: Басқа, value: other }
               - { name: example, label: Мысал, widget: string, required: false }
+      - name: faq
+        label: F.A.Q.
+        icon: quiz
+        file: /src/content/faq.json
+        format: json
+        fields:
+          - name: items
+            label: Сұрақтар
+            label_singular: сұрақ
+            widget: list
+            collapsed: true
+            summary: '{{question}}'
+            hint: Сайтта осы ретпен шығады — ретін сүйреп өзгертуге болады. Орысша мен ағылшынша бос қалса, қазақшасы көрсетіледі.
+            fields:
+              - name: category
+                label: Бөлім
+                widget: select
+                default: site
+                options:
+                  - { label: Орнату, value: install }
+                  - { label: Лицензия, value: license }
+                  - { label: Қаріптер, value: fonts }
+                  - { label: Сайт, value: site }
+              - { name: question, label: Сұрақ (қазақша), widget: string }
+              - { name: answer, label: Жауап (қазақша), widget: markdown, buttons: [bold, italic, code, link, bulleted-list, numbered-list], editor_components: [] }
+              - { name: questionRu, label: Сұрақ (орысша), widget: string, required: false }
+              - { name: answerRu, label: Жауап (орысша), widget: markdown, required: false, buttons: [bold, italic, code, link, bulleted-list, numbered-list], editor_components: [] }
+              - { name: questionEn, label: Сұрақ (ағылшынша), widget: string, required: false }
+              - { name: answerEn, label: Жауап (ағылшынша), widget: markdown, required: false, buttons: [bold, italic, code, link, bulleted-list, numbered-list], editor_components: [] }
       - name: categories
         label: Қаріп категориялары
         icon: category
@@ -321,12 +355,81 @@ collections:
             label_singular: категория
             widget: list
             collapsed: true
-            summary: '{{name}} — {{description}}'
+            summary: '{{name}} · {{term}}'
+            hint: Атауы, толық атауы мен сипаттамасы сайтта дәл осылай шығады — үш тілде де толтырыңыз.
             fields:
-              - { name: id, label: ID (латынша), widget: string, hint: 'Сілтемеде қолданылады: /fonts/category/<id>/. Барын өзгертпеңіз.' }
-              - { name: name, label: Атауы, widget: string }
-              - { name: description, label: Сипаттамасы, widget: string }
-              - { name: color, label: Түсі, widget: color }
+              - { name: id, label: ID (латынша), widget: string, pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).'], hint: 'Сілтемеде қолданылады, мысалы sans → /fonts/category/sans/. Барын өзгертпеңіз.' }
+              - { name: name, label: Атауы (қазақша), widget: string, hint: 'Батырмалар мен карточкаларда. Мысалы: Кесілген' }
+              - { name: nameRu, label: Атауы (орысша), widget: string, hint: 'Мысалы: Без засечек' }
+              - { name: nameEn, label: Атауы (ағылшынша), widget: string, hint: 'Мысалы: Sans serif' }
+              - { name: title, label: Толық атауы (қазақша), widget: string, hint: 'Категория бетінің тақырыбы, іздеу жүйелері де осыны көреді. Мысалы: Кесілген қаріптер (sans serif)' }
+              - { name: titleRu, label: Толық атауы (орысша), widget: string, hint: 'Мысалы: Шрифты без засечек (sans serif)' }
+              - { name: titleEn, label: Толық атауы (ағылшынша), widget: string, hint: 'Мысалы: Sans serif fonts' }
+              - { name: description, label: Сипаттамасы (қазақша), widget: text, hint: Категория бетінде тақырыптың астында. }
+              - { name: descriptionRu, label: Сипаттамасы (орысша), widget: text }
+              - { name: descriptionEn, label: Сипаттамасы (ағылшынша), widget: text }
+              - { name: term, label: Халықаралық атауы, widget: string, hint: 'Басты беттегі түрлі-түсті жазу. Мысалы: Sans' }
+              - { name: color, label: Түсі, widget: color, hint: Халықаралық атауының түсі (басты бет). }
+      - name: tags
+        label: Тегтер
+        icon: sell
+        file: /src/data/tags.json
+        format: json
+        fields:
+          - name: items
+            label: Тегтер
+            label_singular: тег
+            widget: list
+            collapsed: true
+            summary: '{{name}} · {{nameRu}} · {{nameEn}}'
+            fields:
+              - name: id
+                label: ID (латынша)
+                widget: string
+                pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).']
+                hint: 'Сілтемеде қолданылады, мысалы free → /fonts/?tag=free. Барын өзгертпеңіз — қаріптер тегке осы ID арқылы байланған. free, commercial, cyrillic, latin, variable тегтерін сайттың сүзгілері қолданады, өшірмеңіз.'
+              - { name: name, label: Атауы (қазақша), widget: string }
+              - { name: nameRu, label: Атауы (орысша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+              - { name: nameEn, label: Атауы (ағылшынша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+      - name: purposes
+        label: Мақсаты
+        icon: flag
+        file: /src/data/purposes.json
+        format: json
+        fields:
+          - name: items
+            label: Мақсаттар
+            label_singular: мақсат
+            widget: list
+            collapsed: true
+            summary: '{{name}} · {{nameRu}} · {{nameEn}}'
+            fields:
+              - name: id
+                label: ID (латынша)
+                widget: string
+                pattern: ['^[a-z0-9-]+$', 'Тек кіші латын әріптері, сан және сызықша (-).']
+                hint: 'Сілтемеде қолданылады, мысалы logo → /fonts/?purpose=logo. Барын өзгертпеңіз — қаріптер мақсатқа осы ID арқылы байланған.'
+              - { name: name, label: Атауы (қазақша), widget: string }
+              - { name: nameRu, label: Атауы (орысша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+              - { name: nameEn, label: Атауы (ағылшынша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+      - name: donation
+        label: Қолдау картасы
+        icon: credit_card
+        file: /src/data/donation.json
+        format: json
+        fields:
+          - name: items
+            label: Карталар
+            label_singular: карта
+            widget: list
+            required: false
+            collapsed: true
+            summary: '{{bank}} — {{number}}'
+            hint: «Қолдау» бетіндегі банк картасы. Бірнеше карта болса, банктер арасында ауыстыруға болады. Тізім бос болса, блок жасырылады.
+            fields:
+              - { name: bank, label: Банк, widget: string, hint: 'Мысалы: Kaspi' }
+              - { name: number, label: Карта нөмірі, widget: string, pattern: ['^[0-9 ]+$', 'Тек сандар мен бос орын.'], hint: Сайтта 4 саннан топтап көрсетіледі. }
+              - { name: holder, label: Алушы, widget: string, required: false, hint: 'Бос қалса, көрсетілмейді.' }
       - name: donators
         label: Донаторлар
         icon: volunteer_activism

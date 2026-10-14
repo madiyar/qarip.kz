@@ -15,26 +15,24 @@ export const SITE = {
     google: import.meta.env.GOOGLE_SITE_VERIFICATION ?? '',
     yandex: import.meta.env.YANDEX_VERIFICATION ?? '',
   },
-  /** Card details for donations. Leave empty to hide the donation block. */
-  donation: { bank: 'Kaspi', card: '', holder: '' },
   /** Keyboard layout installer archive (public/…). Leave empty to hide the download button. */
   keyboardZip: '',
 };
 
 /** Top navigation (desktop). Tools are a separate drop-down. */
 export const NAV = [
-  { href: '/journal', label: 'Journal' },
-  { href: '/services', label: 'Қызметтер' },
+  { href: '/journal', label: 'Жорнал' },
+  { href: '/services', label: 'Қызмет' },
 ];
 
 /** Pages behind "More" in the mobile tab bar. */
 export const MORE_NAV = [
-  { href: '/journal', label: 'Journal' },
+  { href: '/journal', label: 'Жорнал' },
   { href: '/glossary', label: 'Сөздік' },
   { href: '/typography', label: 'Типография' },
-  { href: '/services', label: 'Қызметтер' },
+  { href: '/services', label: 'Қызмет' },
   { href: '/licenses', label: 'Лицензия түрлері' },
-  { href: '/faq', label: 'Жиі сұрақтар' },
+  { href: '/faq', label: 'F.A.Q.' },
   { href: '/about', label: 'Біз туралы' },
 ];
 
@@ -43,7 +41,7 @@ export const MORE_NAV = [
  * `group` sorts them on the tools page.
  */
 export const TOOLS = [
-  { href: '/tools/tester', label: 'Тестер', title: 'Қаріп тестері', description: 'Файлдағы қазақ әріптерін тексеру', long: 'Файлды тастаңыз: қазақ әріптері, глифтер, OpenType, вариативті осьтер.', glyph: 'Әа', glyphFont: 'serif', group: 'check' },
+  { href: '/tools/tester', label: 'Тестер', title: 'Қаріп тестері', description: 'Файлдағы қазақ әріптерін тексеру', long: 'Файлды тастаңыз: қазақ әріптері, глифтер, OpenType, вариатив осьтер.', glyph: 'Әа', glyphFont: 'serif', group: 'check' },
   { href: '/tools/proofing', label: 'Баспа тексті', title: 'Баспа тексті', description: 'Сарқырама, тақырып, мәтін', long: 'Сарқырама, тақырыптар, мәтін, алфавит, кернинг — басып шығаруға дайын.', glyph: '¶', glyphFont: 'serif', group: 'check' },
   { href: '/tools/kerning', label: 'Кернинг жұптары', title: 'Кернинг жұптары', description: 'Жұптар мен үштіктер генераторы', long: 'Кернинг тексеруге арналған жұптар мен үштіктер, қазақ әріптерімен.', glyph: 'ҚА', glyphFont: 'sans', group: 'check' },
   { href: '/tools/converter', label: 'Конвертер', title: 'Веб-қаріп конвертері', description: 'TTF, OTF, WOFF, WOFF2', long: 'TTF, OTF, WOFF, WOFF2 арасында бірнеше файлды бірден түрлендіру.', glyph: '⇄', glyphFont: 'sans', group: 'convert' },
@@ -74,3 +72,11 @@ export const CHARSETS = [
   { label: 'Кіші әріптер (латын)', chars: 'aäbcdefgğhıijklmnñoöpqrsştuūüvwxyz' },
   { label: 'Сандар және белгілер', chars: '0123456789 .,:;!?¡¿…·•—–-_()[]{}«»‹›""\'\'/\\|@#$€₸₽%&*+=<>~^' },
 ];
+
+/** Alphabet order of the Letters tab (Kazakh Cyrillic, then Kazakh Latin); the Glyphs tab sorts letters by it. */
+export const ALPHABET_ORDER = CHARSETS.slice(0, 4)
+  .map((s) => s.chars)
+  .join('');
+
+/** Kazakh letters that Russian and English lack, highlighted on the Letters and Glyphs tabs. */
+export const KAZAKH_LETTERS = 'ӘәҒғҚқҢңӨөҰұҮүҺһІіÄäĞğİıÑñÖöŞşŪūÜü';

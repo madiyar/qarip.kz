@@ -2,39 +2,87 @@
   "items": [
     {
       "id": "sans",
-      "name": "Sans",
-      "description": "Кесілген қаріп",
+      "term": "Sans",
+      "name": "Кесілген",
+      "nameRu": "Без засечек",
+      "nameEn": "Sans serif",
+      "title": "Кесілген қаріптер (sans serif)",
+      "titleRu": "Шрифты без засечек (sans serif)",
+      "titleEn": "Sans serif fonts",
+      "description": "Кертігі жоқ, таза әрі заманауи шрифттер. Сайтқа, интерфейске, презентацияға жақсы жарасады.",
+      "descriptionRu": "Чистые и современные шрифты без засечек. Хорошо подходят для сайтов, интерфейсов и презентаций.",
+      "descriptionEn": "Clean, modern typefaces without serifs. A good fit for websites, interfaces and presentations.",
       "color": "#3b82f6"
     },
     {
       "id": "serif",
-      "name": "Serif",
-      "description": "Кертілген қаріп",
-      "color": "#8b5cf6"
+      "term": "Serif",
+      "name": "Кертілген",
+      "nameRu": "С засечками",
+      "nameEn": "Serif",
+      "title": "Кертілген қаріптер (serif)",
+      "titleRu": "Шрифты с засечками (serif)",
+      "titleEn": "Serif fonts",
+      "description": "Классикалық кертілген шрифттер. Кітап, газет-журнал және ұзақ мәтінге ыңғайлы.",
+      "descriptionRu": "Классические шрифты с засечками. Удобны для книг, прессы и длинных текстов.",
+      "descriptionEn": "Classic typefaces with serifs. Comfortable for books, press and long reading.",
+      "color": "#eab308"
     },
     {
       "id": "display",
-      "name": "Display",
-      "description": "Көрнекі қаріп",
-      "color": "#ec4899"
+      "term": "Display",
+      "name": "Көрнекі",
+      "nameRu": "Акцидентные",
+      "nameEn": "Display",
+      "title": "Көрнекі қаріптер (display)",
+      "titleRu": "Акцидентные и декоративные шрифты",
+      "titleEn": "Display fonts",
+      "description": "Тақырыпқа, логотипке, афишаға, комикске арналған мінезі бар көрнекі шрифттер.",
+      "descriptionRu": "Характерные шрифты для заголовков, логотипов, афиш и комиксов.",
+      "descriptionEn": "Expressive typefaces for headings, logos, posters and comics.",
+      "color": "#ef4444"
     },
     {
       "id": "slab",
-      "name": "Slab",
-      "description": "Қырлы қаріп",
-      "color": "#f59e0b"
-    },
-    {
-      "id": "handwritten",
-      "name": "Handwritten",
-      "description": "Жазба қаріп",
+      "term": "Slab",
+      "name": "Қырлы",
+      "nameRu": "Брусковые",
+      "nameEn": "Slab serif",
+      "title": "Қырлы қаріптер (slab serif)",
+      "titleRu": "Брусковые шрифты (slab serif)",
+      "titleEn": "Slab serif fonts",
+      "description": "Төртбұрыш кертігі бар салмақты шрифттер. Тақырып пен жарнамаға сай.",
+      "descriptionRu": "Уверенные шрифты с прямоугольными засечками. Для заголовков и рекламы.",
+      "descriptionEn": "Sturdy typefaces with block serifs. For headings and advertising.",
       "color": "#f97316"
     },
     {
+      "id": "handwritten",
+      "term": "Handwritten",
+      "name": "Қолжазба",
+      "nameRu": "Рукописные",
+      "nameEn": "Handwritten",
+      "title": "Қолжазба қаріптер",
+      "titleRu": "Рукописные шрифты",
+      "titleEn": "Handwritten fonts",
+      "description": "Қолмен жазғандай көрінетін шрифттер: шақыру қағазына, открыткаға, комикске.",
+      "descriptionRu": "Шрифты, имитирующие письмо от руки: для приглашений, открыток и комиксов.",
+      "descriptionEn": "Typefaces that imitate handwriting: for invitations, cards and comics.",
+      "color": "#a855f7"
+    },
+    {
       "id": "monospace",
-      "name": "Monospace",
-      "description": "Біркеңді қаріп",
-      "color": "#6b7280"
+      "term": "Monospace",
+      "name": "Бірке",
+      "nameRu": "Моноширинные",
+      "nameEn": "Monospace",
+      "title": "Бірке қаріптер (monospace)",
+      "titleRu": "Моноширинные шрифты",
+      "titleEn": "Monospace fonts",
+      "description": "Әр таңбасының ені бірдей шрифттер. Кодқа және кестеге арналған.",
+      "descriptionRu": "Шрифты с одинаковой шириной всех знаков. Для кода и таблиц.",
+      "descriptionEn": "Typefaces where every character has the same width. For code and tables.",
+      "color": "#22c55e"
     }
   ]
 }

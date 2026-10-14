@@ -1,8 +1,8 @@
 # Qarip
 
-Library of fonts that support the Kazakh language. Live at https://qarip.netlify.app
-(the `qarip.kz` domain is currently **not** owned; it may be bought back later).
-Repo: `madiyar/qarip.kz`, deploys to Netlify from `main`.
+Library of fonts that support the Kazakh language. Live at https://qarip.app
+(the Netlify subdomain `qarip.netlify.app` redirects there; the old `qarip.kz` domain is not owned).
+Repo: `madiyar/qarip.kz` (the repo name predates the domain), deploys to Netlify from `main`.
 
 The owner (Madiyar) writes in Russian — reply in Russian. Site content is Kazakh-first.
 Commit and push only when asked.
@@ -14,8 +14,8 @@ newer SPA made on base44 (`font.base44.app`; its source is at `~/Downloads/Qarip
 base44 SDK). Only the *engine* was ported — content was deliberately **not** imported from
 base44. The catalog holds the fonts that were already in this repo (Balpaq, Beyne, Hiykaya,
 QR Comic Beta, all by Abay Emes); more are added in the CMS at `/admin` (or with
-`npm run font:add`). The content editor is the owner's brother, who is not a developer —
-the admin UI must stay simple, and adding a font must never require technical fields.
+`npm run font:add`). Content editors are not developers — the admin UI must stay simple,
+and adding a font must never require technical fields.
 
 Not ported on purpose: base44 admin pages and auth (Sveltia CMS at `/admin` plays that role),
 the email newsletter form (it was a dead stub in the source), `Dictionary`/`New`/`ApiDocs` pages.
@@ -24,14 +24,14 @@ The download counter was later rebuilt as a Netlify Function (see Download count
 ## Stack and commands
 
 Astro 7 (static output, Content Layer) · React 19 islands · Tailwind CSS 4 · TypeScript ·
-opentype.js 2 · fflate · woff2-encoder (WASM) · sharp · one Netlify Function with Netlify Blobs. Node 22.
+opentype.js 2 · fflate · woff2-encoder (WASM) · sharp · marked (FAQ answers) · one Netlify Function with Netlify Blobs. Node 22.
 
 ```sh
 npm run dev      # http://localhost:4321
 npm run build    # static site in dist/
 npm run check    # astro check — must stay at 0 errors
 npm run font:add -- --name "Font" --designer abay-emes[,other] --category sans --license ofl \
-  [--tags free,cyrillic] [--our] [--quality 7.5] [--description-ru "…"] --archive a.zip files…
+  [--tags free,cyrillic] [--our] [--quality 7.5] [--description-ru "…"] --archive a.zip [files…]
 ```
 
 There is no test suite. Verify with `npm run check`, `npm run build`, and the browser.
@@ -41,14 +41,16 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | Path | What |
 | --- | --- |
 | `astro.config.mjs` | `SITE_URL` — the single place for the domain (or `SITE_URL` env var) |
-| `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary |
-| `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `designers` (list) + `files` (uploaded TTF/OTF) + `archive` (ZIP, required in the CMS) |
-| `src/lib/fontLoader.ts` | Content loader: derives style names, weights, glyphs, alphabets, WOFF2 previews and the ZIP's file list from the files; fetches download counts |
+| `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary, faq |
+| `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `designers` (list) + `archive` (ZIP, required in the CMS) + optional `files` (uploaded TTF/OTF; without them the fonts come from the ZIP) |
+| `src/lib/fontLoader.ts` | Content loader: derives style names, weights, variable axes, glyphs, alphabets, languages, WOFF2 previews and the ZIP's file list from the files; fetches download counts |
 | `public/fonts-web/<slug>/` | Build output (gitignored): WOFF2 previews, and a ZIP only for fonts without an uploaded one |
 | `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
 | `src/content/{designers,licenses,journal}/` | Designers (JSON, bio in kk/ru/en), licenses (MD frontmatter, `visible` switch, optional pricing + body), articles (MD) |
-| `src/content/glossary.json`, `src/data/{categories,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }` |
-| `src/data/{tags,purposes}.json`, `faq.ts`, `unicode.ts` | Taxonomies, FAQ (per language), Unicode reference sections |
+| `src/content/glossary.json`, `src/data/{categories,tags,purposes,donation,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; categories, tags and purposes carry their own ru/en texts (`nameRu`, `titleEn`…) |
+| `src/content/faq.json` | F.A.Q. (`{ "items": [...] }`, edited in the CMS): category, question/answer in kk + optional ru/en, answers in Markdown |
+| `src/data/unicode.ts` | Unicode reference sections |
+| `src/data/languages.json` | Hyperglot orthographies (`{ id, script, chars }`) for the language count; rebuilt with `pip install hyperglot && python3 scripts/languages.py` |
 | `src/views/*.astro` | Page logic, each takes `lang` |
 | `src/pages/**`, `src/pages/ru/**`, `src/pages/en/**` | Thin wrappers: `<View lang="kk|ru|en" />` |
 | `DESIGN.md` | The design system: tokens, type, classes, components, page patterns, decisions |
@@ -60,7 +62,7 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range`/`RangeField`, `Switch`, `CopyButton`/`CodeBlock`, `OwnBadge`, `Skeleton` |
 | `src/components/tools/` | Tester, Converter, Pairing, Proofing, Freezer, Kerning, Keyboard; `ToolHeader`, `OtherTools`, `Dropzone` |
 | `src/lib/journal.ts` | Published articles, reading time, cover glyph |
-| `src/lib/site.ts` | Contacts, nav, tools list, pangrams, donation card, keyboard zip |
+| `src/lib/site.ts` | Contacts, nav, tools list, pangrams, keyboard zip |
 | `src/lib/seo.ts` | Search-facing titles/descriptions per language + JSON-LD builders |
 | `src/lib/sfnt.ts` | Font binary toolkit: SFNT parse/build, WOFF, WOFF2, cmap rebuild, family rename |
 | `src/lib/store.ts`, `src/lib/useStore.ts` | localStorage store: favorites, download history, collections (`catalogs` in code), prefs; React hook |
@@ -74,7 +76,9 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 **i18n.** Three locales: `kk` (default, no prefix), `ru` (`/ru/`), `en` (`/en/`).
 UI strings are written in Kazakh and used as keys: `t('Қаріптер')`. Translations live in
 `src/i18n/ru.json` and `en.json`; a missing key falls back to Kazakh. When adding a string,
-add it to **both** JSON files. Placeholders: `t('{n} стиль', { n })`.
+add it to **both** JSON files. Placeholders: `t('{n} стиль', { n })`. Tag and purpose names are
+translated in their data (`nameRu` / `nameEn`, edited in the CMS), read with `termName()` /
+`getTerms()` from `src/lib/fonts.ts` — not with `t()`.
 A new page needs a view plus three wrappers (`src/pages/x.astro`, `ru/x.astro`, `en/x.astro`).
 
 **Links.** Always build internal links with `localePath(lang, '/path')`. It adds the locale
@@ -82,9 +86,11 @@ prefix and a trailing slash — Netlify serves pages only with a trailing slash 
 301 → `/fonts/`), so links and canonicals must use that form.
 
 **SEO copy.** "Шрифт" is searched far more than "қаріп", and Russian queries dominate
-("казахские шрифты скачать"). Titles/descriptions for home, catalog, categories and font
-pages come from `src/lib/seo.ts`, not from `t()`. Kazakh copy uses both words.
-Categories are static pages (`/fonts/category/<id>/`), not query filters.
+("казахские шрифты скачать"). Titles/descriptions for home, catalog and font pages come from
+`src/lib/seo.ts`, not from `t()`. Kazakh copy uses both words. Categories are static pages
+(`/fonts/category/<id>/`), not query filters; their names, full names (page heading + search
+title, e.g. "Шрифты без засечек (sans serif)") and descriptions are edited in the CMS in three
+languages (`categories.json`, read with `categoryInfo()` / `getCategories()`).
 
 **Styling.** Read `DESIGN.md` first. Tailwind 4; tokens are CSS variables in
 `src/styles/global.css` exposed as `bg-bg`, `bg-elev`, `bg-fill`, `text-fg`/`fg-2`/`fg-3`,
@@ -111,11 +117,20 @@ set before paint (see DESIGN.md, Behaviour) — don't pass pixel sizes to previe
 preview text and size) is browser-only via `src/lib/store.ts`.
 
 **Fonts.** Preview families are `qf-<slug>` (primary style) and `qf-<slug>-<style>`; the
-`@font-face` rules are injected per page through `Base`'s `fontCss` prop. Style metadata is
+`@font-face` rules are injected per page through `Base`'s `fontCss` prop. A font's files are the
+uploaded `files` or, when there are none, the TTF/OTF (WOFF/WOFF2 if that is all) inside its ZIP:
+one file per style (TTF before OTF before web formats), and with more than 40 statics next to a
+variable font only the variable files (Google Fonts ZIPs of optical-size families). Fonts taken
+from a ZIP get a copy in `public/fonts-web/<slug>/<path>.<hash>.<ext>` for the Glyphs/Info tabs. Style metadata is
 read from the font binaries by `src/lib/fontLoader.ts` at build time — never stored by hand
 and never guessed from file names. A style's name is what its full name (nameID 4) adds to
 the font's name ("PT Sans Narrow Bold" − "PT Sans" → "Narrow Bold"); the sub-family alone
-would turn Narrow/Caption/Condensed files into duplicate "Regular"s. The primary style is the
+would turn Narrow/Caption/Condensed files into duplicate "Regular"s. Variable styles get
+"Variable" in front, without spaces ("VariableRegular", "VariableItalic"), and carry their `axes`
+(fvar); the font page shows them first in the preview, with a slider per axis. A font's
+`languages` are counted on its primary style the way the Hyperglot checker does by default (living and
+constructed languages, primary orthographies, base characters; no shaping checks) — "iso-Script"
+pairs, shown as «Тіл» and «Тіл жүйесі» on the Info tab. The primary style is the
 editor's `primaryStyle`, else the most regular one (upright, static, 400, normal width).
 `public/fonts-web/` (WOFF2 previews, generated ZIPs; URLs carry `?v=<hash>`) is build output
 and is gitignored; a font with no usable files is skipped with a warning.
@@ -130,9 +145,10 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
 
 - **opentype.js `toPathData()` is broken** — it can glue coordinates ("42.4 0" → "42.40")
   and cut outlines short. Use `pathData()` from `src/lib/glyphPath.ts` instead.
-- `glossary.json`, `categories.json`, `donators.json` are wrapped in an object
-  (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`. Keep that shape —
-  the CMS config and the category relation field (`items.*.id`) depend on it.
+- `glossary.json`, `faq.json`, `categories.json`, `tags.json`, `purposes.json`, `donation.json`, `donators.json` are
+  wrapped in an object (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`.
+  Keep that shape — the CMS config and the relation fields of the font form (`items.*.id`) depend
+  on it. FAQ items have no ids: the parser numbers them, so the CMS list order is the page order.
 - The CMS config can be validated against Sveltia's JSON schema
   (`https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json`) with ajv + js-yaml.
 - **Restart `astro dev` after changing `content.config.ts` or the shape of a data file** —
@@ -154,23 +170,35 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
   deploy and render unstyled. `public/_redirects` rewrites missing `/_astro/*` files to
   `public/stale.js`, which refetches the page past the cache and reloads once (guarded by
   sessionStorage). Existing files are not affected (Netlify rules don't shadow real files).
-- Sveltia commits big saves in several commits (~16 MB each). A huge ZIP (Literata's is 22 MB)
-  can make a save fail half-way and leave stray files (`public/fonts/literata/Literata.zip` is
-  an unreferenced duplicate of `Literata-1.zip`).
+- Sveltia commits big saves in several commits (16 MB of base64 each, ~12 MB of files); a single
+  bigger file goes alone and GitHub drops the request — the CMS shows "Failed to fetch" and can
+  leave stray files (a 22 MB duplicate of Literata's ZIP was one; removed). The font form caps the
+  ZIP and font files at 10 MB (`max_file_size`).
 
 ## Domain
 
-`SITE_URL` in `astro.config.mjs` (default `https://qarip.netlify.app`) drives canonicals,
-sitemap, hosted CSS (`/fonts/<slug>.css`), OG URLs and the host shown in the UI. When a
-custom domain is connected: change `SITE_URL`, `site_url` in `public/admin/config.yml`, and
-uncomment the first rule in `public/_redirects`. Contact email is `SITE.email`.
+The domain is `qarip.app`. `SITE_URL` in `astro.config.mjs` (default `https://qarip.app`) drives
+canonicals, sitemap, hosted CSS (`/fonts/<slug>.css`), OG URLs and the host shown in the UI.
+When the domain changes, also change `site_url` / `display_url` in `public/admin/config.yml`
+and the first rule in `public/_redirects` (Netlify subdomain → domain). The domain itself is
+attached in Netlify (Domain management). Contact email is `SITE.email`.
 
 ## Admin (Sveltia CMS)
 
-Fonts have several `designers` (relation, `multiple`), a required ZIP `archive`, `quality`
-as a float with step 0.5; there is no "featured" flag and no hand-edited download count.
+Adding a font = name + ZIP (+ designers, category, license). The name stays a typed field: it is
+the page address, fixed when the entry is created, and the CMS (in the browser) cannot read font
+files. `files` is optional — only to show a subset of the ZIP. Fonts have several `designers`
+(relation, `multiple`), `quality` as a float with step 0.5; there is no "featured" flag and no
+hand-edited download count.
 Designers have `bio` (Kazakh, required, fallback) + `bioRu` / `bioEn`. Licenses have a
 `visible` switch: only visible ones are listed on `/licenses` and get their own page.
+Tags and purposes are edited under Анықтамалықтар («Тегтер», «Мақсаты»: id + Kazakh name +
+`nameRu` / `nameEn`); the font form picks them through relation fields (checkboxes). The tag ids
+`free`, `commercial`, `cyrillic`, `latin`, `variable` are used by the catalog filters — keep them.
+The F.A.Q. is edited there too (one list; drag to reorder; answers in Markdown). Categories have
+a short name, a full name and a description, each in kk/ru/en (all required in the CMS), plus the
+Latin `term` (Sans, Serif…) and the colour shown on the home page. CMS hints must not contain
+`<…>`: Sveltia renders them as HTML and drops the text.
 
 `/admin` runs Sveltia CMS with the GitHub backend: editors sign in with a GitHub account that
 has write access to `madiyar/qarip.kz`. Saving commits straight to `main` (no editorial
@@ -188,14 +216,15 @@ the entry. Netlify Identity and Git Gateway are no longer used.
 - Catalog has 21 fonts; the slab category is still empty (its page is `noindex` while empty).
   Adding fonts is the main lever for both usefulness and SEO.
 - Real download counts start from zero (the old CMS numbers were hand-typed).
-- The owner reported an error when uploading variable fonts in the CMS; it did not reproduce
-  in a local Sveltia (variable TTF/OTF, names with `,` and `[]` upload fine, and the build reads
-  them). Waiting for the exact error text.
+- The "Failed to fetch" on saving Merriweather (variable fonts + a Google Fonts ZIP) was the
+  upload size, not the variable fonts (see Gotchas). Since the 10 MB cap and ZIP-only uploads it
+  should not recur; not re-tested in the live CMS yet.
 - Search Console / Yandex Webmaster not connected yet — codes go into the
   `GOOGLE_SITE_VERIFICATION` / `YANDEX_VERIFICATION` env vars, then submit `/sitemap-index.xml`.
 - `SITE.keyboardZip` is empty (download button hidden) — no installer archive available.
-- `SITE.donation.card` is empty (donation block hidden); the number in the base44 source
-  was a placeholder. `src/data/donators.json` is empty (block hidden).
+- The donation card (`src/data/donation.json`, CMS: Анықтамалықтар → Қолдау картасы) holds a
+  placeholder number, 111111111, set by the owner until the real card is entered; with no card
+  the block is hidden. Several cards show as bank tabs. `src/data/donators.json` is empty (block hidden).
 - Journal articles exist only in Kazakh; glossary and license texts are Kazakh-only content.
 - Proofing tool uses each font's primary style only (no style picker).
 - Personal lists are called "Жинақ" (collection) in the UI; the code and localStorage still say

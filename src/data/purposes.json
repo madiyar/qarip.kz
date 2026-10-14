@@ -1,22 +1,34 @@
-[
-  {
-    "id": "headings",
-    "name": "Бас жазу"
-  },
-  {
-    "id": "body",
-    "name": "Дене мәтін"
-  },
-  {
-    "id": "logo",
-    "name": "Логотип"
-  },
-  {
-    "id": "screen",
-    "name": "Экран"
-  },
-  {
-    "id": "print",
-    "name": "Баспа"
-  }
-]
+{
+  "items": [
+    {
+      "id": "headings",
+      "name": "Бас жазу",
+      "nameRu": "Заголовки",
+      "nameEn": "Headings"
+    },
+    {
+      "id": "body",
+      "name": "Дене мәтін",
+      "nameRu": "Основной текст",
+      "nameEn": "Body text"
+    },
+    {
+      "id": "logo",
+      "name": "Логотип",
+      "nameRu": "Логотип",
+      "nameEn": "Logo"
+    },
+    {
+      "id": "screen",
+      "name": "Экран",
+      "nameRu": "Экран",
+      "nameEn": "Screen"
+    },
+    {
+      "id": "print",
+      "name": "Баспа",
+      "nameRu": "Печать",
+      "nameEn": "Print"
+    }
+  ]
+}

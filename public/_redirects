@@ -1,6 +1,6 @@
-# Domain. When a custom domain is connected again, send the Netlify subdomain to it
-# (and set SITE_URL in astro.config.mjs). Never redirect a host to itself — that loops.
-# https://qarip.netlify.app/* https://qarip.kz/:splat 301!
+# Domain: the Netlify subdomain sends visitors to qarip.app (SITE_URL in astro.config.mjs).
+# Never redirect a host to itself — that loops.
+https://qarip.netlify.app/* https://qarip.app/:splat 301!
 
 # Build assets of an earlier deploy (asked for only by pages kept in a browser cache) get a
 # script that reloads the page from the server. Existing files are served as usual.

@@ -84,6 +84,7 @@ interface CardProps extends Props {
 
 /** Font card: the font speaks first (large sample on top), name and meta underneath. */
 export function FontCard({ font, lang, preview, text, lines = 3, meta = 'designer', favorite = true, size = 'var(--pv-list)' }: CardProps) {
+  const t = useT(lang);
   const href = localePath(lang, `/fonts/${font.slug}`);
   const line = fontMeta(font, lang, meta);
   return (
@@ -103,6 +104,11 @@ export function FontCard({ font, lang, preview, text, lines = 3, meta = 'designe
               {font.name}
             </a>
             {font.our && <OwnBadge />}
+            {font.quality ? (
+              <span className="ml-auto shrink-0 pl-1">
+                <QualityIndicator quality={font.quality} label={t('Сапа')} />
+              </span>
+            ) : null}
           </span>
           <span className="block truncate text-[13px] text-fg-3">{line}</span>
         </div>

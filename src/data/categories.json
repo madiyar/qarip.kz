@@ -2,7 +2,6 @@
   "items": [
     {
       "id": "sans",
-      "term": "Sans",
       "name": "Кесілген",
       "nameRu": "Без засечек",
       "nameEn": "Sans serif",
@@ -12,11 +11,11 @@
       "description": "Кертігі жоқ, таза әрі заманауи шрифттер. Сайтқа, интерфейске, презентацияға жақсы жарасады.",
       "descriptionRu": "Чистые и современные шрифты без засечек. Хорошо подходят для сайтов, интерфейсов и презентаций.",
       "descriptionEn": "Clean, modern typefaces without serifs. A good fit for websites, interfaces and presentations.",
+      "term": "Sans",
       "color": "#3b82f6"
     },
     {
       "id": "serif",
-      "term": "Serif",
       "name": "Кертілген",
       "nameRu": "С засечками",
       "nameEn": "Serif",
@@ -26,11 +25,11 @@
       "description": "Классикалық кертілген шрифттер. Кітап, газет-журнал және ұзақ мәтінге ыңғайлы.",
       "descriptionRu": "Классические шрифты с засечками. Удобны для книг, прессы и длинных текстов.",
       "descriptionEn": "Classic typefaces with serifs. Comfortable for books, press and long reading.",
+      "term": "Serif",
       "color": "#eab308"
     },
     {
       "id": "display",
-      "term": "Display",
       "name": "Көрнекі",
       "nameRu": "Акцидентные",
       "nameEn": "Display",
@@ -40,11 +39,11 @@
       "description": "Тақырыпқа, логотипке, афишаға, комикске арналған мінезі бар көрнекі шрифттер.",
       "descriptionRu": "Характерные шрифты для заголовков, логотипов, афиш и комиксов.",
       "descriptionEn": "Expressive typefaces for headings, logos, posters and comics.",
+      "term": "Display",
       "color": "#ef4444"
     },
     {
       "id": "slab",
-      "term": "Slab",
       "name": "Қырлы",
       "nameRu": "Брусковые",
       "nameEn": "Slab serif",
@@ -54,11 +53,11 @@
       "description": "Төртбұрыш кертігі бар салмақты шрифттер. Тақырып пен жарнамаға сай.",
       "descriptionRu": "Уверенные шрифты с прямоугольными засечками. Для заголовков и рекламы.",
       "descriptionEn": "Sturdy typefaces with block serifs. For headings and advertising.",
+      "term": "Slab",
       "color": "#f97316"
     },
     {
       "id": "handwritten",
-      "term": "Handwritten",
       "name": "Қолжазба",
       "nameRu": "Рукописные",
       "nameEn": "Handwritten",
@@ -68,20 +67,21 @@
       "description": "Қолмен жазғандай көрінетін шрифттер: шақыру қағазына, открыткаға, комикске.",
       "descriptionRu": "Шрифты, имитирующие письмо от руки: для приглашений, открыток и комиксов.",
       "descriptionEn": "Typefaces that imitate handwriting: for invitations, cards and comics.",
+      "term": "Handwritten",
       "color": "#a855f7"
     },
     {
-      "id": "monospace",
-      "term": "Monospace",
-      "name": "Бірке",
+      "id": "monospaced",
+      "name": "Біркеңді",
       "nameRu": "Моноширинные",
-      "nameEn": "Monospace",
-      "title": "Бірке қаріптер (monospace)",
+      "nameEn": "Monospaced",
+      "title": "Біркеңді қаріптер (monospaced)",
       "titleRu": "Моноширинные шрифты",
-      "titleEn": "Monospace fonts",
-      "description": "Әр таңбасының ені бірдей шрифттер. Кодқа және кестеге арналған.",
+      "titleEn": "Monospaced Fonts",
+      "description": "Әр таңбасының ені бірдей қаріп. Кодқа және кестеге арналған.",
       "descriptionRu": "Шрифты с одинаковой шириной всех знаков. Для кода и таблиц.",
       "descriptionEn": "Typefaces where every character has the same width. For code and tables.",
+      "term": "Monospaced",
       "color": "#22c55e"
     }
   ]

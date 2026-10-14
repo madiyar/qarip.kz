@@ -47,7 +47,7 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `public/fonts-web/<slug>/` | Build output (gitignored): WOFF2 previews, and a ZIP only for fonts without an uploaded one |
 | `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
 | `src/content/{designers,licenses,journal}/` | Designers (JSON, bio in kk/ru/en), licenses (MD frontmatter, `visible` switch, optional pricing + body), articles (MD) |
-| `src/content/glossary.json`, `src/data/{categories,tags,purposes,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; categories, tags and purposes carry their own ru/en texts (`nameRu`, `titleEn`…) |
+| `src/content/glossary.json`, `src/data/{categories,tags,purposes,donation,donators}.json` | Wrapped objects: `{ "terms": [...] }` / `{ "items": [...] }`; categories, tags and purposes carry their own ru/en texts (`nameRu`, `titleEn`…) |
 | `src/content/faq.json` | F.A.Q. (`{ "items": [...] }`, edited in the CMS): category, question/answer in kk + optional ru/en, answers in Markdown |
 | `src/data/unicode.ts` | Unicode reference sections |
 | `src/data/languages.json` | Hyperglot orthographies (`{ id, script, chars }`) for the language count; rebuilt with `pip install hyperglot && python3 scripts/languages.py` |
@@ -62,7 +62,7 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `src/components/ui/` | `Icon`, `Select` (custom drop-down), `Range`/`RangeField`, `Switch`, `CopyButton`/`CodeBlock`, `OwnBadge`, `Skeleton` |
 | `src/components/tools/` | Tester, Converter, Pairing, Proofing, Freezer, Kerning, Keyboard; `ToolHeader`, `OtherTools`, `Dropzone` |
 | `src/lib/journal.ts` | Published articles, reading time, cover glyph |
-| `src/lib/site.ts` | Contacts, nav, tools list, pangrams, donation card, keyboard zip |
+| `src/lib/site.ts` | Contacts, nav, tools list, pangrams, keyboard zip |
 | `src/lib/seo.ts` | Search-facing titles/descriptions per language + JSON-LD builders |
 | `src/lib/sfnt.ts` | Font binary toolkit: SFNT parse/build, WOFF, WOFF2, cmap rebuild, family rename |
 | `src/lib/store.ts`, `src/lib/useStore.ts` | localStorage store: favorites, download history, collections (`catalogs` in code), prefs; React hook |
@@ -145,7 +145,7 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
 
 - **opentype.js `toPathData()` is broken** — it can glue coordinates ("42.4 0" → "42.40")
   and cut outlines short. Use `pathData()` from `src/lib/glyphPath.ts` instead.
-- `glossary.json`, `faq.json`, `categories.json`, `tags.json`, `purposes.json`, `donators.json` are
+- `glossary.json`, `faq.json`, `categories.json`, `tags.json`, `purposes.json`, `donation.json`, `donators.json` are
   wrapped in an object (`{ "terms": [...] }` / `{ "items": [...] }`); their loaders use a `parser`.
   Keep that shape — the CMS config and the relation fields of the font form (`items.*.id`) depend
   on it. FAQ items have no ids: the parser numbers them, so the CMS list order is the page order.
@@ -172,8 +172,8 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
   sessionStorage). Existing files are not affected (Netlify rules don't shadow real files).
 - Sveltia commits big saves in several commits (16 MB of base64 each, ~12 MB of files); a single
   bigger file goes alone and GitHub drops the request — the CMS shows "Failed to fetch" and can
-  leave stray files (`public/fonts/literata/Literata.zip` is an unreferenced duplicate of
-  `Literata-1.zip`). The font form caps the ZIP and font files at 10 MB (`max_file_size`).
+  leave stray files (a 22 MB duplicate of Literata's ZIP was one; removed). The font form caps the
+  ZIP and font files at 10 MB (`max_file_size`).
 
 ## Domain
 
@@ -222,8 +222,9 @@ the entry. Netlify Identity and Git Gateway are no longer used.
 - Search Console / Yandex Webmaster not connected yet — codes go into the
   `GOOGLE_SITE_VERIFICATION` / `YANDEX_VERIFICATION` env vars, then submit `/sitemap-index.xml`.
 - `SITE.keyboardZip` is empty (download button hidden) — no installer archive available.
-- `SITE.donation.card` is empty (donation block hidden); the number in the base44 source
-  was a placeholder. `src/data/donators.json` is empty (block hidden).
+- The donation card (`src/data/donation.json`, CMS: Анықтамалықтар → Қолдау картасы) holds a
+  placeholder number, 111111111, set by the owner until the real card is entered; with no card
+  the block is hidden. Several cards show as bank tabs. `src/data/donators.json` is empty (block hidden).
 - Journal articles exist only in Kazakh; glossary and license texts are Kazakh-only content.
 - Proofing tool uses each font's primary style only (no style picker).
 - Personal lists are called "Жинақ" (collection) in the UI; the code and localStorage still say

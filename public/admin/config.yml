@@ -412,6 +412,24 @@ collections:
               - { name: name, label: Атауы (қазақша), widget: string }
               - { name: nameRu, label: Атауы (орысша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
               - { name: nameEn, label: Атауы (ағылшынша), widget: string, required: false, hint: 'Бос қалса, қазақша атауы көрсетіледі.' }
+      - name: donation
+        label: Қолдау картасы
+        icon: credit_card
+        file: /src/data/donation.json
+        format: json
+        fields:
+          - name: items
+            label: Карталар
+            label_singular: карта
+            widget: list
+            required: false
+            collapsed: true
+            summary: '{{bank}} — {{number}}'
+            hint: «Қолдау» бетіндегі банк картасы. Бірнеше карта болса, банктер арасында ауыстыруға болады. Тізім бос болса, блок жасырылады.
+            fields:
+              - { name: bank, label: Банк, widget: string, hint: 'Мысалы: Kaspi' }
+              - { name: number, label: Карта нөмірі, widget: string, pattern: ['^[0-9 ]+$', 'Тек сандар мен бос орын.'], hint: Сайтта 4 саннан топтап көрсетіледі. }
+              - { name: holder, label: Алушы, widget: string, required: false, hint: 'Бос қалса, көрсетілмейді.' }
       - name: donators
         label: Донаторлар
         icon: volunteer_activism

@@ -15,8 +15,6 @@ export const SITE = {
     google: import.meta.env.GOOGLE_SITE_VERIFICATION ?? '',
     yandex: import.meta.env.YANDEX_VERIFICATION ?? '',
   },
-  /** Card details for donations. Leave empty to hide the donation block. */
-  donation: { bank: 'Kaspi', card: '', holder: '' },
   /** Keyboard layout installer archive (public/…). Leave empty to hide the download button. */
   keyboardZip: '',
 };

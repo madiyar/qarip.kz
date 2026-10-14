@@ -288,7 +288,7 @@ What was changed or left out, and why:
 | Pangram menu with 7 presets | 3 pangrams (KK 1, KK 2, EN) | Owner's requirement; alphabets stay as chips in the tester |
 | Categories as filters | Static category pages drawn as pills | Category pages rank in search (`/fonts/category/<id>/`) |
 | Sidebar navigation mode | Removed | One navigation model; the tab bar covers phones |
-| Card number, donation goal and progress, donors, prices, `@sozderfonts`, `info@qarip.kz` | Real data from `SITE` / `donators.json`; blocks hidden when empty | No fake data on a live site |
+| Card number, donation goal and progress, donors, prices, `@sozderfonts`, `info@qarip.kz` | Cards from `donation.json` and donors from `donators.json` (both edited in the CMS; several cards → bank tabs); no goal or progress; blocks hidden when empty | No fake data on a live site |
 | "Тапсырыс қабылдайды" badge, "one person counted once" | Not shown | No data behind them |
 | Favorites: share link / download all | Share works per collection; no "download all" | Zipping many archives in the browser is heavy; collections already share |
 | Journal tags | Search instead | Articles have no tags yet |

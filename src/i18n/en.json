@@ -866,7 +866,6 @@
   "Қалай жұмыс істейміз": "How we work",
   "Қандай қаріп, қанша стиль және қашанға керек екенін бірнеше сөйлеммен жазыңыз — нақты баға мен мерзімді айтамыз.": "Tell us in a couple of sentences which font, how many styles and by when — we'll give you an exact price and timeline.",
   "Qarip — тегін және жарнамасыз. Жоба сіздің қолдауыңызбен дамиды: жаңа қаріптерге қазақ әріптерін қосамыз, құралдар жасаймыз.": "Qarip is free and ad-free. The project grows with your support: we add Kazakh letters to new fonts and build tools.",
-  "Картаға аудару": "Card transfer",
   "Карта нөмірі": "Card number",
   "Алушы": "Recipient",
   "Аударымға пікір жазсаңыз, есіміңізді қолдаушылар тізіміне қосамыз. Сома маңызды емес — кез келген көмек құнды.": "Leave a note with your transfer and we'll add your name to the supporters list. The amount doesn't matter — every bit helps.",
@@ -921,5 +920,6 @@
   "Таңдауды алып тастау": "Clear selection",
   "Әріп": "Letters",
   "Керниң жұптары": "Kerning pairs",
-  "Метадерек": "Metadata"
+  "Метадерек": "Metadata",
+  "Банк": "Bank"
 }

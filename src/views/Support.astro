@@ -1,9 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 import ShareButton from '../components/common/ShareButton';
-import CopyButton from '../components/ui/CopyButton';
+import DonationCard, { type DonationCardInfo } from '../components/common/DonationCard';
 import { type Lang, localePath, useT } from '../i18n';
 import { SITE } from '../lib/site';
+import donationData from '../data/donation.json';
 import donatorsData from '../data/donators.json';
 
 interface Props {
@@ -11,7 +12,10 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const card = SITE.donation.card;
+// src/data/donation.json (CMS: Анықтамалықтар → Қолдау картасы): { "items": [{ "bank": "Kaspi", "number": "…", "holder": "…" }] }.
+// No card with a number: the donation block is hidden.
+const cards = (donationData.items as DonationCardInfo[]).filter((c) => c.number?.replace(/\D/g, ''));
+const card = cards.length > 0;
 // src/data/donators.json: { "items": [{ "name": "…", "amount": 10000, "message": "…" }] }
 const donators = (donatorsData.items as { name: string; amount?: number; message?: string }[]).sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)).slice(0, 12);
 const tile = 'hover-name flex flex-col gap-1.5 rounded-[18px] bg-elev px-5 py-[18px] text-left transition-colors hover:bg-hover';
@@ -27,21 +31,19 @@ const tile = 'hover-name flex flex-col gap-1.5 rounded-[18px] bg-elev px-5 py-[1
       </div>
       {
         card && (
-          <div id="donate" class="card card-own sticky top-[calc(var(--header-h)+2rem)] flex w-full flex-col gap-4 !rounded-3xl p-6 max-sm:static sm:max-w-[420px] sm:flex-[1_1_340px]">
-            <b class="text-lg font-[650]">{t('Картаға аудару')}</b>
-            <div class="note p-[18px]">
-              <span class="meta block">{SITE.donation.bank} · {t('Карта нөмірі')}</span>
-              <span class="mt-1 mb-2.5 block font-mono text-[22px] font-medium tracking-[0.02em] tabular-nums">{card}</span>
-              {SITE.donation.holder && (
-                <>
-                  <span class="meta block">{t('Алушы')}</span>
-                  <span class="mt-0.5 block font-semibold">{SITE.donation.holder}</span>
-                </>
-              )}
-            </div>
-            <CopyButton client:idle text={card.replace(/\s/g, '')} label={t('Карта нөмірін көшіру')} done={t('Көшірілді')} className="btn-primary btn-lg rounded-[14px]!" />
-            <p class="meta leading-normal">{t('Аударымға пікір жазсаңыз, есіміңізді қолдаушылар тізіміне қосамыз. Сома маңызды емес — кез келген көмек құнды.')}</p>
-          </div>
+          <DonationCard
+            client:idle
+            cards={cards}
+            labels={{
+              title: t('Жобаны қолдау'),
+              bank: t('Банк'),
+              number: t('Карта нөмірі'),
+              holder: t('Алушы'),
+              copy: t('Карта нөмірін көшіру'),
+              copied: t('Көшірілді'),
+              note: t('Аударымға пікір жазсаңыз, есіміңізді қолдаушылар тізіміне қосамыз. Сома маңызды емес — кез келген көмек құнды.'),
+            }}
+          />
         )
       }
     </div>

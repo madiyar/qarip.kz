@@ -5,6 +5,7 @@
  * the CMS: name, designers, license… and the list of uploaded files) next to the font
  * files themselves. Everything technical is derived here, at build time:
  *
+ *  - the font files are the uploaded ones or, when none were uploaded, those inside the ZIP;
  *  - style name, weight, italic, variable axes, glyph count, supported alphabets and
  *    languages (src/data/languages.json) are read from each font binary;
  *  - a compressed WOFF2 copy for previews goes to `public/fonts-web/<slug>/`;
@@ -23,6 +24,11 @@ import { unzipSync, zipSync } from 'fflate';
 import LANGUAGES from '../data/languages.json';
 
 const FONT_EXT = /\.(ttf|otf|woff2?)$/i;
+/** One file per style from an archive: source formats before web ones. */
+const FORMAT_RANK: Record<string, number> = { ttf: 0, otf: 1, woff2: 2, woff: 3 };
+/** Above this many static styles in an archive with variable fonts, only the variable ones are shown
+ *  (Google Fonts ZIPs of optical-size families hold 80+ statics; the variable files cover them). */
+const MAX_STATIC_FROM_ZIP = 40;
 
 const WEIGHT_WORDS: [RegExp, number][] = [
   [/hairline|thin/i, 100],
@@ -216,7 +222,7 @@ interface Ctx {
 async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Record<string, any>) {
   const fontName = String(raw.name ?? slug);
   const files = [...new Set(asList(raw.files).map(baseName).filter((f) => FONT_EXT.test(f)))];
-  const read: (FileMeta & { fileName: string; ext: string; buf: Buffer; srcTime: number })[] = [];
+  const read: (FileMeta & { fileName: string; ext: string; buf: Buffer; srcTime: number; fromZip?: boolean })[] = [];
 
   for (const fileName of files) {
     const src = path.join(dir, fileName);
@@ -234,8 +240,47 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       warn(`${slug}: cannot read "${fileName}" as a font (${(e as Error).message}) — skipped`);
     }
   }
+
+  // No font files uploaded: the styles come from inside the ZIP.
+  const archive = baseName(raw.archive);
+  const archivePath = path.join(dir, archive);
+  const archiveBuf = archive ? await fs.readFile(archivePath).catch(() => null) : null;
+  if (!files.length && archiveBuf?.length) {
+    let inZip: Record<string, Uint8Array> = {};
+    try {
+      inZip = unzipSync(archiveBuf, { filter: (f) => FONT_EXT.test(f.name) && !/(^|\/)(__MACOSX\/|\._)/.test(f.name) });
+    } catch (e) {
+      warn(`${slug}: cannot open archive "${archive}" (${(e as Error).message})`);
+    }
+    const srcTime = await mtime(archivePath);
+    const found: typeof read = [];
+    for (const [fileName, data] of Object.entries(inZip)) {
+      const buf = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+      const ext = path.extname(fileName).slice(1).toLowerCase();
+      try {
+        found.push({ ...(await inspect(buf, ext)), fileName, ext, buf, srcTime, fromZip: true });
+      } catch (e) {
+        warn(`${slug}: cannot read "${fileName}" in the archive as a font (${(e as Error).message}) — skipped`);
+      }
+    }
+    // The same style in several formats (OTF + WOFF2, TTF/ and OTF/ folders) counts once.
+    const byStyle = new Map<string, (typeof found)[number]>();
+    found.sort((a, b) => FORMAT_RANK[a.ext] - FORMAT_RANK[b.ext] || a.fileName.localeCompare(b.fileName));
+    for (const m of found) {
+      const key = `${m.full.toLowerCase()}|${m.italic}|${m.variable}`;
+      if (!byStyle.has(key)) byStyle.set(key, m);
+    }
+    let picked = [...byStyle.values()];
+    const statics = picked.filter((m) => !m.variable).length;
+    if (statics > MAX_STATIC_FROM_ZIP && picked.some((m) => m.variable)) {
+      warn(`${slug}: the archive has ${statics} static styles — only its variable fonts are shown (upload font files to pick others)`);
+      picked = picked.filter((m) => m.variable);
+    }
+    read.push(...picked);
+  }
+
   if (!read.length) {
-    warn(`${slug}: no usable font files — the font is hidden until files are uploaded`);
+    warn(`${slug}: no usable font files — the font is hidden until a ZIP with fonts (or font files) is uploaded`);
     return null;
   }
 
@@ -246,11 +291,24 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
   }[] = [];
   for (const [i, m] of read.entries()) {
     const name = names[i];
-    const file = `/fonts/${slug}/${encodeURIComponent(m.fileName)}`;
+    // Generated names: the file's path without the extension ("static/Font-Bold" → "static-font-bold").
+    const stem = slugify(m.fileName.replace(/\.[^./]+$/, '')) || 'font';
+    let file = `/fonts/${slug}/${encodeURIComponent(m.fileName)}`;
+    if (m.fromZip) {
+      // A font taken from the archive gets its own copy (the Glyphs and Info tabs read it); the hash in the
+      // name keeps the long-cached /fonts-web/ copies fresh.
+      const copyName = `${stem}.${hash(m.buf)}.${m.ext}`;
+      const out = path.join(outDir, copyName);
+      if (!(await mtime(out))) {
+        await fs.mkdir(outDir, { recursive: true });
+        await fs.writeFile(out, m.buf);
+      }
+      file = `/fonts-web/${slug}/${copyName}`;
+    }
     // Preview file: TTF/OTF are compressed to WOFF2; the version query busts browser caches when the file changes.
     let web = file;
     if (m.ext === 'ttf' || m.ext === 'otf') {
-      const webName = `${slugify(path.basename(m.fileName, path.extname(m.fileName))) || 'font'}.woff2`;
+      const webName = `${stem}.woff2`;
       const out = path.join(outDir, webName);
       try {
         if ((await mtime(out)) < m.srcTime) {
@@ -300,8 +358,6 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
   let zipName: string;
   let zipSize: number;
   let zipFiles: ZipEntry[];
-  const archive = baseName(raw.archive);
-  const archiveBuf = archive ? await fs.readFile(path.join(dir, archive)).catch(() => null) : null;
   if (archiveBuf?.length) {
     zip = `/fonts/${slug}/${encodeURIComponent(archive)}`;
     zipName = archive;

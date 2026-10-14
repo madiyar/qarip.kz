@@ -37,8 +37,9 @@ npm run check    # type check
 ## Adding content
 
 Editors use the admin at `/admin` (Sveltia CMS, sign in with GitHub). To add a font there:
-enter its name, drop the TTF/OTF files and the ZIP archive, pick the designers, category and
-license, save. Each font is a folder — `public/fonts/<slug>/font.json` plus the uploaded files.
+enter its name, drop the ZIP archive (up to 10 MB), pick the designers, category and license,
+save. The fonts are taken from inside the ZIP; uploading font files separately is optional (only
+to show a subset). Each font is a folder — `public/fonts/<slug>/font.json` plus the uploaded files.
 Style names, weights, variable axes, glyph counts, supported alphabets and languages, WOFF2
 previews and the list of files inside the ZIP are derived from the files when the site is built
 (`src/lib/fontLoader.ts`).

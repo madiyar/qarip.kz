@@ -44,7 +44,7 @@ collections:
   - name: fonts
     label: Қаріптер
     label_singular: Қаріп
-    description: Қаріп қосу үшін атауын жазып, файлдары мен ZIP архивін жүктеңіз. Стильдер мен салмақтар файлдан автоматты түрде оқылады.
+    description: Қаріп қосу үшін атауын жазып, ZIP архивін жүктеңіз — қаріптер архивтің ішінен алынады. Стильдер, салмақтар, глифтер мен тілдер файлдан автоматты түрде оқылады.
     icon: font_download
     folder: /public/fonts
     path: '{{slug}}/font'
@@ -64,20 +64,23 @@ collections:
         label: Қаріп атауы
         widget: string
         hint: 'Мысалы: Hiykaya. Сайттағы сілтеме осы атаудан жасалады.'
-      - name: files
-        label: Қаріп файлдары
-        widget: file
-        multiple: true
-        min: 1
-        accept: .ttf,.otf,.woff,.woff2
-        choose_url: false
-        hint: Барлық стильдің файлын (TTF, OTF, вариатив қаріптерді де) бірден сүйреп әкеліңіз. Стиль атауы, салмағы, глиф саны файлдан өзі оқылады.
+      # Files above 10 MB are refused here: GitHub drops such saves half-way ("Failed to fetch").
       - name: archive
         label: ZIP архив
         widget: file
         accept: .zip
         choose_url: false
-        hint: Сайттан жүктелетін архив (қаріп файлдары, лицензия, readme). Қаріп бетіндегі «Файлдар» тізімі осы архивтен алынады.
+        media_libraries: { default: { config: { max_file_size: 10485760 } } }
+        hint: Сайттан жүктелетін архив (қаріп файлдары, лицензия, readme). Ішіндегі TTF/OTF қаріптер сайтқа өзі шығады — бөлек жүктеудің керегі жоқ. Архив 10 МБ-тан аспасын. Google Fonts архиві үлкен болса, ішінен static бумасын алып тастаңыз — вариатив файл барлық салмақты қамтиды.
+      - name: files
+        label: Қаріп файлдары
+        widget: file
+        multiple: true
+        required: false
+        accept: .ttf,.otf,.woff,.woff2
+        choose_url: false
+        media_libraries: { default: { config: { max_file_size: 10485760 } } }
+        hint: Міндетті емес. Бос қалса, қаріптер ZIP архивтің ішінен алынады. Сайтта архивтегінің бәрі емес, тек кейбір стильдер көрінсін десеңіз ғана, сол файлдарды осында жүктеңіз.
       - name: designers
         label: Дизайнерлер
         widget: relation

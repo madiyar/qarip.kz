@@ -31,7 +31,7 @@ npm run dev      # http://localhost:4321
 npm run build    # static site in dist/
 npm run check    # astro check — must stay at 0 errors
 npm run font:add -- --name "Font" --designer abay-emes[,other] --category sans --license ofl \
-  [--tags free,cyrillic] [--our] [--quality 7.5] [--description-ru "…"] --archive a.zip files…
+  [--tags free,cyrillic] [--our] [--quality 7.5] [--description-ru "…"] --archive a.zip [files…]
 ```
 
 There is no test suite. Verify with `npm run check`, `npm run build`, and the browser.
@@ -42,7 +42,7 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | --- | --- |
 | `astro.config.mjs` | `SITE_URL` — the single place for the domain (or `SITE_URL` env var) |
 | `src/content.config.ts` | Collections: fonts, designers, licenses, categories, tags, purposes, journal, glossary, faq |
-| `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `designers` (list) + `files` (uploaded TTF/OTF) + `archive` (ZIP, required in the CMS) |
+| `public/fonts/<slug>/font.json` + files | One folder per font: editorial fields + `designers` (list) + `archive` (ZIP, required in the CMS) + optional `files` (uploaded TTF/OTF; without them the fonts come from the ZIP) |
 | `src/lib/fontLoader.ts` | Content loader: derives style names, weights, variable axes, glyphs, alphabets, languages, WOFF2 previews and the ZIP's file list from the files; fetches download counts |
 | `public/fonts-web/<slug>/` | Build output (gitignored): WOFF2 previews, and a ZIP only for fonts without an uploaded one |
 | `netlify/functions/downloads.mts`, `src/lib/downloads.ts` | Download counter: function + Blobs store, client tracking and live counts |
@@ -117,7 +117,11 @@ set before paint (see DESIGN.md, Behaviour) — don't pass pixel sizes to previe
 preview text and size) is browser-only via `src/lib/store.ts`.
 
 **Fonts.** Preview families are `qf-<slug>` (primary style) and `qf-<slug>-<style>`; the
-`@font-face` rules are injected per page through `Base`'s `fontCss` prop. Style metadata is
+`@font-face` rules are injected per page through `Base`'s `fontCss` prop. A font's files are the
+uploaded `files` or, when there are none, the TTF/OTF (WOFF/WOFF2 if that is all) inside its ZIP:
+one file per style (TTF before OTF before web formats), and with more than 40 statics next to a
+variable font only the variable files (Google Fonts ZIPs of optical-size families). Fonts taken
+from a ZIP get a copy in `public/fonts-web/<slug>/<path>.<hash>.<ext>` for the Glyphs/Info tabs. Style metadata is
 read from the font binaries by `src/lib/fontLoader.ts` at build time — never stored by hand
 and never guessed from file names. A style's name is what its full name (nameID 4) adds to
 the font's name ("PT Sans Narrow Bold" − "PT Sans" → "Narrow Bold"); the sub-family alone
@@ -166,9 +170,10 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
   deploy and render unstyled. `public/_redirects` rewrites missing `/_astro/*` files to
   `public/stale.js`, which refetches the page past the cache and reloads once (guarded by
   sessionStorage). Existing files are not affected (Netlify rules don't shadow real files).
-- Sveltia commits big saves in several commits (~16 MB each). A huge ZIP (Literata's is 22 MB)
-  can make a save fail half-way and leave stray files (`public/fonts/literata/Literata.zip` is
-  an unreferenced duplicate of `Literata-1.zip`).
+- Sveltia commits big saves in several commits (16 MB of base64 each, ~12 MB of files); a single
+  bigger file goes alone and GitHub drops the request — the CMS shows "Failed to fetch" and can
+  leave stray files (`public/fonts/literata/Literata.zip` is an unreferenced duplicate of
+  `Literata-1.zip`). The font form caps the ZIP and font files at 10 MB (`max_file_size`).
 
 ## Domain
 
@@ -180,8 +185,11 @@ attached in Netlify (Domain management). Contact email is `SITE.email`.
 
 ## Admin (Sveltia CMS)
 
-Fonts have several `designers` (relation, `multiple`), a required ZIP `archive`, `quality`
-as a float with step 0.5; there is no "featured" flag and no hand-edited download count.
+Adding a font = name + ZIP (+ designers, category, license). The name stays a typed field: it is
+the page address, fixed when the entry is created, and the CMS (in the browser) cannot read font
+files. `files` is optional — only to show a subset of the ZIP. Fonts have several `designers`
+(relation, `multiple`), `quality` as a float with step 0.5; there is no "featured" flag and no
+hand-edited download count.
 Designers have `bio` (Kazakh, required, fallback) + `bioRu` / `bioEn`. Licenses have a
 `visible` switch: only visible ones are listed on `/licenses` and get their own page.
 Tags and purposes are edited under Анықтамалықтар («Тегтер», «Мақсаты»: id + Kazakh name +
@@ -208,9 +216,9 @@ the entry. Netlify Identity and Git Gateway are no longer used.
 - Catalog has 21 fonts; the slab category is still empty (its page is `noindex` while empty).
   Adding fonts is the main lever for both usefulness and SEO.
 - Real download counts start from zero (the old CMS numbers were hand-typed).
-- The owner reported an error when uploading variable fonts in the CMS; it did not reproduce
-  in a local Sveltia (variable TTF/OTF, names with `,` and `[]` upload fine, and the build reads
-  them). Waiting for the exact error text.
+- The "Failed to fetch" on saving Merriweather (variable fonts + a Google Fonts ZIP) was the
+  upload size, not the variable fonts (see Gotchas). Since the 10 MB cap and ZIP-only uploads it
+  should not recur; not re-tested in the live CMS yet.
 - Search Console / Yandex Webmaster not connected yet — codes go into the
   `GOOGLE_SITE_VERIFICATION` / `YANDEX_VERIFICATION` env vars, then submit `/sitemap-index.xml`.
 - `SITE.keyboardZip` is empty (download button hidden) — no installer archive available.

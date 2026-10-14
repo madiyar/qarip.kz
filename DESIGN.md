@@ -1,6 +1,6 @@
 # Qarip design system
 
-The look of qarip.netlify.app: tokens, type, the reusable classes and components, and the rules
+The look of qarip.app: tokens, type, the reusable classes and components, and the rules
 for building new pages. Everything here is implemented in `src/styles/global.css` (tokens and
 classes) and `src/components/` (components). The reference is the redesign canvas
 (claude.ai artifact "Qarip redesign"); where the site deliberately differs from it, the reason is
@@ -237,8 +237,11 @@ controls in `panel`s, results in `panel`/`CodeBlock`, actions in a row of `btn-r
 
 - **List page** (catalog, category): `Catalog` island — breadcrumb, heading with a fixed-height
   lead, category pills, `FontBrowser`. Top: `PageHeader` → ranked cards and rows.
-- **Font page:** breadcrumb → specimen title (84–112 px in the font itself) + meta row → actions
-  right → `#dl-thanks` slot → tabs → plain-text download summary (SEO) → similar fonts.
+- **Font page:** breadcrumb → specimen title (84–112 px in the font itself) with the actions on
+  its right (desktop; aligned to the title's bottom, so the description expanding and collapsing
+  under it never moves them) → description (3 lines, "More"/"Less") → meta row → `#dl-thanks`
+  slot → tabs → plain-text download summary with category, license, purposes and tags (SEO) →
+  similar fonts.
 - **Tool page:** `ToolHeader` → tool → `OtherTools`.
 - **Content page:** centred column, `PageHeader size="lg"`, panels/rows, a `note` CTA at the end.
 - **Empty state:** one grey sentence + one secondary button, centred, no illustration.

@@ -670,7 +670,6 @@
   "Сатып алу керек": "Purchase required",
   "Жеке жоба, оқу, портфолио": "Personal project, study, portfolio",
   "Логотипке, жарнамаға немесе сатылатын өнімге керек пе? Коммерциялық лицензияны авторынан сатып алыңыз.": "Need it for a logo, an ad or a product for sale? Buy a commercial license from the author.",
-  "Барлық лицензия түрлері": "All license types",
   "WOFF2 керек пе?": "Need WOFF2?",
   "бір қадамда жасайды.": "makes it in one step.",
   "Архивтегі файлдар": "Files in the archive",
@@ -920,5 +919,7 @@
   "Сөйлем ішінде — ұзын сызықша (—), аралықта — қысқа (2020–2024), сөз ішінде — дефис (қай-қайда).": "Within a sentence — the em dash (—), for ranges — the en dash (2020–2024), inside words — the hyphen (well-known).",
   "Сызықша түрлері": "Types of dashes",
   "Жоба": "Project",
-  "Жиі сұрақтар": "FAQ"
+  "Жиі сұрақтар": "FAQ",
+  "Жасыру": "Show less",
+  "Мақсаттар": "Purposes"
 }

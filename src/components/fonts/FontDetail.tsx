@@ -21,8 +21,6 @@ export interface LicenseInfo {
   modification: boolean;
   distribution: boolean;
   attribution: boolean;
-  /** Listed on /licenses. */
-  shown: boolean;
   /** Has its own page with the full text or prices. */
   hasPage: boolean;
 }
@@ -187,7 +185,11 @@ export default function FontDetail(props: Props) {
                     title={t('Мәтінді өзгерту үшін превьюге басыңыз — әр стиль үшін жеке.')}
                     className="line-clamp-3 cursor-text leading-[1.15] text-fg [overflow-wrap:anywhere] outline-none focus:line-clamp-none"
                     style={{ fontFamily: `'${s.family}', system-ui`, fontSize: 'var(--pv-detail)', textTransform: tt }}
-                    onBlur={(e) => setOverrides((o) => ({ ...o, [i]: e.currentTarget.textContent ?? '' }))}
+                    onBlur={(e) => {
+                      // Read now: the updater runs later, when the event's currentTarget is already null.
+                      const value = e.currentTarget.textContent ?? '';
+                      setOverrides((o) => ({ ...o, [i]: value }));
+                    }}
                   >
                     {overrides[i] ?? text}
                   </div>
@@ -272,29 +274,21 @@ export default function FontDetail(props: Props) {
                 </a>
               </div>
             )}
-            <p className="mt-[18px] flex flex-wrap gap-x-2 text-sm text-fg-3">
-              {license.hasPage && (
-                <>
+            {(license.hasPage || license.url) && (
+              <p className="mt-[18px] flex flex-wrap gap-x-2 text-sm text-fg-3">
+                {license.hasPage && (
                   <a className="link-quiet" href={localePath(lang, `/licenses/${license.slug}`)}>
                     {t('Толық мәтін')}
                   </a>
-                  <span aria-hidden="true">·</span>
-                </>
-              )}
-              {license.shown && (
-                <a className="link-quiet" href={localePath(lang, '/licenses')}>
-                  {t('Барлық лицензия түрлері')}
-                </a>
-              )}
-              {license.url && (
-                <>
-                  {license.shown && <span aria-hidden="true">·</span>}
+                )}
+                {license.hasPage && license.url && <span aria-hidden="true">·</span>}
+                {license.url && (
                   <a className="link-quiet break-all" href={license.url} target="_blank" rel="noopener noreferrer">
                     {license.url.replace(/^https?:\/\//, '')}
                   </a>
-                </>
-              )}
-            </p>
+                )}
+              </p>
+            )}
           </div>
         )}
 

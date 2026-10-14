@@ -340,12 +340,13 @@
     @apply bg-fg text-bg;
   }
 }
-/* Underlined tabs. */
+/* Underlined tabs. The baseline is an inset shadow, not a border the tabs overlap: an overlap
+ * makes the strip scroll 1px vertically, and the wheel over it then stops scrolling the page. */
 @utility tabs {
-  @apply no-scrollbar flex gap-6 overflow-x-auto border-b border-line sm:gap-7;
+  @apply no-scrollbar flex gap-6 overflow-x-auto overflow-y-hidden shadow-[inset_0_-1px_0_var(--line)] sm:gap-7;
 }
 @utility tab {
-  @apply -mb-px inline-flex h-11 shrink-0 items-center gap-1.5 border-b-2 border-transparent text-[15px] font-medium whitespace-nowrap text-fg-3 transition-colors hover:text-fg;
+  @apply inline-flex h-11 shrink-0 items-center gap-1.5 border-b-2 border-transparent text-[15px] font-medium whitespace-nowrap text-fg-3 transition-colors hover:text-fg;
   &:is([aria-selected='true'], [aria-current='page']) {
     @apply border-fg text-fg;
   }

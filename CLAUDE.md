@@ -1,8 +1,8 @@
 # Qarip
 
-Library of fonts that support the Kazakh language. Live at https://qarip.netlify.app
-(the `qarip.kz` domain is currently **not** owned; it may be bought back later).
-Repo: `madiyar/qarip.kz`, deploys to Netlify from `main`.
+Library of fonts that support the Kazakh language. Live at https://qarip.app
+(the Netlify subdomain `qarip.netlify.app` redirects there; the old `qarip.kz` domain is not owned).
+Repo: `madiyar/qarip.kz` (the repo name predates the domain), deploys to Netlify from `main`.
 
 The owner (Madiyar) writes in Russian — reply in Russian. Site content is Kazakh-first.
 Commit and push only when asked.
@@ -14,8 +14,8 @@ newer SPA made on base44 (`font.base44.app`; its source is at `~/Downloads/Qarip
 base44 SDK). Only the *engine* was ported — content was deliberately **not** imported from
 base44. The catalog holds the fonts that were already in this repo (Balpaq, Beyne, Hiykaya,
 QR Comic Beta, all by Abay Emes); more are added in the CMS at `/admin` (or with
-`npm run font:add`). The content editor is the owner's brother, who is not a developer —
-the admin UI must stay simple, and adding a font must never require technical fields.
+`npm run font:add`). Content editors are not developers — the admin UI must stay simple,
+and adding a font must never require technical fields.
 
 Not ported on purpose: base44 admin pages and auth (Sveltia CMS at `/admin` plays that role),
 the email newsletter form (it was a dead stub in the source), `Dictionary`/`New`/`ApiDocs` pages.
@@ -160,10 +160,11 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
 
 ## Domain
 
-`SITE_URL` in `astro.config.mjs` (default `https://qarip.netlify.app`) drives canonicals,
-sitemap, hosted CSS (`/fonts/<slug>.css`), OG URLs and the host shown in the UI. When a
-custom domain is connected: change `SITE_URL`, `site_url` in `public/admin/config.yml`, and
-uncomment the first rule in `public/_redirects`. Contact email is `SITE.email`.
+The domain is `qarip.app`. `SITE_URL` in `astro.config.mjs` (default `https://qarip.app`) drives
+canonicals, sitemap, hosted CSS (`/fonts/<slug>.css`), OG URLs and the host shown in the UI.
+When the domain changes, also change `site_url` / `display_url` in `public/admin/config.yml`
+and the first rule in `public/_redirects` (Netlify subdomain → domain). The domain itself is
+attached in Netlify (Domain management). Contact email is `SITE.email`.
 
 ## Admin (Sveltia CMS)
 

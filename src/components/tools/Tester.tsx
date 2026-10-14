@@ -228,7 +228,10 @@ export default function Tester({ lang }: { lang: Lang }) {
               spellCheck={false}
               className="panel min-h-40 px-5 py-6 break-words text-fg outline-none sm:px-7"
               style={{ ...style, fontSize: preview.size }}
-              onBlur={(e) => setPreview((p) => ({ ...p, text: e.currentTarget.textContent ?? '' }))}
+              onBlur={(e) => {
+                const text = e.currentTarget.textContent ?? '';
+                setPreview((p) => ({ ...p, text }));
+              }}
             >
               {runs.map((r, i) =>
                 missing.has(r) ? (

@@ -5,11 +5,11 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 /**
- * Public site URL — the only place to change the domain (e.g. back to https://qarip.kz).
+ * Public site URL — the only place to change the domain.
  * Can also be overridden with the SITE_URL environment variable (Netlify → Environment variables).
  * Everything else reads it via Astro.site / import.meta.env.SITE.
  */
-const SITE_URL = process.env.SITE_URL || 'https://qarip.netlify.app';
+const SITE_URL = process.env.SITE_URL || 'https://qarip.app';
 
 // https://astro.build/config
 export default defineConfig({

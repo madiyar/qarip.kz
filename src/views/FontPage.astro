@@ -55,11 +55,14 @@ const stats = [
   { label: 'Глиф саны', value: glyphs ? String(glyphs) : '—' },
   { label: 'Әліпбилер', value: String(d.scripts.length) },
 ];
-// Catalog links on the Info tab.
-const tagLinks = [
-  ...purposes.flatMap((p) => (p ? [{ label: t(p.data.name), href: localePath(lang, `/fonts?purpose=${p.id}`) }] : [])),
-  ...tags.flatMap((tag) => (tag ? [{ label: t(tag.data.name), href: localePath(lang, `/fonts?tag=${tag.id}`) }] : [])),
-];
+// Catalog links: on the Info tab and in the summary at the bottom.
+const purposeLinks = purposes.flatMap((p) => (p ? [{ label: t(p.data.name), href: localePath(lang, `/fonts?purpose=${p.id}`) }] : []));
+const tagOnlyLinks = tags.flatMap((tag) => (tag ? [{ label: t(tag.data.name), href: localePath(lang, `/fonts?tag=${tag.id}`) }] : []));
+const tagLinks = [...purposeLinks, ...tagOnlyLinks];
+const summaryLinks = [
+  { label: 'Мақсаттар', links: purposeLinks },
+  { label: 'Тегтер', links: tagOnlyLinks },
+].filter((group) => group.links.length > 0);
 const designerLinks = designers.map((x) => ({ name: x.data.name, href: localePath(lang, `/designers/${x.id}`), fonts: byDesigner(all, x.id).length }));
 const catLabel = categoryLabel(lang, d.category.id, category?.data.name ?? d.category.id);
 const commercial = Boolean(license?.data.commercial);
@@ -135,53 +138,54 @@ const h1Size = d.name.length > 9 ? 'text-[48px] sm:text-[84px]' : 'text-[60px] s
       ]}
     />
 
-    <header class="flex flex-wrap items-end justify-between gap-x-10 gap-y-6 pt-7 pb-8">
-      <div class="min-w-0 flex-[1_1_420px]">
-        <h1 class:list={['leading-[0.95] font-normal tracking-[-0.01em] [overflow-wrap:anywhere]', h1Size]} style={`font-family:'${primaryFamily}', system-ui`}>
-          {d.name}
-        </h1>
-        {
-          description && (
-            <div class="mt-3.5 max-w-[680px]">
-              <p id="font-desc" class="line-clamp-3 text-base leading-relaxed whitespace-pre-line text-fg-2">
-                {description}
-              </p>
-              <button type="button" class="link mt-1 text-sm" data-desc-more hidden>
-                {t('Толығырақ')}
-              </button>
-            </div>
-          )
-        }
-        <div class="mt-3 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-sm text-fg-3">
-          <span>
-            {
-              designers.map((x, i) => (
-                <>
-                  {i > 0 && ', '}
-                  <a href={localePath(lang, `/designers/${x.id}`)} class="font-medium text-fg transition-colors hover:text-accent-ink">
-                    {x.data.name}
-                  </a>
-                </>
-              ))
-            }
-          </span>
-          <span>{t('{n} стиль', { n: d.styles.length })}</span>
-          <DownloadCount slug={font.id} count={d.downloads} label={t('{n} жүктеу', { n: '{n}' })} />
-          {d.quality && <QualityIndicator quality={d.quality} label={t('Сапа')} wide />}
-          {d.our && <OwnBadge />}
-        </div>
+    <!-- Desktop: the actions sit in the title's row, so an expanded description never moves them. -->
+    <header class="grid grid-cols-[minmax(0,1fr)] pt-7 pb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-10">
+      <h1 class:list={['leading-[0.95] font-normal tracking-[-0.01em] [overflow-wrap:anywhere] lg:col-start-1', h1Size]} style={`font-family:'${primaryFamily}', system-ui`}>
+        {d.name}
+      </h1>
+      {
+        description && (
+          <div class="mt-3.5 max-w-[680px] lg:col-start-1">
+            <p id="font-desc" class="line-clamp-3 text-base leading-relaxed whitespace-pre-line text-fg-2">
+              {description}
+            </p>
+            <button type="button" class="link mt-1 text-sm" aria-controls="font-desc" aria-expanded="false" data-desc-more data-less={t('Жасыру')} hidden>
+              {t('Толығырақ')}
+            </button>
+          </div>
+        )
+      }
+      <div class="mt-3 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-sm text-fg-3 lg:col-start-1">
+        <span>
+          {
+            designers.map((x, i) => (
+              <>
+                {i > 0 && ', '}
+                <a href={localePath(lang, `/designers/${x.id}`)} class="font-medium text-fg transition-colors hover:text-accent-ink">
+                  {x.data.name}
+                </a>
+              </>
+            ))
+          }
+        </span>
+        <span>{t('{n} стиль', { n: d.styles.length })}</span>
+        <DownloadCount slug={font.id} count={d.downloads} label={t('{n} жүктеу', { n: '{n}' })} />
+        {d.quality && <QualityIndicator quality={d.quality} label={t('Сапа')} wide />}
+        {d.our && <OwnBadge />}
       </div>
-      <FontActions
-        client:load
-        slug={font.id}
-        name={d.name}
-        zip={d.zip}
-        zipName={d.zipName}
-        zipSize={formatBytes(d.zipSize)}
-        commercial={commercial}
-        purchaseUrl={d.purchaseUrl}
-        lang={lang}
-      />
+      <div class="sm:mt-6 sm:flex lg:col-start-2 lg:row-start-1 lg:mt-0 lg:self-end">
+        <FontActions
+          client:load
+          slug={font.id}
+          name={d.name}
+          zip={d.zip}
+          zipName={d.zipName}
+          zipSize={formatBytes(d.zipSize)}
+          commercial={commercial}
+          purchaseUrl={d.purchaseUrl}
+          lang={lang}
+        />
+      </div>
     </header>
 
     <div id="dl-thanks"></div>
@@ -203,7 +207,6 @@ const h1Size = d.name.length > 9 ? 'text-[48px] sm:text-[84px]' : 'text-[60px] s
         modification: license!.data.modification,
         distribution: license!.data.distribution,
         attribution: license!.data.attribution,
-        shown: licenseShown,
         hasPage: hasLicensePage(license!),
       }}
       purchaseUrl={d.purchaseUrl}
@@ -230,6 +233,18 @@ const h1Size = d.name.length > 9 ? 'text-[48px] sm:text-[84px]' : 'text-[60px] s
         <a href={localePath(lang, `/fonts/category/${d.category.id}`)} class="link-quiet">{catName}</a>
         {licenseShown ? <a href={localePath(lang, '/licenses')} class="link-quiet">{license?.data.name}</a> : <span class="text-fg-3">{license?.data.name}</span>}
       </p>
+      {
+        summaryLinks.map((group) => (
+          <p class="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
+            <span class="text-fg-3">{t(group.label)}:</span>
+            {group.links.map((x) => (
+              <a href={x.href} class="link-quiet">
+                {x.label}
+              </a>
+            ))}
+          </p>
+        ))
+      }
     </section>
 
     {
@@ -250,14 +265,18 @@ const h1Size = d.name.length > 9 ? 'text-[48px] sm:text-[84px]' : 'text-[60px] s
 </Base>
 
 <script>
-  // Long descriptions are cut to three lines with a "More" button.
+  // Long descriptions are cut to three lines; the button expands and collapses them.
   const desc = document.getElementById('font-desc');
   const more = document.querySelector<HTMLButtonElement>('[data-desc-more]');
   if (desc && more && desc.scrollHeight > desc.clientHeight + 2) {
+    const labels = { more: more.textContent!.trim(), less: more.dataset.less! };
     more.hidden = false;
     more.addEventListener('click', () => {
-      desc.classList.remove('line-clamp-3');
-      more.remove();
+      const open = !desc.classList.toggle('line-clamp-3');
+      more.textContent = open ? labels.less : labels.more;
+      more.setAttribute('aria-expanded', String(open));
+      // Collapsing a long text can leave the button above the screen.
+      if (!open && more.getBoundingClientRect().top < 0) more.scrollIntoView({ block: 'center' });
     });
   }
 </script>

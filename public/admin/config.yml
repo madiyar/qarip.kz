@@ -18,8 +18,8 @@ backend:
     deleteMedia: 'content: delete “{{path}}”'
 
 app_title: Qarip — админка
-site_url: https://qarip.netlify.app # keep in sync with SITE_URL in astro.config.mjs
-display_url: https://qarip.netlify.app
+site_url: https://qarip.app # keep in sync with SITE_URL in astro.config.mjs
+display_url: https://qarip.app
 
 # Images used across the site (article covers and so on).
 media_folder: /public/images

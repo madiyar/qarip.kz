@@ -23,16 +23,16 @@ export const SITE = {
 
 /** Top navigation (desktop). Tools are a separate drop-down. */
 export const NAV = [
-  { href: '/journal', label: 'Journal' },
-  { href: '/services', label: 'Қызметтер' },
+  { href: '/journal', label: 'Жорнал' },
+  { href: '/services', label: 'Қызмет' },
 ];
 
 /** Pages behind "More" in the mobile tab bar. */
 export const MORE_NAV = [
-  { href: '/journal', label: 'Journal' },
+  { href: '/journal', label: 'Жорнал' },
   { href: '/glossary', label: 'Сөздік' },
   { href: '/typography', label: 'Типография' },
-  { href: '/services', label: 'Қызметтер' },
+  { href: '/services', label: 'Қызмет' },
   { href: '/licenses', label: 'Лицензия түрлері' },
   { href: '/faq', label: 'Жиі сұрақтар' },
   { href: '/about', label: 'Біз туралы' },

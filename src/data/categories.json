@@ -10,31 +10,31 @@
       "id": "serif",
       "name": "Serif",
       "description": "Кертілген қаріп",
-      "color": "#8b5cf6"
+      "color": "#eab308"
     },
     {
       "id": "display",
       "name": "Display",
       "description": "Көрнекі қаріп",
-      "color": "#ec4899"
+      "color": "#ef4444"
     },
     {
       "id": "slab",
       "name": "Slab",
       "description": "Қырлы қаріп",
-      "color": "#f59e0b"
+      "color": "#f97316"
     },
     {
       "id": "handwritten",
       "name": "Handwritten",
       "description": "Жазба қаріп",
-      "color": "#f97316"
+      "color": "#a855f7"
     },
     {
       "id": "monospace",
       "name": "Monospace",
       "description": "Біркеңді қаріп",
-      "color": "#6b7280"
+      "color": "#22c55e"
     }
   ]
 }

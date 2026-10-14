@@ -21,11 +21,11 @@ const popular = [...fonts].sort(byPopularity);
 // Six per tab: two rows of three cards.
 const PER_TAB = 6;
 const ours = fonts.filter((f) => f.our);
-// Order: new, Qarip's own, popular (download counts are still young).
+// Order: new, popular, Qarip's own.
 const tabs = [
   { id: 'new', label: 'Жаңа қосылды', href: '/fonts', more: 'Барлық {n} қаріпті көру', fonts: fonts.slice(0, PER_TAB) },
-  ...(ours.length ? [{ id: 'our', label: 'Qarip қаріптері', href: '/fonts?our=1', more: 'Барлық Qarip қаріптері', fonts: ours.slice(0, PER_TAB) }] : []),
   { id: 'popular', label: 'Танымал', href: '/top', more: 'Толық рейтинг', fonts: popular.slice(0, PER_TAB) },
+  ...(ours.length ? [{ id: 'our', label: 'Qarip қаріптері', href: '/fonts?our=1', more: 'Барлық Qarip қаріптері', fonts: ours.slice(0, PER_TAB) }] : []),
 ];
 // Each category is shown in its most popular font.
 const categoryCards = categories.map((c) => {
@@ -64,7 +64,7 @@ const posts = (await getPosts()).slice(0, 3);
   }
 
   <section class="wrap section">
-    <SectionHead title={t('Стиль таңдаңыз')} />
+    <SectionHead title={t('Стиль таңдап ал')} />
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
       {
         categoryCards.map((c) => (
@@ -75,7 +75,7 @@ const posts = (await getPosts()).slice(0, 3);
             <span>
               <b class="font-name">{c.label}</b>
               <span class="meta">
-                {c.name} · {c.count}
+                <span class="cat-ink font-medium" style={`--cat:${c.color}`}>{c.name}</span> · {c.count}
               </span>
             </span>
           </a>

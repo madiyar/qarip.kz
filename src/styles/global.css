@@ -47,6 +47,8 @@
   --heart: #e5484d;
   --heart-soft: rgb(229 72 77 / 0.1);
   --bad-soft: rgb(229 72 77 / 0.14);
+  /* Lightness of category-coloured text (cat-ink): any hue stays readable on this theme. */
+  --cat-l: 0.52;
 
   --sh-1: 0 0 0 1px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04);
   --sh-2: 0 0 0 1px rgb(0 0 0 / 0.05), 0 12px 32px rgb(0 0 0 / 0.08);
@@ -97,6 +99,7 @@
   --heart: #ff6369;
   --heart-soft: rgb(255 99 105 / 0.14);
   --bad-soft: rgb(255 99 105 / 0.18);
+  --cat-l: 0.8;
 
   --sh-1: 0 0 0 1px rgb(255 255 255 / 0.07);
   --sh-2: 0 0 0 1px rgb(255 255 255 / 0.09), 0 16px 40px rgb(0 0 0 / 0.5);
@@ -468,6 +471,12 @@
 /* Font name inside cards and rows: turns accent with its card. */
 @utility font-name {
   @apply block truncate text-[15px] font-semibold text-fg transition-colors;
+}
+
+/* Text in a category's colour (categories.json, editable in the CMS): set --cat on the element.
+ * Hue and chroma come from the colour, lightness from the theme (--cat-l). */
+@utility cat-ink {
+  color: oklch(from var(--cat) var(--cat-l) c h);
 }
 
 /* Placeholder block while an island or a font file loads. Give it the size of what it stands for. */

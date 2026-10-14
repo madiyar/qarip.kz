@@ -18,7 +18,8 @@ second copy of the same utilities. Before writing markup, look for it here.
 2. **Surfaces, not borders.** Depth comes from background steps (`bg` → `elev` → `pop`) and soft
    shadows. Hairlines (`line`) only separate rows inside one surface.
 3. **One accent.** Blue (`accent`) marks the single primary action of an area, the current
-   selection, links and Qarip's own fonts. Everything else is greyscale.
+   selection, links and Qarip's own fonts. Everything else is greyscale — except the category
+   names on the home page's style cards, which carry their category's colour (`cat-ink`).
 4. **One floating surface.** Menus, popovers, the search panel and dialogs all use `.pop`; on
    phones every `.pop` becomes a bottom sheet over a dimmed page.
 5. **Honest content.** No placeholder numbers, prices, goals or names. If data does not exist
@@ -57,6 +58,7 @@ names come from `@theme inline`, so `bg-elev`, `text-fg-3`, `border-line` etc. w
 | `--warn`, `--warn-soft` | `text-warn`, `bg-warn-soft` | amber | amber | Quality 5–7.5, missing letters |
 | `--heart`, `--heart-soft` | `text-heart` | red | red | Favorites, errors, quality < 5 |
 | `--bad-soft` | `bg-bad-soft` | 14% red | 18% red | Missing glyph tiles |
+| `--cat-l` | — | `0.52` | `0.8` | OKLCH lightness of category-coloured text (`cat-ink`) |
 | `--sh-1` / `--sh-2` / `--sh-pop` | `shadow-1/2/pop` | | | Panel outline / lifted card / floating surface |
 | `--board`, `--key`, `--key-sh` | — | | | Virtual keyboard only |
 | `--header-h` | — | `3.5rem` | | Sticky offset under the header |
@@ -174,6 +176,7 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | `font-card` | Font card (sample on top, name + meta below) |
 | `font-name` | Font/article/designer name; turns accent when its `.font-card` or `.hover-name` parent is hovered |
 | `hover-name` | Put on any link card so its `font-name` reacts |
+| `cat-ink` | Text in a category's colour: set `--cat` (from `categories.json`, editable in the CMS); lightness comes from `--cat-l` so every hue reads on both themes |
 | `prose-q` | With `prose`: article and license text (add `measure`) |
 | `measure` | Reading line length (720 px), left-aligned |
 | `skeleton` (`ui/Skeleton`) | Pulsing placeholder with the size of what is loading |
@@ -216,7 +219,7 @@ one page → `tabs`; a compact one-of-few setting → `segmented`; boolean setti
 | `PreviewToolbar.tsx` | Text, pangram menu (3 pangrams), case, size, view; `usePreview` keeps the state |
 | `Catalog.tsx` | Catalog page: heading, category pills (switch without reload), `FontBrowser` |
 | `FontBrowser.tsx` | Catalog engine: search, filter sheet, sort, list/grid, paging |
-| `HomeFonts.tsx` | Home tabs (popular / new / Qarip), 6 cards each |
+| `HomeFonts.tsx` | Home tabs (new / popular / Qarip), 6 cards each |
 | `FontActions.tsx` | Font page actions + fixed mobile bar + thank-you note after download |
 | `FontDetail.tsx` | Font page tabs: preview, letters, glyphs, license, CSS, variable, info |
 | `GlyphGrid.tsx`, `FontInfo.tsx`, `VariableTab.tsx` | Glyph inspector, technical data, axes |
@@ -290,3 +293,4 @@ What was changed or left out, and why:
 | Font page summary only in tabs | Plain-text download summary kept | Answers "download <font>" queries |
 | Google Fonts | Self-hosted fonts | Privacy (no third-party requests) and speed |
 | "Каталог" for personal lists | "Жинақ" (collection) | "Каталог" already means the font catalog |
+| Grey category names on the home style cards | Each English name in its category's colour (Sans blue, Serif yellow, Display red, Slab orange, Handwritten purple, Monospace green) | Owner's request: a colour is remembered faster than a word |

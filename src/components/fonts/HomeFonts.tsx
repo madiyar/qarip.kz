@@ -20,7 +20,7 @@ interface Props {
   total: number;
 }
 
-/** Home page: popular / new / Qarip fonts as tabs over one grid. Filters and preview controls live in the catalog. */
+/** Home page: new / popular / Qarip fonts as tabs over one grid. Filters and preview controls live in the catalog. */
 export default function HomeFonts({ lang, tabs, total }: Props) {
   const t = useT(lang);
   const [current, setCurrent] = useState(0);

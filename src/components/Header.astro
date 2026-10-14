@@ -28,10 +28,10 @@ const navClass = (on: boolean) => ['py-1.5 transition-colors hover:text-fg', on 
     <Logo href={localePath(lang, '/')} label={t('Qarip — басты бет')} />
 
     <nav class="hidden flex-1 items-center gap-5 lg:flex" aria-label={t('Негізгі мәзір')}>
-      <a href={localePath(lang, '/fonts')} class:list={navClass(fontsActive)} aria-current={fontsActive ? 'page' : undefined}>{t('Қаріптер')}</a>
+      <a href={localePath(lang, '/fonts')} class:list={navClass(fontsActive)} aria-current={fontsActive ? 'page' : undefined}>{t('Каталог')}</a>
       <div class="relative" data-dropdown>
         <button type="button" class:list={['flex items-center gap-1', ...navClass(toolsActive)]} aria-expanded="false" aria-haspopup="true" aria-controls="tools-menu" data-dropdown-trigger>
-          {t('Құралдар')}
+          {t('Құрал')}
           <Icon name="chevronDown" size={12} strokeWidth={2.4} className="transition-transform [[aria-expanded=true]>&]:rotate-180" />
         </button>
         <div id="tools-menu" class="pop absolute top-[calc(100%+12px)] -left-4 z-50 hidden w-[560px] max-w-[calc(100vw-2rem)] p-2" data-dropdown-menu>

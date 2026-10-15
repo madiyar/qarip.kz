@@ -1,0 +1,28 @@
+{
+  "name": "Shonen",
+  "archive": "Shonen (Namikus).zip",
+  "files": [
+    "Shonen (Namikus).otf",
+    "Shonen Bold (Namikus).otf",
+    "Shonen Bold Italic (Namikus).otf",
+    "Shonen Italic (Namikus).otf"
+  ],
+  "designers": [
+    "namik-mardakhaev"
+  ],
+  "category": "handwritten",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "script"
+  ],
+  "purposes": [
+    "comic"
+  ],
+  "our": false,
+  "quality": 8,
+  "description": "Comic",
+  "descriptionRu": "Comic",
+  "descriptionEn": "Comic",
+  "addedDate": "2026-10-15"
+}

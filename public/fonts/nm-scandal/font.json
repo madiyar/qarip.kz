@@ -1,6 +1,12 @@
 {
   "name": "NM Scandal",
   "archive": "NM Scandal.zip",
+  "files": [
+    "NM Scandal Bold Italic.otf",
+    "NM Scandal Bold.otf",
+    "NM Scandal Italic.otf",
+    "NM Scandal Regular.otf"
+  ],
   "designers": [
     "namik-mardakhaev"
   ],

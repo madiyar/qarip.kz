@@ -2,7 +2,7 @@
   "items": [
     {
       "id": "headings",
-      "name": "Маңдайша",
+      "name": "Үлкен мәтін",
       "nameRu": "Заголовки",
       "nameEn": "Headings"
     },
@@ -35,6 +35,12 @@
       "name": "Комикс",
       "nameRu": "Комикс",
       "nameEn": "Comic"
+    },
+    {
+      "id": "billboard",
+      "name": "Маңдайша",
+      "nameRu": "Вывеска",
+      "nameEn": "Billboard"
     }
   ]
 }

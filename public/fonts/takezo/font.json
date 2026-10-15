@@ -1,5 +1,6 @@
 {
   "name": "Takezo",
+  "archive": "Takezo.zip",
   "files": [
     "TakezoBlack-wo8w8.otf",
     "TakezoBold-xRdK0.otf",
@@ -10,9 +11,9 @@
     "TakezoRegular-pga01.otf",
     "TakezoTilt-ovdZ0.otf"
   ],
-  "archive": "Takezo.zip",
   "designers": [
-    "abay-emes"
+    "abay-emes",
+    "namik-mardakhaev"
   ],
   "category": "handwritten",
   "license": "ofl",

@@ -87,7 +87,7 @@
       "id": "at-sign-et-commercial",
       "term": "Айқұлақ",
       "en": "at sign @ / et commercial",
-      "definition": "Электрондық поштада кездесетін таңба. Әдетте шиыршық сызықпен оралған «а» әрпі арқылы жасалады.",
+      "definition": "Электрон поштада кездесетін таңба. Әдетте шиыршық боп оралған «а» әрпі арқылы жасалады.",
       "category": "typography"
     },
     {
@@ -114,7 +114,7 @@
     {
       "id": "handwriting-font",
       "term": "Қолжазба қаріп",
-      "en": "Handwriting Font",
+      "en": "Handwriting / Script Font",
       "definition": "Адам қолмен жазғандай стилде жасалған қаріп.",
       "category": "typography"
     },

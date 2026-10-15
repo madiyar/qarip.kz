@@ -1,0 +1,28 @@
+{
+  "name": "NM Dozor",
+  "archive": "NM Dozor.zip",
+  "files": [
+    "Dozor Bold Italic.otf",
+    "Dozor Bold.otf",
+    "Dozor Italic.otf",
+    "Dozor.otf"
+  ],
+  "designers": [
+    "namik-mardakhaev"
+  ],
+  "category": "handwritten",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "script"
+  ],
+  "purposes": [
+    "comic"
+  ],
+  "our": false,
+  "quality": 8.5,
+  "description": "Комикс қаріп",
+  "descriptionRu": "НМ Дозор — комиксный шрифт для текста в пузырях. Вдохновлён рукописью из комиксов от 50-х до 80-х годов, в частности леттерингом Гаспара Саладино и Тодда Кляйна.",
+  "descriptionEn": "Comic font",
+  "addedDate": "2026-10-15"
+}

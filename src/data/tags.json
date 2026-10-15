@@ -47,6 +47,24 @@
       "name": "Қорқынышты",
       "nameRu": "Устрашающий",
       "nameEn": "Horror"
+    },
+    {
+      "id": "blackletter",
+      "name": "Готик",
+      "nameRu": "Готический",
+      "nameEn": "Blackletter"
+    },
+    {
+      "id": "outline",
+      "name": "Контур",
+      "nameRu": "Контурный",
+      "nameEn": "Outline"
+    },
+    {
+      "id": "stencil",
+      "name": "Трафарет",
+      "nameRu": "Трафаретный",
+      "nameEn": "Stencil"
     }
   ]
 }

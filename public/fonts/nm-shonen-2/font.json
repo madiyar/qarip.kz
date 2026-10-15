@@ -1,0 +1,29 @@
+{
+  "name": "NM Shonen 2",
+  "archive": "NM Shonen 2.zip",
+  "files": [
+    "NM Shonen 2 Bold Italic.otf",
+    "NM Shonen 2 Bold.otf",
+    "NM Shonen 2 Italic.otf",
+    "NM Shonen 2.otf"
+  ],
+  "designers": [
+    "namik-mardakhaev"
+  ],
+  "category": "handwritten",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "script"
+  ],
+  "purposes": [
+    "comic",
+    "body"
+  ],
+  "our": false,
+  "quality": 9,
+  "description": "Комикс беттейтін күшті қаріп",
+  "descriptionRu": "«Сёнен 2» — прекрасный шрифт, который скрасит ваши прекрасные комиксы. Имеет значительную применимость за счёт нейтрального характера. В отдельных случаях шрифт отлично подойдёт в качестве аналога такой классике как CCMonologus и CCSamaritan.\nПоддерживает большинство языков народов России; расширенную кириллицу и латиницу.\nРаспространяется по лицензии OFL, то есть бесплатен на все 100%.",
+  "descriptionEn": "\"Shonen 2\" is a beautiful font that will brighten up your beautiful comics. It has significant applicability due to its neutral nature. In some cases, the font is perfect as an analogue to such classics as CCMonologus and CCSamaritan.\nSupports most languages of the peoples of Russia; extended Cyrillic and Latin alphabet.\nIt is distributed under the OFL license, that is, it is 100% free.\nIf you don't have enough support for any language or characters, write. I'll try to add that.",
+  "addedDate": "2026-10-15"
+}

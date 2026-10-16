@@ -1,0 +1,29 @@
+{
+  "name": "Source Code Pro",
+  "archive": "Source_Code_Pro.zip",
+  "files": [
+    "SourceCodeVF-Italic.otf",
+    "SourceCodeVF-Italic.ttf",
+    "SourceCodeVF-Upright.otf",
+    "SourceCodeVF-Upright.ttf"
+  ],
+  "designers": [
+    "paul-d.-hunt"
+  ],
+  "category": "monospaced",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "purposes": [
+    "screen"
+  ],
+  "our": false,
+  "quality": 9,
+  "description": "Агга",
+  "descriptionRu": "Гага",
+  "descriptionEn": "Гагаг",
+  "addedDate": "2026-10-16"
+}

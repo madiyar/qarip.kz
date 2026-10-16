@@ -1,0 +1,23 @@
+{
+  "name": "Charis SIL",
+  "archive": "Charis_SIL.zip",
+  "designers": [
+    "sil-international"
+  ],
+  "category": "serif",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "purposes": [
+    "body",
+    "print"
+  ],
+  "our": false,
+  "quality": 9,
+  "description": "The Charis project is intended to provide a free and open font family for all current languages and writing systems that use Latin and Cyrillic scripts. It supports almost the complete range of Unicode characters for these scripts, including a comprehensive range of diacritics and a large set of symbols useful for linguistics and literacy work. Smart font routines automatically adjust the position of diacritics to support and optimize arbitrary base+diacritic combinations. This project uses a UFO-based design and production workflow, with all sources in open formats and a completely open-source build toolkit.",
+  "descriptionRu": "The Charis project is intended to provide a free and open font family for all current languages and writing systems that use Latin and Cyrillic scripts. It supports almost the complete range of Unicode characters for these scripts, including a comprehensive range of diacritics and a large set of symbols useful for linguistics and literacy work. Smart font routines automatically adjust the position of diacritics to support and optimize arbitrary base+diacritic combinations. This project uses a UFO-based design and production workflow, with all sources in open formats and a completely open-source build toolkit.",
+  "descriptionEn": "The Charis project is intended to provide a free and open font family for all current languages and writing systems that use Latin and Cyrillic scripts. It supports almost the complete range of Unicode characters for these scripts, including a comprehensive range of diacritics and a large set of symbols useful for linguistics and literacy work. Smart font routines automatically adjust the position of diacritics to support and optimize arbitrary base+diacritic combinations. This project uses a UFO-based design and production workflow, with all sources in open formats and a completely open-source build toolkit.",
+  "addedDate": "2026-10-16"
+}

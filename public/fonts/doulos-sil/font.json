@@ -1,0 +1,26 @@
+{
+  "name": "Doulos SIL",
+  "archive": "DoulosSIL-7.000.zip",
+  "files": [
+    "DoulosSIL-Regular.ttf"
+  ],
+  "designers": [
+    "sil-international"
+  ],
+  "category": "serif",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "purposes": [
+    "body",
+    "print"
+  ],
+  "our": false,
+  "quality": 8,
+  "description": "Doulos SIL is a Unicode-based font family that supports the wide range of languages that use the Latin and Cyrillic scripts, whether used for phonetic or orthographic needs. Linguists appreciate the wide range of characters and symbols useful in their work.",
+  "descriptionRu": "Doulos SIL is a Unicode-based font family that supports the wide range of languages that use the Latin and Cyrillic scripts, whether used for phonetic or orthographic needs. Linguists appreciate the wide range of characters and symbols useful in their work.",
+  "descriptionEn": "Doulos SIL is a Unicode-based font family that supports the wide range of languages that use the Latin and Cyrillic scripts, whether used for phonetic or orthographic needs. Linguists appreciate the wide range of characters and symbols useful in their work.",
+  "addedDate": "2026-10-16"
+}

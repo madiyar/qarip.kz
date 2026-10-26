@@ -1,0 +1,28 @@
+{
+  "name": "Medeo",
+  "archive": "Medeo-RC3.zip",
+  "designers": [
+    "dnfdevs"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable",
+    "pixel"
+  ],
+  "purposes": [
+    "headings",
+    "body",
+    "logo",
+    "screen",
+    "print"
+  ],
+  "our": false,
+  "quality": 9.5,
+  "description": "Интерфейс, код және тақырыптарға арналған ашық қаріптер: латын және кирилл жазуы, он тіл.",
+  "descriptionRu": "Открытые шрифты для интерфейсов, кода и заголовков: латиница и кириллица, десять языков.",
+  "descriptionEn": "Open typefaces for interfaces, code and headlines: Latin and Cyrillic, ten languages.",
+  "addedDate": "2026-10-26"
+}

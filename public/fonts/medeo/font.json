@@ -1,6 +1,10 @@
 {
-  "name": "Medeo",
-  "archive": "Medeo-RC3.zip",
+  "name": "Medeo Sans",
+  "archive": "MedeoSans.zip",
+  "files": [
+    "MedeoSans[opsz,wght].ttf",
+    "MedeoSans-Italic[opsz,wght].ttf"
+  ],
   "designers": [
     "dnfdevs"
   ],
@@ -26,5 +30,5 @@
   "descriptionEn": "Open typefaces for interfaces, code and headlines: Latin and Cyrillic, ten languages.",
   "addedDate": "2026-10-26",
   "releaseDate": "2026-10-25",
-  "updatedDate": "2026-10-25"
+  "updatedDate": "2026-11-01"
 }

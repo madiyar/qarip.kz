@@ -1,10 +1,6 @@
 {
   "name": "Medeo Sans",
   "archive": "MedeoSans.zip",
-  "files": [
-    "MedeoSans[opsz,wght].ttf",
-    "MedeoSans-Italic[opsz,wght].ttf"
-  ],
   "designers": [
     "dnfdevs"
   ],

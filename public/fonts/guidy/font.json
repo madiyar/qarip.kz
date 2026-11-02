@@ -1,9 +1,9 @@
 {
   "name": "Guidy",
+  "archive": "Guidy-1.1.zip",
   "files": [
     "Guidy.otf"
   ],
-  "archive": "Guidy-1.1.zip",
   "designers": [
     "collective-typeworks"
   ],
@@ -22,8 +22,8 @@
   ],
   "our": false,
   "quality": 10,
-  "description": "Гайди",
+  "description": "Guidy — кирилл жазуына негізделген заманауи әліпбилерді қолдайтын, навигациялық жүйелерге арналған геометриялық гротеск. Оның графикалық құрылымы ақпаратты жылдам әрі кедергісіз қабылдауға бағытталған. Үлкейтілген кіші әріп биіктігі, кеңейтілген әріпаралық арақашықтық, қысқартылған жоғарғы және төменгі шығыңқы элементтер мен ашық апертуралар таңбалардың бір-бірінен анық ажыратылуына мүмкіндік береді. Бұл ерекшеліктер қаріпті көше көрсеткіштері, ақпараттық тақтайшалар мен қоғамдық кеңістіктердегі навигациядан бастап, көлемді мәтіндер мен күрделі дизайн жүйелеріне дейін қолдануға қолайлы етеді. Guidy-дің айрықша мүмкіндіктерінің бірі — пернетақта арқылы арнайы командалармен енгізілетін кіріктірілген белгішелер жүйесі. Мысалы, right= комбинациясы оңға бағытталған көрсеткіге айналады. Қаріп 40 белгішені, 400-ден астам тілді, 20 OpenType функциясын және 12 стилистикалық жиынтықты қамтиды.",
   "descriptionRu": "Guidy — навигационный геометрический гротеск, заточенный под особенности всех актуальных языков с алфавитами на основе кириллицы\n\nГрафика шрифта продиктована навигационными нуждами: увеличенный x-height и спейсинг, слегка укороченные выносные элементы, открытые апертуры и другие детали\n\nВсе эти характеристики полезны не только для текстов небольшого объема, например табличек, но и для более крупных блоков, где хорошая различимость символов повышает удобочитаемость. Шрифт одинаково уместен как в объявлениях об отключении горячей воды, так и в комплексных дизайн-системах общественных пространств\n\nГлавная особенность Guidy: встроенный поиск по иконкам. Их можно «набрать» прямо с клавиатуры.\n\nНапишите right= и оно станет →\n\nGuidy в цифрах:\n• 799 Глифов\n• 40 Иконок\n• Поддержка 400+ языков\n• 20 OpenType-фич\n• 12 Стилистических сетов\n• На 100% Бесплатный",
-  "descriptionEn": "Guidy degen",
+  "descriptionEn": "Guidy is a geometric sans serif designed for wayfinding systems, with extensive support for contemporary languages using Cyrillic-based alphabets. Its design is driven by the need to communicate information quickly and clearly. An enlarged x-height, generous letter spacing, slightly shortened ascenders and descenders, and open apertures improve character recognition and make the typeface particularly effective in environments where information needs to be read at a glance or from a distance. These qualities make Guidy suitable for street signage, information boards, public-space navigation, extended text passages, and comprehensive design systems. One of its defining features is a built-in icon search system that allows users to insert pictograms directly from the keyboard using dedicated commands. For example, typing right= produces a right-pointing arrow. The typeface includes 799 glyphs, 40 icons, support for over 400 languages, 20 OpenType features, and 12 stylistic sets.",
   "addedDate": "2026-10-05"
 }

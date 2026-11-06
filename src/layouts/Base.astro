@@ -97,6 +97,7 @@ const ogImage = new URL(image ?? '/og.png', Astro.site);
     </script>
     {fontCss && <style is:inline set:html={fontCss} />}
     <slot name="head" />
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="cb4f6295-f654-4cdf-9833-4ce8e8b5880c"></script>
   </head>
   <body class="flex min-h-dvh flex-col">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent">

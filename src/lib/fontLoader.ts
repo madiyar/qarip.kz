@@ -29,6 +29,8 @@ const FORMAT_RANK: Record<string, number> = { ttf: 0, otf: 1, woff2: 2, woff: 3 
 /** Above this many static styles in an archive with variable fonts, only the variable ones are shown
  *  (Google Fonts ZIPs of optical-size families hold 80+ statics; the variable files cover them). */
 const MAX_STATIC_FROM_ZIP = 40;
+/** Optical size in a static family name: "Inter 18pt" → "18". */
+const OPTICAL_SIZE = /\s(\d+(?:\.\d+)?)pt\b/i;
 
 const WEIGHT_WORDS: [RegExp, number][] = [
   [/hairline|thin/i, 100],
@@ -274,6 +276,16 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       if (!byStyle.has(key)) byStyle.set(key, m);
     }
     let picked = [...byStyle.values()];
+    // Google Fonts ZIPs of optical-size families repeat every static style per size ("Inter 18pt
+    // Bold", "Inter 24pt Bold", "Inter 28pt Bold"): keep the smallest (text) size, named without it.
+    const sizeOf = (m: FileMeta) => (m.variable ? null : m.family.match(OPTICAL_SIZE)?.[1] ?? null);
+    const sizes = new Set(picked.map(sizeOf).filter((s) => s !== null).map(Number));
+    if (sizes.size > 1) {
+      const text = Math.min(...sizes);
+      picked = picked
+        .filter((m) => sizeOf(m) === null || Number(sizeOf(m)) === text)
+        .map((m) => (m.variable ? m : { ...m, full: m.full.replace(OPTICAL_SIZE, ''), family: m.family.replace(OPTICAL_SIZE, '') }));
+    }
     const statics = picked.filter((m) => !m.variable).length;
     if (statics > MAX_STATIC_FROM_ZIP && picked.some((m) => m.variable)) {
       warn(`${slug}: the archive has ${statics} static styles — only its variable fonts are shown (upload font files to pick others)`);

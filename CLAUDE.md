@@ -121,8 +121,10 @@ preview text and size) is browser-only via `src/lib/store.ts`.
 **Fonts.** Preview families are `qf-<slug>` (primary style) and `qf-<slug>-<style>`; the
 `@font-face` rules are injected per page through `Base`'s `fontCss` prop. A font's files are the
 uploaded `files` or, when there are none, the TTF/OTF (WOFF/WOFF2 if that is all) inside its ZIP:
-one file per style (TTF before OTF before web formats), and with more than 40 statics next to a
-variable font only the variable files (Google Fonts ZIPs of optical-size families). Fonts taken
+one file per style (TTF before OTF before web formats). Statics repeated per optical size
+(Google Fonts ZIPs: "Inter 18pt Bold", "Inter 24pt Bold"…) keep only the smallest size, named
+without it (Inter: 2 variable + 18 statics); with more than 40 statics left next to a variable
+font only the variable files are shown. Fonts taken
 from a ZIP get a copy in `public/fonts-web/<slug>/<path>.<hash>.<ext>` for the Glyphs/Info tabs. Style metadata is
 read from the font binaries by `src/lib/fontLoader.ts` at build time — never stored by hand
 and never guessed from file names. A style's name is what its full name (nameID 4) adds to

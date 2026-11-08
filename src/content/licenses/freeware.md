@@ -7,3 +7,5 @@ distribution: true
 attribution: false
 visible: false
 ---
+
+Әр қаріптің өз лицензия мәтіні болуы мүмкін, мұқият ашып қараңыз.

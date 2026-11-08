@@ -1,11 +1,27 @@
 {
   "name": "Inter",
-  "archive": "Inter-site.zip",
+  "archive": "Inter.zip",
   "designers": [
     "rasmus-andersson"
   ],
   "category": "sans",
   "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "purposes": [
+    "headings",
+    "body",
+    "logo",
+    "screen",
+    "print"
+  ],
   "our": false,
+  "quality": 10,
+  "description": "Inter — цифрлық интерфейстер мен заманауи типографикаға арналған әмбебап гротеск қаріп. Оның дизайны әртүрлі өлшемде анық оқылуға, таңбалардың бір-бірінен оңай ажыратылуына және мәтіннің біркелкі қабылдануына бағытталған. Биік кіші әріптері, ашық апертуралары мен мұқият реттелген пропорциялары шағын экран мәтіндерінен бастап ірі тақырыптарға дейін жақсы оқылымдылықты сақтайды. Қаріптің жуандық диапазоны Thin-нен Black-ке дейін созылады, ал оптикалық өлшем осі әріп пішіндерін мәтіндік және тақырыптық қолдануға бейімдейді. Inter веб-сайттар, мобильді қосымшалар, интерфейстер, презентациялар, баспа материалдары және фирмалық сәйкестендіру жүйелері үшін қолайлы. Кең таңбалар жиынтығы, курсив нұсқасы және OpenType мүмкіндіктері оны көптілді жобаларға арналған икемді құралға айналдырады.",
+  "descriptionRu": "Inter — универсальный гротеск, разработанный для цифровых интерфейсов и современной типографики. Его конструкция ориентирована на высокую читаемость, чёткое различие между символами и комфортное восприятие текста в разных масштабах. Увеличенная высота строчных знаков, открытые апертуры и выверенные пропорции помогают сохранять разборчивость как в небольших интерфейсных элементах, так и в крупных заголовках. Гарнитура предлагает девять степеней насыщенности — от Thin до Black, оптическую ось размера и полноценные курсивные начертания. Дополнительные OpenType-функции позволяют настраивать альтернативные формы букв, табличные цифры, дроби и другие типографические детали. Inter подходит для веб-сайтов, мобильных приложений, пользовательских интерфейсов, презентаций, редакционных материалов и фирменной айдентики.",
+  "descriptionEn": "Inter is a versatile sans serif typeface designed for digital interfaces and contemporary typography. Its construction prioritises readability, clear character recognition, and consistent performance across a wide range of sizes. A generous x-height, open apertures, and carefully balanced proportions help maintain legibility in everything from compact interface elements to large headlines. The family offers nine weights, ranging from Thin to Black, an optical size axis, and a full set of italic styles. Its extensive OpenType features provide additional typographic control, including alternate character forms, tabular figures, fractions, and contextual alternates. Inter is well suited to websites, mobile applications, user interfaces, presentations, editorial layouts, and visual identities.",
   "addedDate": "2026-11-08"
 }

@@ -170,10 +170,12 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
   deploy and render unstyled. `public/_redirects` rewrites missing `/_astro/*` files to
   `public/stale.js`, which refetches the page past the cache and reloads once (guarded by
   sessionStorage). Existing files are not affected (Netlify rules don't shadow real files).
-- Sveltia commits big saves in several commits (16 MB of base64 each, ~12 MB of files); a single
-  bigger file goes alone and GitHub drops the request — the CMS shows "Failed to fetch" and can
-  leave stray files (a 22 MB duplicate of Literata's ZIP was one; removed). The font form caps the
-  ZIP and font files at 10 MB (`max_file_size`).
+- Big CMS saves fail with "Failed to fetch" (a CORS error on `api.github.com/graphql` in the
+  console): GitHub cuts an API request off after ~10 s, so the limit depends on the editor's
+  connection — the same 10.2 MB Inter ZIP failed for one editor and saved for the owner (Nov 2026);
+  22 MB once went through. A failed save can leave stray files (a 22 MB duplicate of Literata's ZIP
+  was one; removed). The font form caps the ZIP and font files at 10 MB (`max_file_size`); its hint
+  says to shrink the archive on "Failed to fetch". Bigger archives go in with `npm run font:add`.
 - The CMS never deletes a file that was removed from a list or replaced by an upload under another
   name: stale files pile up in `public/fonts/<slug>/`. Anything not named in `font.json`
   (`archive`, `files`) is unused and can be deleted.

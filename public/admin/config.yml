@@ -64,14 +64,16 @@ collections:
         label: Қаріп атауы
         widget: string
         hint: 'Мысалы: Hiykaya. Сайттағы сілтеме осы атаудан жасалады.'
-      # Files above 10 MB are refused here: GitHub drops such saves half-way ("Failed to fetch").
+      # Files above 10 MB are refused here. GitHub's API cuts a request off after ~10 s, so whether a
+      # big save goes through depends on the connection: the same 10.2 MB ZIP failed for one editor
+      # ("Failed to fetch") and saved for another. Bigger archives go in with `npm run font:add`.
       - name: archive
         label: ZIP архив
         widget: file
         accept: .zip
         choose_url: false
         media_libraries: { default: { config: { max_file_size: 10485760 } } }
-        hint: Сайттан жүктелетін архив (қаріп файлдары, лицензия, readme). Ішіндегі TTF/OTF қаріптер сайтқа өзі шығады — бөлек жүктеудің керегі жоқ. Архив 10 МБ-тан аспасын. Google Fonts архиві үлкен болса, ішінен static бумасын алып тастаңыз — вариатив файл барлық салмақты қамтиды.
+        hint: Сайттан жүктелетін архив (қаріп файлдары, лицензия, readme). Ішіндегі TTF/OTF қаріптер сайтқа өзі шығады — бөлек жүктеудің керегі жоқ. Архив 10 МБ-тан аспасын. Сақтағанда «Failed to fetch» қатесі шықса, архив интернетіңіз үшін тым үлкен — оны кішірейтіңіз. Google Fonts архиві үлкен болса, ішінен static бумасын алып тастаңыз — вариатив файл барлық салмақты қамтиды.
       - name: files
         label: Қаріп файлдары
         widget: file

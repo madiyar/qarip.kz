@@ -250,7 +250,10 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
     try {
       inZip = unzipSync(archiveBuf, { filter: (f) => FONT_EXT.test(f.name) && !/(^|\/)(__MACOSX\/|\._)/.test(f.name) });
     } catch (e) {
-      warn(`${slug}: cannot open archive "${archive}" (${(e as Error).message})`);
+      // A RAR or 7z renamed to .zip looks fine in the CMS but can't be read here.
+      const head = archiveBuf.subarray(0, 4).toString('latin1');
+      const kind = head === 'Rar!' ? 'a RAR archive' : head === '7z\xbc\xaf' ? 'a 7z archive' : '';
+      warn(`${slug}: cannot open archive "${archive}" (${kind ? `it is ${kind} renamed to .zip — re-pack it as ZIP` : (e as Error).message})`);
     }
     const srcTime = await mtime(archivePath);
     const found: typeof read = [];

@@ -1,0 +1,25 @@
+{
+  "name": "Bitter",
+  "archive": "Bitter.zip",
+  "designers": [
+    "sol-matas"
+  ],
+  "category": "serif",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "purposes": [
+    "print",
+    "body"
+  ],
+  "our": false,
+  "quality": 10,
+  "description": "Кез келген веб-сайтқа, блогқа немесе баспа басылымына ерекше стиль сыйлайтын Bitter шрифтін тегін жүктеп алыңыз. Sol Matas жасаған бұл қаріп экран бетінде оқуды аса ыңғайлы ету үшін арнайы әзірленген. Жоғары контрасты, заманауи иірімдері және әмбебаптығы арқасында ол ұзақ мәтіндерді оқуға, тақырыптар мен UI/UX дизайн жобаларына өте жарасты келеді. Google Fonts платформасында қолжетімді бұл қаріп кез келген құрылғыда мінсіз көрінеді.",
+  "descriptionRu": "Ищете качественный засечковый шрифт для веб-дизайна или типографики? Скачайте Bitter — популярный шрифт от дизайнера Соль Матас (Sol Matas), оптимизированный специально для комфортного чтения с экранов любых цифровых устройств. Благодаря высокой читаемости, вариативности начертаний и современному стилю, Bitter идеально подходит для блогов, новостных порталов, корпоративных сайтов и печатных изданий. Шрифт бесплатен для коммерческого и личного использования по лицензии SIL Open Font License.",
+  "descriptionEn": "Enhance your digital typography with Bitter, a contemporary slab serif typeface designed specifically for high legibility on screens. Created by Sol Matas, Bitter combines a strong editorial presence with a friendly rhythm, making it an exceptional choice for long-form reading, UI/UX design, blogs, and corporate branding. Available for free on Google Fonts under the SIL Open Font License, it scales seamlessly across all devices and screen resolutions.",
+  "addedDate": "2026-11-08",
+  "releaseDate": "2011-12-19",
+  "updatedDate": "2020-05-28"
+}

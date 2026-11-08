@@ -1,0 +1,27 @@
+{
+  "name": "Alice",
+  "archive": "Alice.zip",
+  "designers": [
+    "cyreal",
+    "ksenya-erulevich"
+  ],
+  "category": "serif",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "script"
+  ],
+  "purposes": [
+    "print",
+    "body"
+  ],
+  "our": false,
+  "quality": 10,
+  "description": "Alice — классикалық әдебиет пен көркем басылымдарға арналған ерекше сипаты бар антиква қарпі. Льюис Кэрроллдың «Алиса ғажайыптар елінде» шығармасынан шабыт алған бұл қаріп ескі кітаптардың эстетикасын, нәзік винтаждық көңіл күйді және өзіндік көркем мінезді үйлестіреді. Кең пропорциялары, жұмсақ дөңгеленген пішіндері мен ашық әріпаралық кеңістігі мәтінге еркіндік беріп, оқуды жайлы етеді. Alice ұзақ мәтіндерді теруге, кітап беттерін безендіруге, әдеби журналдарға, тақырыптар мен авторлық басылымдарға жарайды. Оның өзгеше келбеті баспа өнімдеріне классикалық әрі есте қаларлық көрініс береді.",
+  "descriptionRu": "Alice — выразительная антиква с винтажным характером, созданная для книжной типографики и литературных изданий. Вдохновением для шрифта послужила повесть Льюиса Кэрролла «Алиса в Стране чудес», что отразилось в его необычном сочетании классической эстетики и сказочного настроения. Широкие пропорции, мягкие округлые формы и открытые просветы придают буквам дружелюбный, немного старомодный облик. Alice подходит для набора художественной литературы, длинных текстов, оформления книг, журналов, заголовков и печатных материалов, которым хочется придать индивидуальность. Это бесплатный шрифт с засечками, который помогает создать атмосферу классического книжного дизайна.",
+  "descriptionEn": "English\nAlice is a distinctive serif typeface designed for literary typography and editorial design. Inspired by Lewis Carroll’s Alice’s Adventures in Wonderland, it combines a nostalgic, old-fashioned character with a playful and slightly whimsical appearance. Its wide proportions, soft rounded shapes and open apertures give the letters a welcoming feel while making extended reading comfortable. Alice works particularly well for novels, book layouts, literary magazines, editorial projects, headlines and printed publications that call for a touch of classic charm. This free serif font brings personality and a timeless bookish atmosphere to both traditional and contemporary designs.",
+  "addedDate": "2026-11-08",
+  "releaseDate": "2011-08-10",
+  "updatedDate": "2021-12-08"
+}

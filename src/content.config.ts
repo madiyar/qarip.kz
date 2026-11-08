@@ -58,8 +58,12 @@ const fonts = defineCollection({
   }),
 });
 
+// The CMS names files after `{{name}}` and stores that file name in relations, so the id
+// must be the file name as is ("paul-d.-hunt"). Astro's default slugifies it ("paul-d-hunt").
+const fileId = ({ entry }: { entry: string }) => entry.replace(/\.[^.]+$/, '');
+
 const designers = defineCollection({
-  loader: glob({ pattern: '*.json', base: './src/content/designers' }),
+  loader: glob({ pattern: '*.json', base: './src/content/designers', generateId: fileId }),
   schema: z.object({
     name: z.string(),
     /** Kazakh bio; also the fallback for the other languages. */
@@ -81,7 +85,7 @@ const designers = defineCollection({
 });
 
 const licenses = defineCollection({
-  loader: glob({ pattern: '*.md', base: './src/content/licenses' }),
+  loader: glob({ pattern: '*.md', base: './src/content/licenses', generateId: fileId }),
   schema: z.object({
     name: z.string(),
     description: z.string(),

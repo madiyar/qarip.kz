@@ -174,6 +174,13 @@ Nothing to configure: Blobs works on every Netlify plan. `DOWNLOADS_OFFLINE=1` s
   bigger file goes alone and GitHub drops the request — the CMS shows "Failed to fetch" and can
   leave stray files (a 22 MB duplicate of Literata's ZIP was one; removed). The font form caps the
   ZIP and font files at 10 MB (`max_file_size`).
+- The CMS never deletes a file that was removed from a list or replaced by an upload under another
+  name: stale files pile up in `public/fonts/<slug>/`. Anything not named in `font.json`
+  (`archive`, `files`) is unused and can be deleted.
+- A RAR/7z renamed to `.zip` passes the CMS but the build can't open it and hides the font
+  (the build log says so). Re-pack it as a real ZIP.
+- Designer and license ids are their file names as is (`generateId` in `content.config.ts`):
+  the CMS names files after `{{name}}` ("paul-d.-hunt") and Astro's default slugify broke such refs.
 
 ## Domain
 

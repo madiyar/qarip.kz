@@ -30,6 +30,7 @@ opentype.js 2 · fflate · woff2-encoder (WASM) · sharp · marked (FAQ answers)
 npm run dev      # http://localhost:4321
 npm run build    # static site in dist/
 npm run check    # astro check — must stay at 0 errors
+npm run admin    # local admin with auto pull/commit/push (see ADMIN.md); no npm install needed
 npm run font:add -- --name "Font" --designer abay-emes[,other] --category sans --license ofl \
   [--tags free,cyrillic] [--our] [--quality 7.5] [--description-ru "…"] --archive a.zip [files…]
 ```
@@ -68,6 +69,7 @@ There is no test suite. Verify with `npm run check`, `npm run build`, and the br
 | `src/lib/store.ts`, `src/lib/useStore.ts` | localStorage store: favorites, download history, collections (`catalogs` in code), prefs; React hook |
 | `src/lib/og.ts`, `src/pages/og*.ts` | Social preview PNGs rendered at build time |
 | `scripts/add-font.mjs` | CLI equivalent of the CMS form: copies files and writes `font.json` |
+| `scripts/local-admin.mjs`, `admin.cmd`, `admin.command`, `ADMIN.md` | Local admin for editors (double-click launchers, Russian guide) |
 | `public/admin/` | Sveltia CMS (`index.html` + `config.yml`; keep fields in sync with `content.config.ts`) |
 | `public/_redirects` | Netlify redirects: legacy v1 URLs and base44-style URLs |
 
@@ -215,6 +217,16 @@ workflow) and Netlify redeploys. Sign-in options: "Sign In with GitHub" needs a 
 app registered in Netlify (project → Access & security → OAuth) or a Sveltia authenticator
 (`backend.base_url`); "Sign In Using Access Token" works without any setup. On localhost,
 "Work with Local Repository" edits the working copy directly (Chromium only).
+
+**Local admin** (`npm run admin`, or double-click `admin.cmd` / `admin.command`; guide for
+editors in `ADMIN.md`): `scripts/local-admin.mjs` pulls `main`, serves `public/` on
+`localhost:4300` and opens `/admin/` for the local-repository mode. It serves `config.yml` with
+`max_file_size` raised to 50 MB (disk writes have no API time-out). It watches the folders the
+CMS writes to (`public/fonts`, `public/images`, `src/content`, `src/data`) and 5 s after a save
+commits only those, pulls with rebase and pushes to `main`. On a rebase conflict it pushes the
+editor's commits to a `conflict/<UTC time>` branch for the owner to merge and resets to
+`origin/main` (only if no other tracked files are modified). Note: it also pushes any other
+unpushed commits on the machine's `main`. Built-in Node modules only.
 
 The fonts collection lives in `public/fonts` with `path: '{{slug}}/font'` and entry-relative
 media (`media_folder: ''`), so uploaded files land next to `font.json` and are removed with

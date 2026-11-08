@@ -1,0 +1,25 @@
+{
+  "name": "Arsenal SC",
+  "archive": "Arsenal_SC.zip",
+  "designers": [
+    "andrij-shevchenko"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "purposes": [
+    "billboard",
+    "headings"
+  ],
+  "our": false,
+  "quality": 9,
+  "description": "Arsenal SC — Arsenal қаріптер тобының Small Caps, яғни кіші бас әріптерге негізделген нұсқасы. Ол түпнұсқа Arsenal қарпінің ұстамды гротеск сипатын, дәстүрлі пішіндерін, ықшам пропорциялары мен штрихтар арасындағы нәзік контрастын сақтайды. Бұл нұсқаның басты ерекшелігі — кіші әріптердің орнына көлемі кішірейтілген бас әріптерді қолдану мүмкіндігі. Мұндай шешім мәтінге біркелкі әрі жинақы көрініс беріп, типографиялық екпін жасауға көмектеседі. Arsenal SC кітап безендіру, журнал беттеу, тақырыптар, навигация, титулдық беттер және редакциялық дизайн үшін қолайлы. Кирилл және латын әліпбиін қолдауы оны қазақ және басқа да көптілді жобаларда пайдалануға мүмкіндік береді.",
+  "descriptionRu": "Arsenal SC — специальная версия семейства Arsenal, созданная на основе малых прописных букв (Small Caps). Шрифт сохраняет узнаваемый характер оригинального Arsenal: традиционные формы гротеска, узкие пропорции и умеренный контраст штрихов. Его ключевая особенность заключается в том, что строчные буквы заменяются уменьшенными заглавными, благодаря чему текст приобретает более ровный, собранный и выразительный вид. Arsenal SC подойдёт для книжной вёрстки, журналов, заголовков, навигационных элементов, титульных страниц и редакционного дизайна. Он помогает выделять отдельные фрагменты текста и создавать аккуратную типографическую иерархию. Поддержка кириллицы и латиницы делает шрифт полезным для многоязычных проектов, включая материалы на казахском языке.",
+  "descriptionEn": "Arsenal SC is a Small Caps version of the Arsenal typeface family, retaining the original design’s restrained grotesque character, traditional letterforms, narrow proportions and subtle stroke contrast. Its defining feature is the use of small capital letters in place of lowercase characters, creating a consistent and compact typographic appearance. This makes Arsenal SC useful for headings, book layouts, magazine design, navigation, title pages and editorial publications. The typeface offers a refined way to emphasize text while maintaining a cohesive visual style. With support for Cyrillic and Latin scripts, Arsenal SC is also suitable for multilingual typography, including projects in Kazakh and other Cyrillic-based languages.",
+  "addedDate": "2026-11-08",
+  "releaseDate": "2024-06-25",
+  "updatedDate": "2025-05-30"
+}

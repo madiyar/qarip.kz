@@ -1,0 +1,9 @@
+{
+  "name": "GGBotNet",
+  "bio": "Itch.io платформасында танымал GGBotNet жобасы ретро стильдегі видеоойындарды әзірлеумен және әлемдік тілдерді (соның ішінде кириллица, араб, грек және т.б.) толық қолдайтын бірегей тегін қаріптерді (шрифттерді) жасаумен айналысады. Олардың жұмыстарының көпшілігі Creative Commons Zero (CC0) немесе SIL Open Font License лицензиялары бойынша таратылады, яғни кез келген адам оларды коммерциялық және жеке жобаларында еркін қолдана алады. Студия сонымен қатар пиксельдік текстуралар, 3D модельдер және шағын ойын активтерін ұсынады.",
+  "bioRu": "GGBotNet на платформе Itch.io специализируется на создании атмосферных ретро-игр, а также на разработке бесплатных шрифтов с широкой языковой поддержкой (включая кириллицу, греческий, арабский, латиницу и др.). Большинство шрифтов и ассетов распространяются по свободным лицензиям (CC0 и SIL OFL), что позволяет использовать их как в личных, так и в коммерческих проектах. Кроме того, студия создает игровые ассеты, пиксельные текстуры и ретро-симуляторы.",
+  "bioEn": "GGBotNet is an indie developer profile on Itch.io focused on crafting retro-style video games and designing an extensive collection of free, multilingual fonts (supporting Cyrillic, Greek, Arabic, Vietnamese, and more). Most of their work—including fonts, pixel textures, game assets, and 3D models—is released under permissive licenses such as Creative Commons Zero (CC0) and the SIL Open Font License, making them freely available for both personal and commercial creative projects.",
+  "links": {
+    "website": "https://ggbot.itch.io/"
+  }
+}

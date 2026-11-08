@@ -210,6 +210,9 @@ The F.A.Q. is edited there too (one list; drag to reorder; answers in Markdown).
 a short name, a full name and a description, each in kk/ru/en (all required in the CMS), plus the
 Latin `term` (Sans, Serif…) and the colour shown on the home page. CMS hints must not contain
 `<…>`: Sveltia renders them as HTML and drops the text.
+An article's slug is its file name and URL. It has no template: the editor types it (Slug field
+in a new draft, ⋮ → Edit Slug later), and a `pattern` allows only `a-z0-9` and hyphens — filled
+from the Kazakh title it came out Cyrillic ("medeo-—-қазақ-…", since renamed by the editor).
 
 `/admin` runs Sveltia CMS with the GitHub backend: editors sign in with a GitHub account that
 has write access to `madiyar/qarip.kz`. Saving commits straight to `main` (no editorial

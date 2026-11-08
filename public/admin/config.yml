@@ -214,10 +214,12 @@ collections:
     extension: md
     format: frontmatter
     identifier_field: title
+    # No template on purpose: the slug (the article's address) must be typed in. Filled from the
+    # Kazakh title it came out Cyrillic and unreadable in links ("medeo-—-қазақ-тіліне-…").
     slug:
-      template: '{{title}}'
       editable: true
-      hint: Сілтемедегі атау — латын әріптерімен жазған дұрыс, мысалы dash-types.
+      hint: Сілтемедегі атау — латын әріптерімен, сөздер арасында сызықша, мысалы dash-types.
+      pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Тек кіші латын әріптері, сандар және сызықша, мысалы dash-types.']
     summary: '{{title}}'
     sortable_fields: [title, pubDate]
     media_folder: /public/images/journal

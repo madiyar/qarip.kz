@@ -1,0 +1,10 @@
+{
+  "name": "Cyreal",
+  "bio": "Cyreal — латын және кирилл жазуларына арналған жоғары сапалы ашық қаріп студиясы. Гаяне Багдасарян мен Алексей Ваняшин негізін қалаған. Қаріптер SIL OFL лицензиясы бойынша тегін таратылады. Жобаны Қазақстанның Алматы қаласындағы Алексей Ваняшин жүргізеді.",
+  "bioRu": "Cyreal — открытая шрифтовая студия, специализирующаяся на качественных гарнитурах для латиницы и кириллицы. Основана Гаяне Багдасарян и Алексеем Ваняшиным. Шрифты распространяются бесплатно по лицензии SIL OFL. Проект поддерживает Алексей Ваняшин из Алматы, Казахстан.",
+  "bioEn": "Cyreal is an open-source type foundry specializing in high-quality Latin and Cyrillic fonts. Founded by Gayaneh Bagdasaryan and Alexei Vanyashin, it releases free fonts under the SIL Open Font License. Maintained by Alexei Vanyashin in Almaty, Kazakhstan.",
+  "links": {
+    "website": "https://cyreal.org/",
+    "telegram": "https://t.me/cyrealtype"
+  }
+}

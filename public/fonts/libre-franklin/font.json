@@ -1,0 +1,24 @@
+{
+  "name": "Libre Franklin",
+  "archive": "Libre_Franklin.zip",
+  "designers": [
+    "impallari-type"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "purposes": [
+    "screen"
+  ],
+  "our": false,
+  "quality": 9,
+  "description": "Libre Franklin — бұл Пабло Импаллари (Impallari Type студиясы), Родриго Фуэнсалида және Нгуен Нхунг бірлесіп әзірлеген заманауи рубленген сан-сериф шрифті. Ол 1912 жылы Моррис Фуллер Бентон жасап шығарған классикалық американдық Franklin Gothic гарнитурасын заманауи талаптарға сай қайта жандандыру және кеңейту мақсатында Google компаниясының қолдауымен жасалған. Қаріптің дизайны классикалық винтаждық гротеск стилінің сипатын сақтай отырып, жоғары оқылымдылық пен бейтарап тепе-теңдікті ұсынады. Түрлі салмақтағы 18 стильді және вариативті осьтерді қамтитын бұл жиынтық латын, кириллица және вьетнам жазуларын толық қолдайды. Ыңғайлы пропорциялары мен жан-жақтылығының арқасында Libre Franklin шрифті веб-интерфейстерде, мобильді қосымшаларда, редакциялық мақалалар мен корпоративтік брендинг жүйелерінде тамаша нәтиже көрсетеді.",
+  "descriptionRu": "Шрифт Libre Franklin представляет собой масштабное цифровое переосмысление и расширение классического гротеска Franklin Gothic, созданного Моррисом Фуллером Бентоном в 1912 году. Проект был разработан аргентинской студией Impallari Type при участии Пабло Импаллари, Родриго Фуэнсалиды и Нгуен Нхунг при поддержке Google Fonts. Гарнитура сочетает исторический характер традиционной американской типографики с бескомпромиссным техническим качеством, высокой читаемостью и нейтральной эстетикой. Семейство включает 18 начертаний от сверхтонких до насыщенных черных, а также поддерживает вариативные оси и расширенные наборы символов для латиницы, кириллицы и вьетнамского языка. Этот универсальный шрифт отлично подходит для верстки пользовательских интерфейсов, крупных заголовков, систем навигации, новостных порталов и современного веб-дизайна.",
+  "descriptionEn": "The Libre Franklin font is an extensive sans-serif typeface designed by Pablo Impallari of Impallari Type alongside Rodrigo Fuenzalida and Nhung Nguyen as a Google-sponsored revival project. Inspired by Morris Fuller Benton’s historic 1912 Franklin Gothic typeface, Libre Franklin interprets and expands upon the classic American grotesque aesthetic for modern digital environments. Featuring 18 styles across a broad weight spectrum along with variable font support, it offers exceptional language coverage including Latin, Cyrillic, and Vietnamese character sets. Renowned for its structural clarity, neutral tone, and effortless multi-device legibility, Libre Franklin serves as an ideal typographic toolkit for web applications, user interface architecture, corporate identity systems, and editorial design.",
+  "addedDate": "2026-11-10",
+  "releaseDate": "2016-06-15"
+}

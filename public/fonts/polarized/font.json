@@ -1,0 +1,14 @@
+{
+  "name": "Polarized",
+  "archive": "Polarized.zip",
+  "designers": [
+    "typodermic-fonts"
+  ],
+  "category": "display",
+  "license": "personal",
+  "our": false,
+  "description": "Polarized — бұл Typodermic Fonts студиясы жобалаған, электроника мен цифрлық индикаторлардың (LCD/LED сегменттері) эстетикасынан шабыт алған заманауи дисплейлі қаріп отбасы. Оның басты ерекшелігі — бұрышты сегменттерді заманауи геометриялық формалармен үйлестіріп, тек сандарды ғана емес, сонымен қатар толық мәтіндік сөздер мен тақырыптарды да біркелкі әрі үйлесімді көрсету мүмкіндігі. Бұл қаріп электромобильдерді зарядтау станцияларының интерфейстеріне, автоспорт телеметриясына, спорттық жаттығу тренажерларына, энергия жүйелерінің мониторингіне және зертханалық өлшеу құралдарына өте қолайлы. 10 түрлі стильді (бес салмақ дәрежесі және оларға сәйкес курсивтер) қамтитын жиынтық латын, кириллица және грек әліпбилерін толық қолдайды.",
+  "descriptionRu": "Шрифт Polarized представляет собой выразительный геометрический гротеск, вдохновленный цифровыми табло и сегментными индикаторами, созданный шрифтовой студией Typodermic Fonts. Гарнитура разработана специально для визуализации динамических данных, таких как скорость, мощность, время круга, процент заряда аккумулятора и показатели датчиков, сохраняя при этом идеальную читаемость в заголовках и интерфейсах. Семейство прекрасно подходит для интерфейсов электромобилей, спортивной телеметрии, энергетических систем и высокотехнологичных гаджетов. Коллекция включает 10 начертаний в пяти весовых категориях с парными наклонными стилями, поддерживая латинский, кириллический и греческий алфавиты.",
+  "descriptionEn": "The Polarized font is a specialized display typeface family created by Typodermic Fonts, drawing direct aesthetic inspiration from electronic segment displays and digital readout instruments. By bridging the gap between literal segment-based numbers and fully versatile mixed-case typography, Polarized allows live metrics—such as charging speed, lap times, power output, and battery status—to share a seamless visual language with product titles, status words, and interface headings. Offering 10 coordinated styles spanning five weights with matching italics, Polarized provides robust multilingual support covering Latin, Cyrillic, and Greek character sets for EV charging networks, motorsport telemetry, fitness equipment, and energy-monitoring systems.",
+  "addedDate": "2026-11-11"
+}

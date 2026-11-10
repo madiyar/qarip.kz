@@ -1,0 +1,15 @@
+{
+  "name": "Monofonto",
+  "archive": "Monofonto.zip",
+  "designers": [
+    "typodermic-fonts"
+  ],
+  "category": "monospaced",
+  "license": "personal",
+  "our": false,
+  "quality": 6,
+  "description": "Monofonto — бұл Typodermic Fonts студиясы жасап шығарған, техникалық деректер мен интерфейстерді ұйымдастыруға арналған бекітілген ені бар (monospaced) экрандық қаріп отбасы. Оның танымалдығы Fallout видеоойын сериясында қолданылуымен басталғанымен, заманауи қайта өңделген нұсқасы әлдеқайда таза, дәл әрі стильді графикалық торды ұсынады. Бұл қаріп ойын интерфейстеріндегі (HUD panels), бағдарламалық құралдардағы, аудиоплейерлер мен синтезаторлардың параметрлік панельдеріндегі, сондай-ақ киберқауіпсіздік пен серверлік журналдардағы (logs, API, IP-мекенжайлар) мәліметтерді реттеу үшін өте қолайлы. 4 стильді (Regular, Italic, Bold, Bold Italic) қамтитын жиынтық латын, кириллица және грек әліпбилерін толық қолдайды, бұл оны техникалық және цифрлық жобалар үшін таптырмас құрал етеді.",
+  "descriptionRu": "Шрифт Monofonto представляет собой культовый моноширинный экранный гротеск, созданный шрифтовой студией Typodermic Fonts для визуализации технических данных и пользовательских интерфейсов. Получивший широкую известность благодаря культовой серии игр Fallout, шрифт прошел существенное современное переосмысление и оптимизацию шрифтовой сетки. Гарнитура идеально подходит для оформления игровых консолей иHUD-панелей, интерфейсов музыкального оборудования, терминалов кибербезопасности, систем мониторинга серверов и логов разработчиков. Семейство состоит из 4 начертаний (Regular, Italic, Bold, Bold Italic) с поддержкой латинского, кириллического и греческого алфавитов, придавая системным данным высокий уровень визуального стиля.",
+  "descriptionEn": "The Monofonto font is a renowned fixed-width monospaced screen typeface family created by Typodermic Fonts, designed to bring distinct aesthetic character to technical data and complex user interfaces. Widely recognized for its prominent role in the iconic Fallout game series, Monofonto has evolved into a highly refined monospaced design that organizes parameters, telemetry, coordinates, code logs, and system metrics with absolute structural clarity. Offering 4 coordinated styles (Regular, Italic, Bold, and Bold Italic), Monofonto provides robust multilingual support covering Latin, Cyrillic, and Greek character sets, seamlessly serving game HUDs, audio software interfaces, developer consoles, and cybersecurity dashboards.",
+  "addedDate": "2026-11-11"
+}

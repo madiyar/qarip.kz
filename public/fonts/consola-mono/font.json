@@ -1,0 +1,20 @@
+{
+  "name": "Consola Mono",
+  "archive": "Consola_Mono.zip",
+  "designers": [
+    "wojciech-kalinowski"
+  ],
+  "category": "monospaced",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "our": false,
+  "description": "Бағдарламалау орталарына, терминалдарға және деректерді өңдеуге арналған тамаша тең енді (monospaced) цифрлық қаріп. Оның әрбір таңбасы бірдей көлденең кеңістікті алып, кодың жолдарын қатаң түзу етіп көрсетеді, бұл әсіресе әзірлеушілер мен жүйелік әкімшілер үшін үлкен маңызға ие. Қаріптің дизайны классикалық консольдік стильдердің қаталдығын сақтай отырып, ұзақ уақыт монитор алдында жұмыс істегенде көздің шаршауын азайтатын анық сызықтар мен жақсартылған таңба айырмашылығын қамтамасыз етеді. Сандар мен басқа әріптердің (мысалы, нөл мен 'O' немесе бірлік пен кіші 'l' әрпі) өзара шатасып кетпеуі үшін арнайы ойластырылған пішіні қатесіз код жазуға ықпал етеді. Латын әліпбиін және негізгі арнайы символдарды толық қолдайтын бұл жиынтық заманауи IDE орталарында, мәтіндік редакторларда және құжаттамаларда сенімді түрде жұмыс істейді.",
+  "descriptionRu": "Шрифт Consola Mono представляет собой специализированную моноширинную гарнитуру, созданную для программистов, разработчиков и всех, кто профессионально работает с исходным кодом. Каждый символ шрифта занимает строго фиксированную ширину, что обеспечивает идеальное выравнивание строк, блоков кода и табличных данных в текстовых редакторах и терминалах. Визуальная структура гарнитуры спроектирована с акцентом на максимальную четкость считывания: разработчики уделили особое внимание различимости похожих знаков, таких как цифра ноль и заглавная буква O, а также единица и строчная буква l, что сводит к минимуму вероятность досадных синтаксических ошибок. Лаконичный минималистичный дизайн без лишних декоративных элементов снижает нагрузку на зрение при многочасовых сессиях кодинга. Благодаря универсальной совместимости с различными операционными системами и средами разработки, Consola Mono является надежным инструментом для технического набора.",
+  "descriptionEn": "The Consola Mono font is a precision-crafted monospaced typeface engineered specifically for software developers, programmers, and technical writers who demand flawless alignment in coding environments and command-line interfaces. Built with strict fixed-width metrics, Consola Mono ensures that every character occupies the exact same horizontal space, maintaining crisp vertical columns for code blocks, scripts, and logs. The design prioritizes ultimate legibility by meticulously distinguishing between ambiguous characters—such as the numeral zero and uppercase O, or the number one and lowercase l—to prevent common syntax errors during intense development sessions. Featuring a clean, unpretentious aesthetic optimized for digital screens and high-resolution displays, Consola Mono delivers exceptional readability, reducing eye strain during long hours of programming and technical documentation work.",
+  "addedDate": "2026-11-11",
+  "releaseDate": "2011-06-10",
+  "updatedDate": "2013-01-27"
+}

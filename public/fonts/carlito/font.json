@@ -1,0 +1,21 @@
+{
+  "name": "Carlito",
+  "archive": "Carlito.zip",
+  "designers": [
+    "łukasz-dziedzic"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "our": false,
+  "quality": 10,
+  "description": "Carlito — бұл польшалық типограф әрі дизайнер Лукаш Дзедзиц өзінің танымал Lato қаріптер жиынтығы негізінде жасап шығарған заманауи рубленген сан-сериф шрифті. Ол бастапқыда Google компаниясының тапсырысымен ChromeOS операциялық жүйесі үшін Microsoft-тың Calibri шрифтімен метрикалық жағынан толық сәйкес келу мақсатында әзірленген. Мұндай техникалық шешім офистік құжаттарды ашқанда немесе өңдегенде мәтіннің пішіні мен аралықтарының бұзылмауын қамтамасыз етеді. Қаріптің дизайны гуманистік жұмсақ сызықтарды, компьютер мен мобильді құрылғылар экранындағы, сондай-ақ баспа өнімдеріндегі жоғары оқылымдылықты және әртүрлі веб-жобалар мен цифрлық дизайн салаларында қолдануға қолайлы әмбебаптықты біріктіреді. Латын, кириллица және басқа да көптеген жазу жүйелерін қамтитын кеңейтілген тілдік қолдауының арқасында Carlito шрифті заманауи интерфейстерде, қолданбаларда, корпоративтік презентациялар мен ақпараттық сайттарда өте үйлесімді әрі анық көрінеді.",
+  "descriptionRu": "Шрифт Carlito представляет собой современный гуманистический гротеск, разработанный известным дизайнером Лукашем Дзедзицем на базе популярного семейства Lato по заказу компании Google для интеграции в открытые программные платформы. Главной технической особенностью и назначением этой гарнитуры является полная метрическая совместимость с проприетарным стандартом Microsoft Calibri, благодаря чему при переносе документов и таблиц сохраняются исходные отступы, переносы и общая верстка текста. Высокое качество цифровой оптимизации, лаконичный геометрический ритм и открытые пропорции знаков делают этот шрифт отличным выбором для создания чистых пользовательских интерфейсов, электронной документации, блогов, книг и веб-страниц, где важна безупречная читаемость при любых размерах. Расширенный набор символов охватывает латинские и кириллические алфавиты, обеспечивая корректное отображение текстов на множестве языков мира, а вариативность начертаний позволяет гибко выстраивать текстовую иерархию в любых профессиональных проектах.",
+  "descriptionEn": "The Carlito font is a versatile and meticulously engineered sans-serif typeface designed by Łukasz Dziedzic, originating as a Google-sponsored project for ChromeOS to provide a metric-compatible open-source alternative to Microsoft’s Calibri. Derived from the popular Lato typeface family, Carlito retains a warm, humanist touch while strictly matching the character metrics and proportions of Calibri, ensuring seamless document exchange, precise layout rendering, and flawless typographic consistency across different operating systems. Featuring an expansive character set with robust support for Latin, Cyrillic, and numerous global writing systems, Carlito delivers exceptional legibility on digital screens of all resolutions as well as in printed publications. Whether implemented in user interface design, corporate identity systems, editorial layouts, or responsive web platforms, Carlito combines approachable aesthetics with high-performance technical execution for modern designers and developers worldwide.",
+  "addedDate": "2026-11-10",
+  "releaseDate": "2013-12-15",
+  "updatedDate": "2026-03-03"
+}

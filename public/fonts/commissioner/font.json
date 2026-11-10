@@ -1,0 +1,27 @@
+{
+  "name": "Commissioner",
+  "archive": "Commissioner.zip",
+  "designers": [
+    "kostas-bartsokas"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "purposes": [
+    "screen",
+    "print",
+    "headings"
+  ],
+  "our": false,
+  "quality": 10,
+  "description": "Commissioner — бұл аргентиналық шрифт дизайнері Космин Бартс (Cosimo Lorenzo Pancini / Castro Type және басқа да авторлардың қатысуымен) әзірлеген, қазіргі заманғы әмбебап сан-сериф гарнитурасы. Бұл шрифт дәстүрлі готикалық стильдің қарапайымдылығы мен қазіргі цифрлық ортадағы максималды икемділікті үйлестіретін бірегей вариативті (variable) сипатқа ие. Оның көлбеулік (italic), қалыңдық (weight) және оптикалық өлшемдер сияқты параметрлерін нақты уақытта шексіз өзгертуге болады, бұл веб-дизайнда теңдесі жоқ еркіндік береді. Қаріптің құрылымында заманауи геометриялық формалар гуманистік жылулықпен үйлесіп, оны шағын экрандарда да, ұзақ мәтіндік блоктарта да бірдей деңгейде тамаша оқылатын етеді. Латын, кириллица және басқа да көптеген жазу жүйелерін толық қамтитын кеңейтілген тілдік қолдауы мен заманауи веб-стандарттарға оңтайландырылуы оны интерфейстер, мобильді қосымшалар, редакциялық дизайн мен корпоративтік сайттар үшін таптырмас құралға айналдырады.",
+  "descriptionRu": "Шрифт Commissioner представляет собой универсальную вариативную гротескную гарнитуру, созданную дизайнером Косимом Барцем в качестве современного инструмента для адаптивного веб-дизайна и цифровой типографики. Уникальная архитектура шрифта построена на основе гибких вариативных осей, позволяющих плавно регулировать насыщенность, наклон и другие параметры в широчайшем диапазоне прямо в CSS или графических редакторах. Дизайн гарнитуры сочетает в себе чистую геометрическую основу, открытые апертуры и лаконичный ритм, что обеспечивает превосходную читаемость как в мелких интерфейсных элементах, так и в крупных акцидентных заголовках. Расширенный набор символов включает полноценную поддержку латиницы и кириллицы, охватывая множество языков. Commissioner идеально подходит для разработки современных пользовательских интерфейсов, кроссплатформенных приложений, блогов, новостных порталов и масштабных брендинговых проектов, где критически важна гибкость и высокая скорость рендеринга текста.",
+  "descriptionEn": "The Commissioner font is a versatile and progressive sans-serif variable typeface designed by Cosimo Lorenzo Pancini, engineered specifically to meet the complex demands of modern responsive web design and digital publishing. Built as a truly flexible variable font, Commissioner features continuous axes for weight, slant, and optical sizing, allowing designers to dynamically fine-tune typography for any screen resolution or layout context. The design harmonizes clean geometric structures with subtle humanist details, delivering exceptional legibility, high visual impact, and a distinct contemporary aesthetic. Boasting comprehensive multilingual support across Latin and Cyrillic scripts alongside advanced OpenType features, Commissioner serves as an exceptionally powerful toolkit for user interface design, mobile applications, editorial layouts, and corporate identity systems worldwide.",
+  "addedDate": "2026-11-11",
+  "releaseDate": "2020-08-13",
+  "updatedDate": "2026-02-10"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Lapierend",
+  "archive": "Lapierend_Font_v1.00.zip",
+  "designers": [
+    "arsvalds"
+  ],
+  "category": "display",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "purposes": [
+    "headings"
+  ],
+  "our": false,
+  "description": "Lapierend — бұл Arsvalds жобасы аясында әзірленген, заманауи визуалды стиль мен жоғары функционалдылықты үйлестіретін жан-жақты қаріп отбасы. Оның мұқият ойластырылған геометриялық пішіндері мен тұрақты пропорциялары сандық интерфейстерде, корпоративтік брендтерде және күрделі баспа материалдарында тамаша оқылуды қамтамасыз етеді. Бұл қаріп латын, кириллица, грек, армян, грузин және еврей жазу жүйелерін кеңінен қолдап, әлемнің көптеген тілдерінде сапалы теруге мүмкіндік береді.",
+  "descriptionRu": "Lapierend представляет собой современную шрифтовую гарнитуру, созданную проектом Arsvalds и сочетающую чистую геометрическую основу с выразительным универсальным характером. Шрифт разработан для решения широкого спектра задач в веб-разработке, айдентике и издательском деле, обеспечивая высокую адаптивность и безупречную эстетику. Коллекция включает 2 начертания (Regular и Italic) с поддержкой расширенных письменных систем, включая латиницу, кириллицу, греческий, армянский, грузинский и иврит.",
+  "descriptionEn": "The Lapierend font is a versatile sans-serif typeface family created by Arsvalds to support clean branding, responsive UI design, and editorial publishing. Offering a refined geometric structure across its Regular and Italic styles, Lapierend provides comprehensive multilingual support covering Latin, Cyrillic, Greek, Armenian, Georgian, and Hebrew character sets for international design systems.",
+  "addedDate": "2026-11-12",
+  "releaseDate": "2026-10-23"
+}

@@ -1,0 +1,47 @@
+# Builds the site on GitHub (free for public repos) and uploads it to Netlify.
+# CLI deploys don't use Netlify build minutes. Netlify's own builds are stopped
+# (Project configuration → Build & deploy → Stop builds).
+#
+# A burst of CMS saves gives one deploy: every run first waits, and a newer push
+# cancels the waiting (or running) one.
+#
+# Secrets: NETLIFY_AUTH_TOKEN (User settings → Applications → Personal access tokens),
+# NETLIFY_SITE_ID (Project configuration → Project ID).
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['*.md', 'admin.cmd', 'admin.command'] # root docs only; articles are in src/
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Wait for more saves
+        if: github.event_name == 'push'
+        run: sleep 600 # editors save every 3–10 min while adding fonts
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Runs `npm run build` (netlify.toml) with the project's Netlify env vars,
+      # bundles netlify/functions and publishes dist/.
+      - name: Build and deploy
+        run: npx -y netlify-cli@27.8.1 deploy --prod --message "${{ github.sha }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

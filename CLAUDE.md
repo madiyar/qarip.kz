@@ -3,6 +3,9 @@
 Library of fonts that support the Kazakh language. Live at https://qarip.app
 (the Netlify subdomain `qarip.netlify.app` redirects there; the old `qarip.kz` domain is not owned).
 Repo: `madiyar/qarip.kz` (the repo name predates the domain), deploys to Netlify from `main`.
+The build runs in GitHub Actions (`.github/workflows/deploy.yml`, `netlify deploy --prod`), not on
+Netlify: the free plan's build minutes ran out in Nov 2026 with a build per CMS save. Each push waits
+10 min and is cancelled by a newer one, so a burst of saves gives one deploy. Netlify builds are stopped.
 
 The owner (Madiyar) writes in Russian — reply in Russian. Site content is Kazakh-first.
 Commit and push only when asked.

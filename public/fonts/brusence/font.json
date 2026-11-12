@@ -1,0 +1,19 @@
+{
+  "name": "Brusence",
+  "archive": "Brusence_Font_v1.00.zip",
+  "designers": [
+    "arsvalds"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free"
+  ],
+  "our": false,
+  "description": "Brusence — бұл Arsvalds жобасы аясында жасалған заманауи және эстетикалық қаріп отбасы. Оның конструктивті геометриясы мен еркін сызықтары әртүрлі заманауи дизайн жобаларына, соның ішінде брендтерге, сандық интерфейстер мен баспа материалдарына ерекше стиль беруге бағытталған. Бұл қаріп латын, кириллица, грек, армян және фрасер жазу жүйелерін толық қолдап, әлемнің ондаған тілінде сапалы теруге мүмкіндік береді.",
+  "descriptionRu": "Brusence представляет собой современную шрифтовую гарнитуру, разработанную проектом Arsvalds и сочетающую чистую геометрию с выразительным визуальным характером. Шрифт создан для решения широкого спектра задач в веб-дизайне, айдентике и издательском деле, обеспечивая отличную читаемость и универсальность. Семейство включает 2 начертания (Regular и Italic) и поддерживает расширенные письменные системы, включая латиницу, кириллицу, греческий, армянский и фрасер.",
+  "descriptionEn": "The Brusence font is a versatile geometric sans-serif typeface family created by Arsvalds to support clean branding, responsive UI design, and editorial publishing. Offering a robust visual structure across its Regular and Italic styles, Brusence provides comprehensive multilingual support covering Latin, Cyrillic, Greek, Armenian, and Fraser character sets for international design systems.",
+  "addedDate": "2026-11-12",
+  "releaseDate": "2026-10-21"
+}

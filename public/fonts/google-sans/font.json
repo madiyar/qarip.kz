@@ -1,0 +1,31 @@
+{
+  "name": "Google Sans",
+  "archive": "Google_Sans.zip",
+  "designers": [
+    "google",
+    "steve-matteson"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "purposes": [
+    "headings",
+    "body",
+    "logo",
+    "screen",
+    "print",
+    "billboard"
+  ],
+  "our": false,
+  "quality": 10,
+  "description": "Google Sans — заманауи геометриялық гротеск, қарапайым пішіндері мен жұмсақ сызықтары арқылы мәтінге жинақы әрі танымал көрініс береді. Google компаниясының визуалды стилімен тығыз байланысты бұл қаріп тақырыптарда, интерфейс элементтерінде, жарнамалық материалдарда және цифрлық өнімдердің дизайнында қолданылады. Дөңгелек геометриялық пішіндер мен мұқият теңгерілген пропорциялар оған заманауи әрі достық сипат береді. Google Sans веб-сайттар, мобильді қосымшалар, презентациялар, брендтік материалдар және графикалық дизайн үшін қолайлы. Қаріптің әртүрлі қалыңдықтары мәтін иерархиясын құруға, маңызды ақпаратты ерекшелеуге және біртұтас визуалды стиль қалыптастыруға мүмкіндік береді.",
+  "descriptionRu": "Google Sans — современный геометрический гротеск, сочетающий лаконичные формы, мягкие линии и сбалансированные пропорции. Разработанный для визуальной коммуникации Google, он стал узнаваемой частью оформления цифровых продуктов и фирменных материалов компании. Округлые элементы придают буквам дружелюбный характер, а чёткая геометрия сохраняет аккуратный и современный внешний вид. Google Sans подходит для веб-сайтов, мобильных приложений, пользовательских интерфейсов, презентаций, рекламных материалов и графического дизайна. Различные начертания позволяют выстраивать выразительную типографическую иерархию, оформлять заголовки и выделять важную информацию, сохраняя целостность визуальной композиции.",
+  "descriptionEn": "Google Sans is a modern geometric sans serif typeface defined by clean shapes, smooth curves and balanced proportions. Developed for Google’s visual communication, it has become a recognizable part of the company’s digital products and brand identity. Its rounded forms give the letters a friendly character, while the precise geometry creates a clean and contemporary appearance. Google Sans is suitable for websites, mobile applications, user interfaces, presentations, advertising materials and graphic design. Its range of weights makes it easy to build typographic hierarchy, create distinctive headlines and highlight important information while maintaining a consistent visual style across digital and print projects.",
+  "addedDate": "2026-11-13",
+  "releaseDate": "2025-12-09",
+  "updatedDate": "2026-10-29"
+}

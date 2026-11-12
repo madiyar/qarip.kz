@@ -6,6 +6,9 @@ Repo: `madiyar/qarip.kz` (the repo name predates the domain), deploys to Netlify
 The build runs in GitHub Actions (`.github/workflows/deploy.yml`, `netlify deploy --prod`), not on
 Netlify: the free plan's build minutes ran out in Nov 2026 with a build per CMS save. Each push waits
 10 min and is cancelled by a newer one, so a burst of saves gives one deploy. Netlify builds are stopped.
+Font metadata and generated files are keyed by content hash in `.cache/fonts.json` (gitignored);
+CI keeps `.cache` + `public/fonts-web` with `actions/cache`, so only new fonts are processed
+(110 fonts: ~6 min cold, ~10 s warm). `fontLoader` deletes unused files in `public/fonts-web`.
 
 The owner (Madiyar) writes in Russian — reply in Russian. Site content is Kazakh-first.
 Commit and push only when asked.

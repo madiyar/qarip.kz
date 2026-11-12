@@ -14,6 +14,11 @@
  *  - download counts come from the live site (`/api/downloads`, a Netlify Function).
  *
  * `public/fonts-web/` is generated output and is not committed.
+ *
+ * Everything derived from a file is keyed by its content hash in `.cache/fonts.json`
+ * (gitignored; kept between CI runs with `public/fonts-web/`), so a build only reads
+ * and compresses the files that changed. Dates can't be trusted: a fresh clone gives
+ * every file the checkout time.
  */
 import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
@@ -205,7 +210,68 @@ function zipEntries(buf: Uint8Array): ZipEntry[] {
   return out.sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
 }
 
-const mtime = (file: string) => fs.stat(file).then((s) => s.mtimeMs, () => 0);
+const exists = (file: string) => fs.stat(file).then(() => true, () => false);
+
+/** What earlier builds derived from the files, by content hash. */
+interface Cache {
+  version: string;
+  /** "<ext>:<file hash>" → metadata read from that file. */
+  meta: Record<string, FileMeta>;
+  /** Generated file (relative to the project) → hash of what it was made from. */
+  out: Record<string, string>;
+}
+const CACHE_FILE = path.resolve('.cache/fonts.json');
+/** Bump when inspect() or the generated files change; languages.json changes are picked up on their own. */
+const CACHE_VERSION = `1:${hash(JSON.stringify(LANGUAGES))}`;
+const emptyCache = (): Cache => ({ version: CACHE_VERSION, meta: {}, out: {} });
+
+async function readCache(): Promise<Cache> {
+  try {
+    const c = JSON.parse(await fs.readFile(CACHE_FILE, 'utf8')) as Cache;
+    if (c.version === CACHE_VERSION) return c;
+  } catch {}
+  return emptyCache();
+}
+
+/** One sync's view of the cache: reads the old one, records only what is still in use. */
+class Derived {
+  readonly next = emptyCache();
+  /** Every file written to (or kept in) public/fonts-web during this sync. */
+  readonly produced = new Set<string>();
+  constructor(private readonly old: Cache) {}
+
+  async meta(buf: Buffer, ext: string, sha: string): Promise<FileMeta> {
+    const key = `${ext}:${sha}`;
+    return (this.next.meta[key] ??= this.old.meta[key] ?? (await inspect(buf, ext)));
+  }
+
+  /** Writes `out` unless it already holds what `make` would make from `source` (a hash). */
+  async output(out: string, source: string, make: () => Uint8Array | Promise<Uint8Array>): Promise<void> {
+    const key = path.relative(process.cwd(), out);
+    this.produced.add(out);
+    if (this.old.out[key] !== source || !(await exists(out))) {
+      const data = await make();
+      await fs.mkdir(path.dirname(out), { recursive: true });
+      await fs.writeFile(out, data);
+    }
+    this.next.out[key] = source;
+  }
+}
+
+/** Deletes generated files no font uses any more (old hashes, removed fonts), then empty folders. */
+async function prune(dir: string, keep: Set<string>): Promise<boolean> {
+  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => []);
+  let empty = true;
+  for (const e of entries) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) {
+      if (await prune(p, keep)) await fs.rmdir(p).catch(() => {});
+      else empty = false;
+    } else if (keep.has(p)) empty = false;
+    else await fs.rm(p, { force: true });
+  }
+  return empty;
+}
 
 /** File names as stored by the CMS: a bare name, or a path whose last segment is the name. */
 const baseName = (value: unknown) => decodeURIComponent(String(value ?? '').split('/').pop() ?? '');
@@ -217,14 +283,15 @@ interface Ctx {
   outDir: string;
   slug: string;
   downloads: Record<string, number>;
+  derived: Derived;
   warn: (m: string) => void;
 }
 
 /** Turns one `font.json` plus its files into a full catalog entry. Returns null when there is nothing to show yet. */
-async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Record<string, any>) {
+async function processFont({ dir, outDir, slug, downloads, derived, warn }: Ctx, raw: Record<string, any>) {
   const fontName = String(raw.name ?? slug);
   const files = [...new Set(asList(raw.files).map(baseName).filter((f) => FONT_EXT.test(f)))];
-  const read: (FileMeta & { fileName: string; ext: string; buf: Buffer; srcTime: number; fromZip?: boolean })[] = [];
+  const read: (FileMeta & { fileName: string; ext: string; buf: Buffer; sha: string; fromZip?: boolean })[] = [];
 
   for (const fileName of files) {
     const src = path.join(dir, fileName);
@@ -236,8 +303,9 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       continue;
     }
     const ext = path.extname(fileName).slice(1).toLowerCase();
+    const sha = hash(buf);
     try {
-      read.push({ ...(await inspect(buf, ext)), fileName, ext, buf, srcTime: await mtime(src) });
+      read.push({ ...(await derived.meta(buf, ext, sha)), fileName, ext, buf, sha });
     } catch (e) {
       warn(`${slug}: cannot read "${fileName}" as a font (${(e as Error).message}) — skipped`);
     }
@@ -257,13 +325,13 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
       const kind = head === 'Rar!' ? 'a RAR archive' : head === '7z\xbc\xaf' ? 'a 7z archive' : '';
       warn(`${slug}: cannot open archive "${archive}" (${kind ? `it is ${kind} renamed to .zip — re-pack it as ZIP` : (e as Error).message})`);
     }
-    const srcTime = await mtime(archivePath);
     const found: typeof read = [];
     for (const [fileName, data] of Object.entries(inZip)) {
       const buf = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
       const ext = path.extname(fileName).slice(1).toLowerCase();
+      const sha = hash(buf);
       try {
-        found.push({ ...(await inspect(buf, ext)), fileName, ext, buf, srcTime, fromZip: true });
+        found.push({ ...(await derived.meta(buf, ext, sha)), fileName, ext, buf, sha, fromZip: true });
       } catch (e) {
         warn(`${slug}: cannot read "${fileName}" in the archive as a font (${(e as Error).message}) — skipped`);
       }
@@ -312,26 +380,17 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
     if (m.fromZip) {
       // A font taken from the archive gets its own copy (the Glyphs and Info tabs read it); the hash in the
       // name keeps the long-cached /fonts-web/ copies fresh.
-      const copyName = `${stem}.${hash(m.buf)}.${m.ext}`;
-      const out = path.join(outDir, copyName);
-      if (!(await mtime(out))) {
-        await fs.mkdir(outDir, { recursive: true });
-        await fs.writeFile(out, m.buf);
-      }
+      const copyName = `${stem}.${m.sha}.${m.ext}`;
+      await derived.output(path.join(outDir, copyName), m.sha, () => m.buf);
       file = `/fonts-web/${slug}/${copyName}`;
     }
     // Preview file: TTF/OTF are compressed to WOFF2; the version query busts browser caches when the file changes.
     let web = file;
     if (m.ext === 'ttf' || m.ext === 'otf') {
       const webName = `${stem}.woff2`;
-      const out = path.join(outDir, webName);
       try {
-        if ((await mtime(out)) < m.srcTime) {
-          const { compress } = await import('woff2-encoder');
-          await fs.mkdir(outDir, { recursive: true });
-          await fs.writeFile(out, await compress(m.buf));
-        }
-        web = `/fonts-web/${slug}/${webName}?v=${hash(m.buf)}`;
+        await derived.output(path.join(outDir, webName), m.sha, async () => (await import('woff2-encoder')).compress(m.buf));
+        web = `/fonts-web/${slug}/${webName}?v=${m.sha}`;
       } catch (e) {
         warn(`${slug}: WOFF2 compression failed for "${m.fileName}" (${(e as Error).message}) — the original file is used for previews`);
       }
@@ -387,13 +446,11 @@ async function processFont({ dir, outDir, slug, downloads, warn }: Ctx, raw: Rec
     warn(archive ? `${slug}: archive "${archive}" is missing — building one from the font files` : `${slug}: no ZIP archive uploaded — building one from the font files`);
     zipName = `${slug}.zip`;
     const out = path.join(outDir, zipName);
-    const newest = Math.max(...read.map((m) => m.srcTime));
-    if ((await mtime(out)) < newest) {
+    await derived.output(out, hash(read.map((m) => `${fontName}/${m.fileName}:${m.sha}`).join('\n')), () => {
       const entries: Record<string, Uint8Array> = {};
       for (const m of read) entries[`${fontName}/${m.fileName}`] = m.buf;
-      await fs.mkdir(outDir, { recursive: true });
-      await fs.writeFile(out, zipSync(entries, { level: 9 }));
-    }
+      return zipSync(entries, { level: 9 });
+    });
     const buf = await fs.readFile(out);
     zip = `/fonts-web/${slug}/${zipName}?v=${hash(buf)}`;
     zipSize = buf.length;
@@ -455,6 +512,7 @@ export function fontLoader({ base = 'public/fonts', out = 'public/fonts-web' }: 
 
       const sync = async () => {
         const seen = new Set<string>();
+        const derived = new Derived(await readCache());
         const dirs = await fs.readdir(root, { withFileTypes: true }).catch(() => []);
         for (const entry of dirs) {
           if (!entry.isDirectory()) continue;
@@ -468,7 +526,7 @@ export function fontLoader({ base = 'public/fonts', out = 'public/fonts-web' }: 
             continue;
           }
           try {
-            const data = await processFont({ dir: path.join(root, slug), outDir: path.join(outRoot, slug), slug, downloads, warn: (m) => logger.warn(m) }, raw);
+            const data = await processFont({ dir: path.join(root, slug), outDir: path.join(outRoot, slug), slug, downloads, derived, warn: (m) => logger.warn(m) }, raw);
             if (!data) continue;
             const parsed = await parseData({ id: slug, data, filePath: file });
             store.set({ id: slug, data: parsed, digest: generateDigest(data), filePath: path.relative(process.cwd(), file) });
@@ -479,6 +537,9 @@ export function fontLoader({ base = 'public/fonts', out = 'public/fonts-web' }: 
           }
         }
         for (const id of store.keys()) if (!seen.has(id)) store.delete(id);
+        await prune(outRoot, derived.produced);
+        await fs.mkdir(path.dirname(CACHE_FILE), { recursive: true });
+        await fs.writeFile(CACHE_FILE, JSON.stringify(derived.next));
         logger.info(`${seen.size} fonts loaded`);
       };
 

@@ -28,3 +28,6 @@ public/fonts/*/web/
 
 # Hyperglot cache (scripts/languages.py)
 .hyperglot-cache
+
+# hashes and metadata of the font files (src/lib/fontLoader.ts)
+.cache/

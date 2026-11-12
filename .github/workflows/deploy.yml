@@ -38,6 +38,16 @@ jobs:
 
       - run: npm ci
 
+      # WOFF2 previews and font metadata from earlier runs (src/lib/fontLoader.ts):
+      # only new or changed font files are processed. A new entry is saved every run.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .cache
+            public/fonts-web
+          key: fonts-${{ github.run_id }}
+          restore-keys: fonts-
+
       # Runs `npm run build` (netlify.toml) with the project's Netlify env vars,
       # bundles netlify/functions and publishes dist/.
       - name: Build and deploy

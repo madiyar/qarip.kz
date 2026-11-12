@@ -1,0 +1,9 @@
+{
+  "name": "Google",
+  "bio": "Google Fonts — бұл Google компаниясы іске қосқан, әлемдегі ең ірі әрі ең танымал ашық бастапқы кодты (open-source) қаріптер каталогы мен типографикалық платформасы. Жобаның басты мақсаты — веб-дизайнерлер мен әзірлеушілерге жоғары сапалы, жылдам жүктелетін және әртүрлі әліпбилерді қолдайтын тегін қаріптерді ұсыну арқылы интернет кеңістігін көрнекі әрі оқылуға ыңғайлы ету. Платформа тәуелсіз қаріп дизайнерлерімен және әлемдік студиялармен бірлесе отырып, сандық интерфейстер мен баспа жобаларына арналған бірегей қаріптерді әзірлеуді қаржыландырады және таратады.",
+  "bioRu": "Google Fonts — это крупнейший в мире открытый каталог шрифтов и типографическая платформа, запущенная компанией Google для развития современной веб-типографики. Основная миссия проекта заключается в том, чтобы сделать интернет более выразительным, быстрым и доступным, предоставляя дизайнерам и разработчикам бесплатные шрифты с открытым исходным кодом. Платформа не только служит библиотекой готовых решений, но и выступает в роли продюсерского центра, заказывая и финансируя разработку новых гарнитур у ведущих мировых шрифтовых студий и независимых авторов с поддержкой множества систем письма, включая кириллицу и латиницу.",
+  "bioEn": "Google Fonts is the world’s leading open-source font catalog and typographic platform launched by Google to advance modern web typography. Dedicated to making the web more expressive, fast, and accessible, the platform provides designers and developers with a massive library of free, open-source typefaces optimized for digital interfaces and print. Beyond hosting a global repository, Google Fonts actively commissions and collaborates with independent type designers and renowned foundries to engineer high-quality, multilingual font families supporting Latin, Cyrillic, and hundreds of other global writing systems.",
+  "links": {
+    "website": "https://fonts.google.com/"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Tota",
+  "archive": "Tota_Font_v1.00.zip",
+  "designers": [
+    "arsvalds"
+  ],
+  "category": "handwritten",
+  "license": "ofl",
+  "tags": [
+    "free",
+    "latin"
+  ],
+  "purposes": [
+    "comic",
+    "billboard"
+  ],
+  "our": false,
+  "description": "Tota — бұл Arsvalds жобасы аясында әзірленген, қолмен жазылған қаріптер санатына жататын және шығармашылық жобаларға, балалар кітаптарына әрі ерекше дизайнға арналған көркем қаріп отбасы. Оның табиғи әрі жанды сызықтары мәтінге жұмсақ қолжазба сипатын беріп, баспа материалдары мен цифрлық интерфейстерде ерекше жылы атмосфера қалыптастыруға бағытталған. Бұл қаріп латын, кириллица, грек, еврей, вьетнам және фрасер жазу жүйелерін кеңінен қолдайды.",
+  "descriptionRu": "Tota представляет собой выразительную рукописную гарнитуру, созданную проектом Arsvalds для творческих проектов, детской литературы и неформального оформления. Шрифт сочетает естественный графический почерк с аккуратной детализацией, обеспечивая уютную визуальную эстетику в издательском деле и айдентике. Коллекция включает 2 начертания (Regular и Italic) с расширенной поддержкой латиницы, кириллицы, греческого алфавита, иврита, вьетнамского языка и письменности фрасер.",
+  "descriptionEn": "The Tota font is a specialized hand-drawn typeface family created by Arsvalds to support creative editorial designs, children's publications, and friendly brand identities. Featuring a natural, organic graphic style across its Regular and Italic styles, Tota provides robust multilingual support covering Latin, Cyrillic, Greek, Hebrew, Vietnamese, and Fraser character sets for diverse international applications.",
+  "addedDate": "2026-11-12",
+  "releaseDate": "2026-09-13"
+}

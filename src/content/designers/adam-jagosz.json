@@ -1,7 +1,10 @@
 {
   "name": "Adam Jagosz",
-  "bio": "Біреу",
+  "bio": "Адам Ягош (Adam Jagosz) — Катовице қаласынан (Польша) шыққан тәуелсіз қаріпкер және бағдарламалық қамтамасыз ету инженері. Оның портфолиосы заманауи геометриялық және вариатив қаріптерді (Google Fonts каталогындағы танымал Tektur, Slowglass, Ares), сондай-ақ тарихи готикалық жазулар мен каллиграфиялық қайта жаңғыртуларды (мысалы, XV ғасырдағы Zwollen Bible негізінде жасалған AJ Quadrata готикалық қарібі) қамтиды. Адамның жұмыстары жоғары технологиялық дәлдікті, кириллица, латын және грек тілдерін кеңінен қолдауды, сондай-ақ футуристік sci-fi эстетикасы мен ұқыпты орындалған органикалық трафареттік шешімдерді (Aromatron) үйлесімді түрде біріктіреді.",
+  "bioRu": "Адам Ягош (Adam Jagosz) — польский шрифтовой дизайнер и софтверный инженер из Катовице, известный своими выразительными работами на стыке цифровых технологий и классической типографики. В его портфолио входят как современные вариативные семейства (популярный футуристический шрифт Tektur, выпущенный через Google Fonts, массивный Slowglass и научно-фантастический Ares), так и глубокие исторические реконструкции, включая готический шрифт AJ Quadrata, вдохновленный традициями Textura Quadrata и Библии XV века. Шрифты Ягоша отличаются инженерной точностью, широкой языковой поддержкой кириллицы и латиницы, а также разнообразием стилей — от технологичного хайтека до теплых органических трафаретов (Aromatron).",
+  "bioEn": "Adam Jagosz is an independent type designer and software engineer based in Katowice, Poland. His diverse typeface portfolio spans cutting-edge variable and geometric fonts—such as the Google Fonts release Tektur, the extensive Slowglass family, and the sci-fi-inspired Ares—alongside meticulous historical revivals like AJ Quadrata, a blackletter typeface modeled after 15th-century Textura Quadrata manuscripts. Jagosz’s work seamlessly merges rigorous technical engineering with rich visual character, offering robust multi-script support across Latin, Greek, and Cyrillic, paired with distinct aesthetic directions ranging from futuristic interfaces to warm organic stencils like Aromatron.",
   "links": {
-    "website": "https://www.adamjagosz.com/"
+    "website": "https://www.adamjagosz.com/",
+    "instagram": "https://www.instagram.com/aj_type/"
   }
 }

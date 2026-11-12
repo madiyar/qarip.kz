@@ -1,0 +1,29 @@
+{
+  "name": "Roboto",
+  "archive": "Roboto.zip",
+  "designers": [
+    "christian-robertson",
+    "paratype",
+    "font-bureau"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "purposes": [
+    "screen",
+    "logo",
+    "body"
+  ],
+  "our": false,
+  "quality": 10,
+  "description": "Roboto — бұл Google компаниясы арнайы Android операциялық жүйесіне және цифрлық интерфейстерге арнап жасазған, нео-гротеск стиліндегі заманауи әмбебап қаріп отбасы. Оның басты ерекшелігі — механикалық қатаңдық пен табиғи иірімді ашық пішіндердің үйлесімі, бұл әріптердің кез келген экранда және қашықтықта оңай оқылуын қамтамасыз етеді. Мобильді қосымшалар, веб-сайттар мен баспа материалдары үшін мінсіз шешім болып табылатын бұл қаріп латын, кириллица, грек және басқа да көптеген әліпбилерді кеңінен қолдайды.",
+  "descriptionRu": "Шрифт Roboto представляет собой популярное семейство нео-гротесков, созданное компанией Google в качестве фирменной гарнитуры для операционной системы Android и цифровых интерфейсов. Шрифт сочетает в себе геометрическую скелетную основу с открытыми и мягкими изгибами, обеспечивая превосходную разборчивость на экранах любых размеров и при различных разрешениях. Семейство прекрасно подходит для мобильной разработки, веб-дизайна и корпоративных платформ. Коллекция включает широчайший набор начертаний с полной поддержкой латинского, кириллического и греческого алфавитов.",
+  "descriptionEn": "The Roboto font is a contemporary neo-grotesk sans-serif typeface family originally commissioned by Google as the system font for Android and digital user interfaces. Featuring a harmonious blend of geometric rigidity and friendly open curves, Roboto delivers exceptional legibility across screens of all sizes and high-density displays. Offering robust multilingual support covering Latin, Cyrillic, and Greek character sets, Roboto provides a reliable, clean typographic standard for modern apps, web development, and digital design ecosystems.",
+  "addedDate": "2026-11-13",
+  "releaseDate": "2011-10-18",
+  "updatedDate": "2024-03-27"
+}

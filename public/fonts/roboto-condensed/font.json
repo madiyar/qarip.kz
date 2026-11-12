@@ -1,0 +1,23 @@
+{
+  "name": "Roboto Condensed",
+  "archive": "Roboto_Condensed.zip",
+  "designers": [
+    "christian-robertson"
+  ],
+  "category": "sans",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "purposes": [
+    "logo",
+    "headings"
+  ],
+  "our": false,
+  "description": "Roboto Condensed — бұл Кристиан Робертсон (Christian Robertson) жобалаған, танымал Roboto қаріп отбасының жинақы (Condensed) нұсқасы. Оның басты ерекшелігі — мазмұнның маңыздылығын жоғалтпай, шектеулі көлденең кеңістікте максималды ақпаратты сыйғызуға мүмкіндік беретін тығыз пропорциялары мен заманауи геометриялық пішіндері. Мобильді қосымшалардағы мәтіндерге, кестелерге, интерфейс элементтері мен динамикалық веб-сайттарға арналған бұл қаріп латын, кириллица және грек әліпбилерін толық қолдайды.",
+  "descriptionRu": "Шрифт Roboto Condensed представляет собой компактную версию популярного нео-гротеска Roboto, разработанную дизайнером Кристианом Робертсоном (Christian Robertson). Гарнитура оптимизирована для эффективного использования горизонтального пространства без ущерба для читаемости, что делает ее идеальной для плотных интерфейсов, мобильных экранов, таблиц и веб-приложений. Семейство включает сбалансированный набор начертаний с полной поддержкой латинского, кириллического и греческого алфавитов.",
+  "descriptionEn": "The Roboto Condensed font is a space-saving variant of the popular Roboto neo-grotesk family designed by Christian Robertson. Engineered to maximize content density in constrained horizontal layouts without sacrificing legibility, Roboto Condensed provides clean, modern typography for mobile interfaces, data tables, responsive web design, and digital applications. Offering robust multilingual support covering Latin, Cyrillic, and Greek character sets, Roboto Condensed delivers high readability and a sleek aesthetic across diverse digital platforms.",
+  "addedDate": "2026-11-13"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Medeo Mono Nerd",
+  "archive": "MedeoMonoNerdFont.zip",
+  "designers": [
+    "dnfdevs"
+  ],
+  "category": "monospaced",
+  "license": "ofl",
+  "tags": [
+    "latin",
+    "free",
+    "variable"
+  ],
+  "our": false,
+  "description": "Medeo Mono Nerd — бағдарламалау, терминалдар және техникалық интерфейстерге арналған моноқаріп. Оның барлық таңбалары бірдей енге ие, сондықтан код жолдары, кестелер, сандар мен деректер бір-біріне дәл келіп, реттелген көрініс қалыптастырады. Қаріптің Nerd Font нұсқасы терминалдарда қолданылатын көптеген арнайы белгішелер мен таңбаларды қамтиды. Бұл оны код редакторлары, командалық жол интерфейстері, әзірлеушілерге арналған құралдар, деректер кестелері және техникалық құжаттамалар үшін ыңғайлы етеді. Medeo Mono Nerd құрамында 18 қаріп стилі бар, ал OpenType мүмкіндіктері бағдарламалау кезінде жиі қолданылатын таңбалар мен балама әріп пішіндерін пайдалануға мүмкіндік береді. Кирилл және латын жазуларын қолдауы оны қазақ және басқа да көптілді бағдарламалау орталарында қолдануға қолайлы етеді. Қаріп SIL Open Font License 1.1 лицензиясымен тегін таратылады.",
+  "descriptionRu": "Medeo Mono Nerd — моноширинный шрифт для программирования, терминалов и технических интерфейсов. Все символы имеют одинаковую ширину, благодаря чему строки кода, таблицы, цифры и данные выстраиваются в ровные колонки. Версия Nerd Font дополнена большим набором специальных иконок и символов, которые используются в терминалах, командных строках и инструментах разработчика. Это делает Medeo Mono Nerd удобным выбором для редакторов кода, консольных приложений, системных интерфейсов, таблиц и технической документации. Семейство включает 18 начертаний и поддерживает OpenType-функции, в том числе лигатуры и альтернативные формы символов для программирования. Поддержка кириллицы и латиницы позволяет использовать шрифт в многоязычных проектах, включая работу с казахским текстом. Medeo Mono Nerd распространяется бесплатно по лицензии SIL Open Font License 1.1.",
+  "descriptionEn": "Medeo Mono Nerd is a monospaced typeface designed for programming, terminal environments and technical interfaces. Every character occupies the same horizontal space, keeping code, tables, numbers and data neatly aligned in consistent columns. Its Nerd Font edition includes an extensive collection of additional icons and symbols commonly used in terminals, command-line tools and developer environments. This makes Medeo Mono Nerd a practical choice for code editors, command-line interfaces, system dashboards, data tables and technical documentation. The family includes 18 styles and offers OpenType features, including coding ligatures and alternative character forms. With Cyrillic and Latin script support, it is suitable for multilingual development workflows, including projects involving Kazakh text. Medeo Mono Nerd is available under the SIL Open Font License 1.1, allowing free use in personal and commercial projects.",
+  "addedDate": "2026-11-14",
+  "releaseDate": "2026-11-01",
+  "updatedDate": "2026-11-10"
+}
